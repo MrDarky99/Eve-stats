@@ -1,9 +1,10 @@
-EVE Ledger SDE storage-quota staging build
+EVE Ledger contract blueprint finder staging
 
-This build moves the large SDE blueprint/type cache from localStorage into IndexedDB.
-It retains a session-only fallback if IndexedDB caching fails.
+Primary website file: index.html
 
-Deployment: replace the existing site's HTML file with EveLedger_fixed.html after backing up the current file.
+This build adds a Blueprint Contract Finder inside Production Planner.
+It scans The Forge region contract pages (bounded to 20 pages), filters outstanding item-exchange contracts by the configured Jita 4-4 location ID, checks contents for up to 80 listings, and matches blueprint items to the loaded SDE blueprint dataset. Results show contract price, BPO/BPC status, and BPC ME/TE/runs.
 
-Checks run: embedded script syntax check; static inspection confirms SDE cache writes use IndexedDB and no longer write sdeTypes/sdeBlueprints into localStorage.
-Not verified: live CCP SDE fetch, OAuth, browser UI, IndexedDB on your specific mobile browser.
+Deployment: backup your current site file, then replace it with index.html from this package.
+
+Limitations: no live ESI/browser/mobile verification was performed here. Contract listings may be region-wide; the location filter assumes Jita 4-4 ID 60003760. The scan is deliberately capped. This is a finder, not an automated purchase feature. Contract links are generic contract-search links rather than direct contract purchase links.

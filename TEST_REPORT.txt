@@ -1,7 +1,6 @@
-SDE storage quota fix — staged check report
-
-PASS: embedded JavaScript syntax check (Node --check)
-PASS: static check — SDE data no longer persisted via localStorage store.set()
-PASS: IndexedDB write/read helpers added, with unavailable-cache fallback
-
-NOT TESTED: live CCP downloads, real mobile browser interaction, OAuth, deployment.
+Staging checks:
+PASS: Embedded script syntax (Node --check).
+PASS: Static verification of finder UI and event hookup.
+PASS: Scan limits are present (20 pages, 80 contract listings).
+PASS: Contract results matched to loaded SDE blueprints and display BPC ME/TE/runs fields.
+NOT TESTED: live ESI response, Jita contract location accuracy, mobile UI, browser deployment.

@@ -1,6 +1,10 @@
-Staging checks:
-PASS: Embedded script syntax (Node --check).
-PASS: Static verification of finder UI and event hookup.
-PASS: Scan limits are present (20 pages, 80 contract listings).
-PASS: Contract results matched to loaded SDE blueprints and display BPC ME/TE/runs fields.
-NOT TESTED: live ESI response, Jita contract location accuracy, mobile UI, browser deployment.
+Checks performed:
+- PASS JavaScript syntax check with Node --check
+- PASS static check scanner click handler appears before final init()
+- PASS initialization wrapped in try/catch
+- PASS scan error handling/status display included
+
+Not tested:
+- Live ESI API requests and contract schema
+- Actual browser/mobile button interaction
+- GitHub Pages deployment

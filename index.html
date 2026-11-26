@@ -147,7 +147,6 @@ $('#saveSettings').onclick=()=>{store.set('cfg',{tax:+$('#cfgTax').value||0,brok
 $('#exportData').onclick=exportData;$('#importData').onchange=async e=>{try{await importData(e.target.files[0])}catch(x){showMsg(x.message,'bad')}};
 $('#clearData').onclick=()=>{if(confirm('Delete all EVE Ledger data from this browser?')){for(let i=localStorage.length-1;i>=0;i--){let k=localStorage.key(i);if(k.startsWith('el:'))localStorage.removeItem(k)}location.reload()}};
 function init(){navDraw();populateSelect();$('#materialRows').innerHTML=materialRow()+materialRow();render();handleOAuth()}
-init();
 
 // Contract-based blueprint discovery: bounded ESI scan to avoid excessive requests.
 const JITA4_4=60003760, FORGE=10000002;
@@ -158,6 +157,8 @@ async function scanBlueprintContracts(){const status=$('#contractStatus'),out=$(
  found.sort((a,b)=>a.contract.price-b.contract.price);if(!found.length){out.innerHTML='<div class="notice">No blueprint items found in the checked Jita 4-4 contracts. Note: contract location filtering and endpoint coverage can vary.</div>';status.textContent='Scan finished';return}
  out.innerHTML=table(['Blueprint','Contract price','Type','ME','TE','Runs','Contract'],found.slice(0,100).map(x=>[esc(x.name),fmtMoney(x.contract.price),x.item.is_blueprint_copy?'BPC':'BPO',x.item.is_blueprint_copy?fmt(x.item.blueprint_me||0):'—',x.item.is_blueprint_copy?fmt(x.item.blueprint_te||0):'—',x.item.is_blueprint_copy?fmt(x.item.blueprint_runs||0):'—',`<a href="https://contractsearch.eveonline.com/" target="_blank" rel="noopener">Browse</a>`]));status.textContent=`Found ${found.length} blueprint entries in checked contracts`;
  }catch(e){status.textContent='Scan failed: '+e.message;out.innerHTML='<div class="notice warn">'+esc(e.message)+'</div>'}}
-$('#scanBlueprintContracts').onclick=scanBlueprintContracts;
+$('#scanBlueprintContracts').onclick=()=>{scanBlueprintContracts().catch(e=>{const st=$('#contractStatus'),o=$('#contractResults');if(st)st.textContent='Scan failed';if(o)o.innerHTML='<div class="notice warn">'+esc(e?.message||String(e))+'</div>';});};
+// Initialize last, so a startup failure elsewhere cannot leave the scanner button inert.
+try{init()}catch(e){console.error('EVE Ledger startup error:',e);const st=$('#contractStatus');if(st)st.textContent='Startup error (scanner is still available)';}
 
 </script></body></html>

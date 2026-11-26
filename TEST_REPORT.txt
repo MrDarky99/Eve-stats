@@ -1,0 +1,7 @@
+SDE storage quota fix — staged check report
+
+PASS: embedded JavaScript syntax check (Node --check)
+PASS: static check — SDE data no longer persisted via localStorage store.set()
+PASS: IndexedDB write/read helpers added, with unavailable-cache fallback
+
+NOT TESTED: live CCP downloads, real mobile browser interaction, OAuth, deployment.

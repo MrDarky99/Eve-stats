@@ -1,0 +1,13 @@
+const prefix='eveStatsV2:';
+export const read=(k,def=null)=>{try{return JSON.parse(localStorage.getItem(prefix+k))??def}catch{return def}};
+export const write=(k,v)=>localStorage.setItem(prefix+k,JSON.stringify(v));
+export const chars=()=>read('characters',{});
+export const saveChar=(id,data)=>{const c=chars();c[id]={...(c[id]||{}),...data};write('characters',c)};
+export const removeChar=id=>{const c=chars();delete c[id];write('characters',c);localStorage.removeItem(prefix+'data:'+id)};
+export const data=id=>read('data:'+id,{});
+export const saveData=(id,d)=>write('data:'+id,d);
+export const prefs=()=>read('prefs',{tax:4.5,broker:3,selected:'all'});
+export const savePrefs=p=>write('prefs',p);
+export const names=()=>read('names',{});
+export const saveNames=n=>write('names',n);
+export const prefixKey=prefix;

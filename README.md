@@ -6,7 +6,7 @@ Static, browser-only EVE Online character dashboard. No server or database.
 1. Create a GitHub repository (or use your existing repository).
 2. Upload the files in this folder to the repository root: `index.html`, `style.css`, `app.js`, `esi.js`, `planner.js`, `store.js`.
 3. In GitHub, open Settings → Pages and choose deployment from the main branch/root.
-4. Ensure the EVE Developer application callback URL matches `https://mrdarky99.github.io/Eve-stats/` in `esi.js`.
+4. Ensure the EVE Developer application callback URL matches `` in `esi.js`.
 5. Visit the Pages URL and click Add character.
 
 ## Included

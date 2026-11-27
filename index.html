@@ -13,7 +13,29 @@ header{position:sticky;top:0;z-index:5;background:#0c1117ee;border-bottom:1px so
 .navbtn{display:block;width:100%;text-align:left;background:transparent;color:var(--muted);padding:10px;border-radius:8px;margin:2px 0;font-weight:600}.navbtn.active,.navbtn:hover{background:var(--panel2);color:var(--text)}main{padding:22px;max-width:1500px;width:100%;margin:auto}
 h1{font-size:25px;margin:0 0 4px}h2{font-size:17px;margin:22px 0 10px}h3{font-size:15px;margin:14px 0 8px}.muted{color:var(--muted)}.tiny{font-size:12px;color:var(--muted)}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}.metric{font-size:22px;font-weight:800;margin-top:5px}.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--gold)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:11px;color:var(--muted)}.section{display:none}.section.active{display:block}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;min-width:650px}th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-size:12px}th:first-child,td:first-child{text-align:left}tr:last-child td{border-bottom:0}.empty{padding:22px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}.field{display:grid;gap:4px;min-width:120px}.field label{font-size:12px;color:var(--muted)}.field input,.field select{width:100%}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.notice{padding:11px 13px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);margin:10px 0}.notice.warn{border-color:#70552c}.notice.bad{border-color:#633a3a}.notice.good{border-color:#315d50}.progress{height:5px;background:var(--line);border-radius:5px;overflow:hidden}.progress div{height:100%;background:var(--gold);width:0}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.chart{width:100%;height:160px;background:var(--panel);border:1px solid var(--line);border-radius:10px}.search{min-width:180px}.foot{margin-top:30px;border-top:1px solid var(--line);padding:15px;color:var(--muted);font-size:12px}
 @media(max-width:800px){.shell{grid-template-columns:1fr}nav{position:sticky;top:60px;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px;display:flex;overflow:auto;background:var(--bg);z-index:4}.navbtn{white-space:nowrap;width:auto;display:inline-block;margin:0;padding:8px 10px}main{padding:15px}header{padding:10px}}
-</style></head><body>
+</style>
+<style>
+#contractBlueprintFinder .cf-intro{margin:4px 0 12px}#contractBlueprintFinder .cf-panel{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:12px;margin:10px 0}
+#contractBlueprintFinder .cf-wide{grid-column:1/-1}#contractBlueprintFinder .cf-progress{height:6px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:8px}#contractBlueprintFinder .cf-progress i{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+#contractBlueprintFinder .cf-sug button{display:block;width:100%;text-align:left;margin:5px 0;background:#0d151e;color:var(--text);border:1px solid var(--line)}#contractBlueprintFinder .cf-sug small{display:block;color:var(--muted);font-weight:400}
+#contractBlueprintFinder .cf-check{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--muted)}#contractBlueprintFinder .cf-check input{width:auto}
+#contractBlueprintFinder #cf-log{white-space:pre-wrap;word-break:break-word;color:var(--muted);font-size:11px;max-height:140px;overflow:auto;margin:8px 0 0}
+#contractBlueprintFinder .cf-tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;margin:2px 4px 2px 0;background:#334155}#contractBlueprintFinder .cf-bpo{background:#065f46}#contractBlueprintFinder .cf-bpc{background:#92400e}#contractBlueprintFinder .cf-best{border-color:var(--green)}#contractBlueprintFinder .cf-result h3{font-size:14px;margin:0 0 8px}#contractBlueprintFinder .cf-result p{margin:6px 0;line-height:1.4}
+#contractBlueprintFinder .cf-result dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px;margin:10px 0 0}#contractBlueprintFinder .cf-result dt{color:var(--muted)}#contractBlueprintFinder .cf-result dd{margin:0;overflow-wrap:anywhere}
+</style>
+
+
+<style>
+#contractBlueprintFinder .cf-intro{margin:4px 0 12px}#contractBlueprintFinder .cf-panel{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:12px;margin:10px 0}
+#contractBlueprintFinder .cf-wide{grid-column:1/-1}#contractBlueprintFinder .cf-progress{height:6px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:8px}#contractBlueprintFinder .cf-progress i{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+#contractBlueprintFinder .cf-sug button{display:block;width:100%;text-align:left;margin:5px 0;background:#0d151e;color:var(--text);border:1px solid var(--line)}#contractBlueprintFinder .cf-sug small{display:block;color:var(--muted);font-weight:400}
+#contractBlueprintFinder .cf-check{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--muted)}#contractBlueprintFinder .cf-check input{width:auto}
+#contractBlueprintFinder #cf-log{white-space:pre-wrap;word-break:break-word;color:var(--muted);font-size:11px;max-height:140px;overflow:auto;margin:8px 0 0}
+#contractBlueprintFinder .cf-tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;margin:2px 4px 2px 0;background:#334155}#contractBlueprintFinder .cf-bpo{background:#065f46}#contractBlueprintFinder .cf-bpc{background:#92400e}#contractBlueprintFinder .cf-best{border-color:var(--green)}#contractBlueprintFinder .cf-result h3{font-size:14px;margin:0 0 8px}#contractBlueprintFinder .cf-result p{margin:6px 0;line-height:1.4}
+#contractBlueprintFinder .cf-result dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12px;margin:10px 0 0}#contractBlueprintFinder .cf-result dt{color:var(--muted)}#contractBlueprintFinder .cf-result dd{margin:0;overflow-wrap:anywhere}
+</style>
+
+</head><body>
 <header><div class="brand">EVE <span>LEDGER</span></div><div class="top-actions"><select id="charSelect" aria-label="Character selection"><option value="all">All characters</option></select><button class="secondary" id="syncAll">Sync all</button><button id="addChar">Add character</button></div></header>
 <div class="shell"><nav id="nav"></nav><main>
 <div id="status" class="notice" style="display:none"></div><div id="syncProgress" style="display:none"><div class="tiny" id="progressText"></div><div class="progress"><div id="progressBar"></div></div></div>
@@ -23,7 +45,34 @@ h1{font-size:25px;margin:0 0 4px}h2{font-size:17px;margin:22px 0 10px}h3{font-si
 <section class="section" id="assets"><h1>Assets</h1><div class="row"><input id="assetSearch" class="search" placeholder="Search item or location"><select id="assetSort"><option value="value">Value</option><option value="name">Name</option><option value="quantity">Quantity</option></select></div><div id="assetCards" class="cards" style="margin-top:12px"></div><h2>Assets by location</h2><div id="locationTable"></div><h2>Asset list</h2><div id="assetTable"></div></section>
 <section class="section" id="industry"><h1>Industry</h1><div id="industryCards" class="cards"></div><h2>Active and recent jobs</h2><div id="jobsTable"></div><h2>Mining record (30 days)</h2><div id="miningTable"></div><h2>Recent losses</h2><div id="lossTable"></div></section>
 <section class="section" id="markets"><h1>Market tools</h1><div class="notice warn">Market scan is an indicative comparison, not an executable quote. Orders can change and available quantity is not guaranteed. This scan checks the selected items at five hubs.</div><div class="row"><button id="scanTop">Scan top traded items</button><button class="secondary" id="scanAssets">Scan selected asset items</button></div><div id="marketResult" style="margin-top:12px"></div></section>
-<section class="section" id="planner"><h1>Production planner</h1><div class="muted">SDE-powered blueprint search, material calculation, ME/TE modifiers, market quotes and facility/job cost estimates.</div><div class="card" style="margin-top:12px"><div class="row"><button id="loadSDE">Load / refresh blueprint database</button><span id="sdeStatus" class="tiny">SDE not loaded</span></div><div class="formgrid" style="margin-top:10px"><div class="field"><label>Search product</label><input id="bpSearch" placeholder="Search blueprint or product"></div><div class="field"><label>Blueprint / product</label><select id="bpSelect"><option value="">Load database first</option></select></div><div class="field"><label>Runs</label><input id="planRuns" type="number" min="1" value="1"></div><div class="field"><label>Material Efficiency (ME %)</label><input id="planME" type="number" min="0" max="10" value="10"></div><div class="field"><label>Time Efficiency (TE %)</label><input id="planTE" type="number" min="0" max="20" value="20"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" value="0"></div><div class="field"><label>Facility material bonus (%)</label><input id="planMatBonus" type="number" step=".01" value="0"></div><div class="field"><label>Facility time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" value="0"></div><div class="field"><label>System / facility name</label><input id="planFacilityName" placeholder="System / station / structure"></div><div class="field"><label>Blueprint copy runs (optional)</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Product sell price (ISK/unit)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:10px"><button id="priceMaterials">Price materials in Jita</button><button class="secondary" id="priceProduct">Price product in Jita</button><button id="calculatePlan">Calculate</button><button class="secondary" id="savePlan">Save plan</button></div><div id="planMaterialTable"></div><div id="planResult"></div></div><div class="card" id="contractBlueprintFinder" style="margin-top:14px"><h2>Blueprint contract finder · The Forge</h2><div class="muted">Scans public item-exchange contracts in The Forge, retrieves contents for a bounded set, and highlights blueprint copies/originals. Results are indicative; contract prices and items may change.</div><div class="row" style="margin-top:10px"><button id="scanBlueprintContracts">Scan blueprint contracts</button><span id="contractStatus" class="tiny">Ready</span></div><div id="contractResults" style="margin-top:10px"></div></div><h2>Saved plans</h2><div id="savedPlans"></div><div class="notice warn">Market estimates use Jita regional order snapshots, not guaranteed fill prices or depth-aware execution. Facility/system inputs are estimates. Nearby player structures cannot be reliably enumerated publicly; enter your preferred facility and its bonuses manually. Blueprint database is CCP SDE data.</div></section>
+<section class="section" id="planner"><h1>Production planner</h1><div class="muted">SDE-powered blueprint search, material calculation, ME/TE modifiers, market quotes and facility/job cost estimates.</div><div class="card" style="margin-top:12px"><div class="row"><button id="loadSDE">Load / refresh blueprint database</button><span id="sdeStatus" class="tiny">SDE not loaded</span></div><div class="formgrid" style="margin-top:10px"><div class="field"><label>Search product</label><input id="bpSearch" placeholder="Search blueprint or product"></div><div class="field"><label>Blueprint / product</label><select id="bpSelect"><option value="">Load database first</option></select></div><div class="field"><label>Runs</label><input id="planRuns" type="number" min="1" value="1"></div><div class="field"><label>Material Efficiency (ME %)</label><input id="planME" type="number" min="0" max="10" value="10"></div><div class="field"><label>Time Efficiency (TE %)</label><input id="planTE" type="number" min="0" max="20" value="20"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" value="0"></div><div class="field"><label>Facility material bonus (%)</label><input id="planMatBonus" type="number" step=".01" value="0"></div><div class="field"><label>Facility time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" value="0"></div><div class="field"><label>System / facility name</label><input id="planFacilityName" placeholder="System / station / structure"></div><div class="field"><label>Blueprint copy runs (optional)</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Product sell price (ISK/unit)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:10px"><button id="priceMaterials">Price materials in Jita</button><button class="secondary" id="priceProduct">Price product in Jita</button><button id="calculatePlan">Calculate</button><button class="secondary" id="savePlan">Save plan</button></div><div id="planMaterialTable"></div><div id="planResult"></div></div><div class="card" id="contractBlueprintFinder" style="margin-top:14px"><h2>Blueprint contract finder</h2>
+<div class="cf-intro muted">Search blueprint originals and copies across public contracts using EVE Ref’s bulk snapshot. The archive is cached locally on this device, so contract contents are indexed without one ESI request per contract.</div>
+<div class="cf-panel">
+  <b>Local contract database</b>
+  <div id="cf-dbStatus" class="tiny" style="margin-top:6px">Starting scanner…</div>
+  <div class="cf-progress"><i id="cf-progress"></i></div>
+  <div class="row" style="margin-top:9px"><button id="cf-refresh">Check for update</button><button id="cf-clear" class="secondary">Delete local database</button></div>
+  <p class="tiny">The app checks EVE Ref’s timestamp/ETag and reuses the saved archive when unchanged. Snapshots are generally published about every 30 minutes.</p>
+</div>
+<div class="cf-panel">
+  <div class="formgrid">
+    <div class="field cf-wide"><label>Blueprint name</label><input id="cf-q" autocomplete="off" placeholder="e.g. Astero Blueprint" disabled></div>
+    <div id="cf-sug" class="cf-sug cf-wide"></div>
+    <div id="cf-picked" class="tiny cf-wide">Loading blueprint names…</div>
+    <div class="field"><label>Region</label><select id="cf-region"><option value="10000002">The Forge (Jita)</option><option value="10000043">Domain (Amarr)</option><option value="10000032">Sinq Laison (Dodixie)</option><option value="10000030">Heimatar (Rens)</option><option value="10000042">Metropolis (Hek)</option><option value="0">All regions</option></select></div>
+    <div class="field"><label>Station</label><select id="cf-station"><option value="0">Any station in selected region</option><option value="60003760">Jita IV - Moon 4 - Caldari Navy Assembly Plant</option><option value="60008494">Amarr VIII (Oris) - Emperor Family Academy</option><option value="60011866">Dodixie IX - Moon 20 - Federation Navy Assembly Plant</option><option value="60004588">Rens VI - Moon 8 - Brutor Tribe Treasury</option><option value="60005686">Hek VIII - Moon 12 - Boundless Creation Factory</option></select></div>
+    <div class="field"><label>Maximum contract volume (m³)</label><input id="cf-maxvol" value="1" inputmode="decimal" placeholder="Blank = any"></div>
+    <div class="field"><label>Minimum price (ISK)</label><input id="cf-minprice" inputmode="numeric" placeholder="No minimum"></div>
+    <div class="field"><label>Maximum price (ISK)</label><input id="cf-maxprice" inputmode="numeric" placeholder="No maximum"></div>
+    <div class="field"><label>Results limit</label><select id="cf-limit"><option>100</option><option>250</option><option>500</option><option>1000</option></select></div>
+  </div>
+  <label class="cf-check"><input id="cf-single" type="checkbox"> Only single-blueprint-sized contracts (0.01 m³)</label>
+  <p class="tiny">Searches active item-exchange and auction contracts, including BPO/BPC ME, TE, runs and bundled items.</p>
+  <button id="cf-go" disabled>Search contracts</button>
+</div>
+<div class="cf-panel"><b>Search status</b><div id="cf-status" class="tiny" style="margin-top:6px">Waiting for database…</div><pre id="cf-log"></pre></div>
+<div id="cf-results"></div>
+</div><h2>Saved plans</h2><div id="savedPlans"></div><div class="notice warn">Market estimates use Jita regional order snapshots, not guaranteed fill prices or depth-aware execution. Facility/system inputs are estimates. Nearby player structures cannot be reliably enumerated publicly; enter your preferred facility and its bonuses manually. Blueprint database is CCP SDE data.</div></section>
 <section class="section" id="profiles"><h1>Character profiles</h1><div class="muted">Skills and standings are fetched when the character has authorized the requested ESI scopes. The app does not infer skills from missing data.</div><div id="profileTable" style="margin-top:12px"></div></section>
 <section class="section" id="settings"><h1>Settings & data</h1><div class="notice warn">This app is a browser-only GitHub Pages application. EVE OAuth tokens are stored in browser local storage. Use a trusted browser, avoid shared devices, and remove authorization when finished.</div><div class="formgrid"><div class="field"><label>Default estimated sales tax (%)</label><input id="cfgTax" type="number" step=".01"></div><div class="field"><label>Default estimated broker fee (%)</label><input id="cfgBroker" type="number" step=".01"></div></div><div class="row" style="margin-top:10px"><button id="saveSettings">Save settings</button><button class="secondary" id="exportData">Export JSON backup</button><label class="secondary" style="padding:9px;border:1px solid var(--line);border-radius:8px;cursor:pointer">Import backup <input id="importData" type="file" accept=".json,application/json" hidden></label><button class="danger" id="clearData">Clear all local data</button></div><h2>Characters</h2><div id="settingsChars"></div><h2>Storage notes</h2><div class="notice">Data is stored on this browser and is not synced between devices. Export a backup periodically. Removing a character deletes its local data; it does not itself revoke EVE authorization.</div></section>
 <div class="foot">EVE Ledger · Browser-local dashboard · EVE Online is a trademark of CCP Games. This project is unofficial and not affiliated with CCP.</div>
@@ -148,17 +197,819 @@ $('#exportData').onclick=exportData;$('#importData').onchange=async e=>{try{awai
 $('#clearData').onclick=()=>{if(confirm('Delete all EVE Ledger data from this browser?')){for(let i=localStorage.length-1;i>=0;i--){let k=localStorage.key(i);if(k.startsWith('el:'))localStorage.removeItem(k)}location.reload()}};
 function init(){navDraw();populateSelect();$('#materialRows').innerHTML=materialRow()+materialRow();render();handleOAuth()}
 
-// Contract-based blueprint discovery: bounded ESI scan to avoid excessive requests.
-const JITA4_4=60003760, FORGE=10000002;
-async function scanBlueprintContracts(){const status=$('#contractStatus'),out=$('#contractResults');status.textContent='Fetching The Forge contract listings…';out.innerHTML='';try{
- let all=[],page=1,pages=1;do{let r=await fetch(`${ESI}/contracts/region/${FORGE}/?page=${page}`);if(!r.ok)throw Error('Contracts endpoint returned '+r.status);pages=+(r.headers.get('X-Pages')||1);all.push(...await r.json());page++;}while(page<=pages&&page<=20);
- const listings=all.filter(c=>c.type==='item_exchange'&&c.status==='outstanding'&&c.location_id===JITA4_4&&c.price>0).slice(0,80);status.textContent=`${listings.length} candidate contracts · checking contents (limit 80)`;
- let found=[],cache=new Map();for(let i=0;i<listings.length;i++){status.textContent=`Checking contract contents ${i+1}/${listings.length}`;let c=listings[i];try{let r=await fetch(`${ESI}/contracts/region/${FORGE}/items/${c.contract_id}/`);if(!r.ok)continue;let items=await r.json();for(let it of items){let b=getBlueprint(it.type_id);if(!b)continue;let name=sdeTypes[it.type_id]||bpName(b)||('Blueprint type '+it.type_id);found.push({contract:c,item:it,name});}}catch{}}
- found.sort((a,b)=>a.contract.price-b.contract.price);if(!found.length){out.innerHTML='<div class="notice">No blueprint items found in the checked Jita 4-4 contracts. Note: contract location filtering and endpoint coverage can vary.</div>';status.textContent='Scan finished';return}
- out.innerHTML=table(['Blueprint','Contract price','Type','ME','TE','Runs','Contract'],found.slice(0,100).map(x=>[esc(x.name),fmtMoney(x.contract.price),x.item.is_blueprint_copy?'BPC':'BPO',x.item.is_blueprint_copy?fmt(x.item.blueprint_me||0):'—',x.item.is_blueprint_copy?fmt(x.item.blueprint_te||0):'—',x.item.is_blueprint_copy?fmt(x.item.blueprint_runs||0):'—',`<a href="https://contractsearch.eveonline.com/" target="_blank" rel="noopener">Browse</a>`]));status.textContent=`Found ${found.length} blueprint entries in checked contracts`;
- }catch(e){status.textContent='Scan failed: '+e.message;out.innerHTML='<div class="notice warn">'+esc(e.message)+'</div>'}}
-$('#scanBlueprintContracts').onclick=()=>{scanBlueprintContracts().catch(e=>{const st=$('#contractStatus'),o=$('#contractResults');if(st)st.textContent='Scan failed';if(o)o.innerHTML='<div class="notice warn">'+esc(e?.message||String(e))+'</div>';});};
 // Initialize last, so a startup failure elsewhere cannot leave the scanner button inert.
 try{init()}catch(e){console.error('EVE Ledger startup error:',e);const st=$('#contractStatus');if(st)st.textContent='Startup error (scanner is still available)';}
 
-</script></body></html>
+</script>
+<script>
+(function initBlueprintContractFinder(){
+
+
+const $ = id => document.getElementById('cf-' + id);
+const INDEX_URL = 'https://data.everef.net/public-contracts/index.json';
+const FILE_NAME = 'public-contracts-latest.v2.tar.bz2';
+const DB_NAME = 'eve-contract-finder-v2';
+const STORE = 'archive';
+const BP_KEY = 'eveBpListV2';
+const ESI = 'https://esi.evetech.net/latest';
+let BP = [], selected = null, contractsReady = false, busy = false;
+// Some embedded previews (including static.app previews) deny IndexedDB.
+// Fall back to an in-memory cache so the scanner can still run in that session.
+let memoryArchive = null, memoryOnly = false, storageWarningShown = false;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let bz2Decompress = null;
+function withTimeout(promise, ms, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(label + ' timed out after ' + Math.round(ms/1000) + ' seconds.')), ms); })
+  ]).finally(() => clearTimeout(timer));
+}
+async function fetchTimed(url, options={}, ms=12000, label='Request') {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, {...options, signal: controller.signal});
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error(label + ' timed out after ' + Math.round(ms/1000) + ' seconds.');
+    throw e;
+  } finally { clearTimeout(timer); }
+}
+async function loadBzip2() {
+  if (bz2Decompress) return bz2Decompress;
+  // SheetJS bz2 is a browser UMD build: it attaches { decompress } to window.bz2.
+  // Importing its CommonJS wrapper as an ES module can succeed but expose no named exports.
+  dbStatus('Loading archive decompression engine…');
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/bz2@1.0.1/index.js',
+    'https://unpkg.com/bz2@1.0.1/index.js'
+  ];
+  const failures = [];
+  for (const url of sources) {
+    try {
+      log('Loading decompressor from ' + new URL(url).hostname + '…');
+      await withTimeout(new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.onload = () => {
+          const fn = window.bz2 && window.bz2.decompress;
+          if (typeof fn === 'function') resolve(fn);
+          else reject(new Error('Script loaded, but window.bz2.decompress was not exposed.'));
+        };
+        script.onerror = () => reject(new Error('Browser could not load the decompression script.'));
+        document.head.appendChild(script);
+      }), 15000, 'Decompression library download').then(fn => { bz2Decompress = fn; });
+      if (bz2Decompress) {
+        log('Decompression engine loaded successfully.');
+        return bz2Decompress;
+      }
+    } catch (e) {
+      failures.push(new URL(url).hostname + ': ' + e.message);
+      log('Could not load from ' + new URL(url).hostname + ': ' + e.message);
+    }
+  }
+  throw new Error('Could not load a working BZIP2 decompressor. Check your connection, content blockers, or browser preview restrictions. Details: ' + failures.join(' | '));
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isk = n => n == null ? '—' : Number(n).toLocaleString('en-US',{maximumFractionDigits:0}) + ' ISK';
+const left = d => { const ms = new Date(d)-Date.now(); if(ms<=0)return 'expired'; const h=Math.floor(ms/36e5); return h>=48?Math.floor(h/24)+'d '+h%24+'h':h+'h '+Math.floor(ms%36e5/6e4)+'m'; };
+function status(s){$('status').textContent=s}
+function dbStatus(s){$('dbStatus').textContent=s}
+function log(s){$('log').textContent += s+'\n';$('log').scrollTop=$('log').scrollHeight}
+function progress(p){$('progress').style.width=Math.max(0,Math.min(100,p))+'%'}
+
+async function openDB(){
+  if(memoryOnly) return null;
+  try {
+    if(!window.indexedDB) throw new Error('IndexedDB is unavailable in this browser context.');
+    return await new Promise((resolve,reject)=>{
+      let req;
+      try { req=indexedDB.open(DB_NAME,1); }
+      catch(e) { reject(e); return; }
+      req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE)};
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error || new Error('IndexedDB could not be opened.'));
+      req.onblocked=()=>reject(new Error('IndexedDB open request was blocked.'));
+    });
+  } catch(e) {
+    memoryOnly=true;
+    if(!storageWarningShown){
+      storageWarningShown=true;
+      log('Persistent browser storage is blocked in this preview. Continuing with temporary in-memory storage; the archive will need to be downloaded again after closing this page. Open the HTML directly in Chrome to enable device storage.');
+      dbStatus('Preview blocks local database storage · using temporary session memory');
+    }
+    return null;
+  }
+}
+async function dbGet(key){
+  const db=await openDB();
+  if(!db) return key==='current' ? memoryArchive : null;
+  return new Promise((resolve,reject)=>{const r=db.transaction(STORE,'readonly').objectStore(STORE).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+}
+async function dbPut(key,value){
+  const db=await openDB();
+  if(!db){if(key==='current')memoryArchive=value;return;}
+  return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(value,key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
+}
+async function dbClear(){
+  const db=await openDB();
+  memoryArchive=null;
+  if(!db)return;
+  return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).clear();tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
+}
+
+async function fetchIndex(){
+  const r=await fetchTimed(INDEX_URL,{cache:'no-store'},12000,'EVE Ref update check');
+  if(!r.ok)throw new Error('EVE Ref index request failed (HTTP '+r.status+').');
+  const index=await r.json();
+  const f=(index.files||[]).find(x=>x.name===FILE_NAME);
+  if(!f)throw new Error('Could not find '+FILE_NAME+' in EVE Ref index.');
+  return f;
+}
+async function getArchive(force=false){
+  dbStatus('Checking EVE Ref snapshot timestamp…');
+  let remote=null, old=null;
+  try{remote=await fetchIndex()}catch(e){
+    old=await dbGet('current');
+    if(old?.blob){log('Could not check online; using the locally saved archive. '+e.message);return old}
+    throw e;
+  }
+  old=await dbGet('current');
+  const same=old && old.last_modified===remote.last_modified && old.etag===remote.etag && old.blob;
+  if(same && !force){
+    dbStatus('Up to date · saved locally · '+new Date(remote.last_modified).toLocaleString());
+    log('Snapshot unchanged. Reusing the archive already saved on this device.');
+    return old;
+  }
+  dbStatus('Downloading new snapshot ('+(remote.size/1048576).toFixed(2)+' MiB)…');
+  status('Downloading EVE Ref archive…');
+  const r=await fetchTimed(remote.url,{cache:'no-store'},90000,'EVE Ref archive download');
+  if(!r.ok)throw new Error('Archive download failed (HTTP '+r.status+').');
+  const reader=r.body?.getReader();
+  let blob;
+  if(reader){
+    const chunks=[];let got=0,total=Number(r.headers.get('content-length'))||remote.size;
+    while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;progress(got/total*100);status('Downloading archive… '+(got/1048576).toFixed(1)+' / '+(total/1048576).toFixed(1)+' MiB');}
+    blob=new Blob(chunks,{type:'application/x-bzip2'});
+  }else blob=await r.blob();
+  const record={blob,last_modified:remote.last_modified,etag:remote.etag,size:remote.size,name:remote.name,downloaded_at:new Date().toISOString()};
+  await dbPut('current',record);
+  progress(100);
+  dbStatus('Downloaded and saved locally · '+new Date(remote.last_modified).toLocaleString());
+  log('Saved '+remote.name+' ('+(blob.size/1048576).toFixed(2)+' MiB) in this browser/device.');
+  return record;
+}
+
+function tarFiles(bytes){
+  const files={};let off=0;
+  const dec=new TextDecoder();
+  while(off+512<=bytes.length){
+    const h=bytes.subarray(off,off+512);
+    if(h.every(x=>x===0))break;
+    const name=dec.decode(h.subarray(0,100)).replace(/\0.*$/s,'');
+    const prefix=dec.decode(h.subarray(345,500)).replace(/\0.*$/s,'');
+    const full=(prefix?prefix+'/':'')+name;
+    const sizeText=dec.decode(h.subarray(124,136)).replace(/\0.*$/s,'').trim();
+    const size=parseInt(sizeText||'0',8)||0;
+    const start=off+512;
+    if(['meta.json','contracts.csv','contract_items.csv'].includes(name)||['meta.json','contracts.csv','contract_items.csv'].includes(full.split('/').pop())){
+      files[name]=bytes.subarray(start,start+size);
+    }
+    off=start+Math.ceil(size/512)*512;
+  }
+  for(const n of ['meta.json','contracts.csv','contract_items.csv'])if(!files[n])throw new Error('Archive is missing '+n+'.');
+  return files;
+}
+
+// CSV parser handles commas, escaped quotes, CRLF and quoted line breaks without building a giant row array.
+function eachCSV(text, callback){
+  let row=[], field='', quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"' && text[i+1]==='"'){field+='"';i++}
+      else if(ch==='"')quoted=false;
+      else field+=ch;
+    }else if(ch==='"'){quoted=true}
+    else if(ch===','){row.push(field);field=''}
+    else if(ch==='\n'){row.push(field);callback(row);row=[];field=''}
+    else if(ch!=='\r')field+=ch;
+  }
+  if(field.length||row.length){row.push(field);callback(row)}
+}
+function csvObjectHeaders(text){
+  const line=text.slice(0,text.indexOf('\n')<0?text.length:text.indexOf('\n')).replace(/\r$/,'');
+  // Header names in this dataset do not contain quoted commas.
+  return line.split(',').map(x=>x.replace(/^"|"$/g,''));
+}
+async function parseArchive(record){
+  status('Opening saved archive…');progress(0);
+  const compressed=new Uint8Array(await record.blob.arrayBuffer());
+  status('Decompressing BZIP2 archive…');
+  const decompress=await loadBzip2();
+  status('Decompressing BZIP2 archive…');
+  await new Promise(resolve=>setTimeout(resolve,50));
+  const tar=decompress(compressed,true);
+  const files=tarFiles(tar);
+  const decoder=new TextDecoder('utf-8');
+  const meta=JSON.parse(decoder.decode(files['meta.json']));
+  const contractsText=decoder.decode(files['contracts.csv']);
+  const itemsText=decoder.decode(files['contract_items.csv']);
+  status('Indexing contracts…');
+  const ch=csvObjectHeaders(contractsText), ci=Object.fromEntries(ch.map((x,i)=>[x,i]));
+  const contractMap=new Map();
+  eachCSV(contractsText,(row)=>{
+    if(row[0]==='collateral')return;
+    const type=row[ci.type], id=Number(row[ci.contract_id]);
+    if(!id || (type!=='item_exchange'&&type!=='auction'))return;
+    if(new Date(row[ci.date_expired]).getTime()<=Date.now())return;
+    const c={
+      contract_id:id,type,date_expired:row[ci.date_expired],date_issued:row[ci.date_issued],
+      start_location_id:Number(row[ci.start_location_id]),issuer_id:Number(row[ci.issuer_id]),
+      issuer_corporation_id:Number(row[ci.issuer_corporation_id]),for_corporation:row[ci.for_corporation]==='true',
+      price:Number(row[ci.price])||0,buyout:Number(row[ci.buyout])||0,volume:Number(row[ci.volume])||0,
+      title:row[ci.title]||'',region_id:Number(row[ci.region_id]),station_id:Number(row[ci.station_id])
+    };
+    contractMap.set(id,c);
+  });
+  status('Database loaded · indexing '+contractMap.size.toLocaleString()+' active contracts…');
+  return {meta,contractMap,itemsText};
+}
+
+function setBlueprints(groups,rows){
+  BP=rows.map(r=>({id:Number(r[0]),n:r[1],l:r[1].toLowerCase(),g:groups[r[2]]}));
+}
+async function esi(path,opts){
+  const r=await fetchTimed(ESI+path,opts,20000,'EVE Online API request');
+  if(!r.ok)throw new Error('ESI request failed: HTTP '+r.status);
+  return r;
+}
+async function loadBlueprints(){
+  try{const cached=JSON.parse(localStorage.getItem(BP_KEY)||'null');if(cached?.rows?.length>500){setBlueprints(cached.groups,cached.rows);return}}catch(e){}
+  $('picked').textContent='Building blueprint name list (first run)…';
+  const cat=await (await esi('/universe/categories/9/')).json();
+  const groups=[], typeGroup={};let done=0;
+  for(let i=0;i<cat.groups.length;i+=5){
+    await Promise.all(cat.groups.slice(i,i+5).map(async gid=>{
+      const r=await esi('/universe/groups/'+gid+'/');const g=await r.json();
+      if(g.types?.length){const gi=groups.push(g.name)-1;g.types.forEach(t=>typeGroup[t]=gi)}
+      done++;$('picked').textContent='Building blueprint list… '+done+'/'+cat.groups.length;
+    }));
+  }
+  const ids=Object.keys(typeGroup).map(Number),rows=[];
+  for(let i=0;i<ids.length;i+=500){
+    const r=await esi('/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ids.slice(i,i+500))});
+    (await r.json()).forEach(x=>rows.push([x.id,x.name,typeGroup[x.id]]));
+  }
+  if(rows.length<500)throw new Error('Blueprint name list was incomplete.');
+  setBlueprints(groups,rows);
+  try{localStorage.setItem(BP_KEY,JSON.stringify({groups,rows}))}catch(e){}
+}
+function suggest(){
+  selected=null;$('go').disabled=true;$('picked').textContent='';
+  const q=$('q').value.trim().toLowerCase();
+  if(q.length<2){$('sug').innerHTML='';return}
+  const words=q.split(/\s+/);
+  const matches=BP.filter(b=>words.every(w=>b.l.includes(w)));
+  matches.sort((a,b)=>(Number(b.l.startsWith(q))-Number(a.l.startsWith(q)))||a.n.length-b.n.length||a.n.localeCompare(b.n));
+  $('sug').innerHTML=matches.slice(0,10).map(b=>`<button data-id="${b.id}">${esc(b.n)}<small>${esc(b.g||'')} · Type ID ${b.id}</small></button>`).join('')||'<span class="dim">No blueprint matches.</span>';
+  if(matches.length>10)$('sug').insertAdjacentHTML('beforeend',`<p class="dim small">${matches.length-10} more matches — type more letters to narrow it down.</p>`);
+}
+function pick(b){selected=b;$('q').value=b.n;$('sug').innerHTML='';$('picked').textContent='Selected: '+b.n+' · Type ID '+b.id;$('go').disabled=!database}
+$('q').addEventListener('input',suggest);
+$('sug').addEventListener('click',e=>{const b=e.target.closest('button');if(b){const found=BP.find(x=>x.id===Number(b.dataset.id));if(found)pick(found)}});
+
+let database=null;
+async function refreshDatabase(force=false){
+  if(busy)return;busy=true;dbStatus('Starting database check…');status('Checking EVE Ref for a newer snapshot…');$('refresh').disabled=true;$('go').disabled=true;$('log').textContent='';
+  try{
+    const record=await getArchive(force);
+    database=await parseArchive(record);
+    contractsReady=true;
+    const d=database.meta.scrape_end||record.last_modified;
+    status('Ready · snapshot scrape ended '+new Date(d).toLocaleString()+' · '+database.contractMap.size.toLocaleString()+' active contracts indexed.');
+    dbStatus((memoryOnly?'Session copy ready (not saved after closing)':'Local copy ready')+' · scrape ended '+new Date(d).toLocaleString());
+    $('go').disabled=!selected;
+  }catch(e){
+    status('Database error: '+e.message);
+    dbStatus('Could not load database. '+e.message);
+    log('If this preview blocks browser storage, the scanner can still work for this session using memory. For persistent device caching, open the HTML directly in Chrome rather than an embedded preview.');
+    const old=await dbGet('current').catch(()=>null);
+    if(old?.blob){try{database=await parseArchive(old);contractsReady=true;$('go').disabled=!selected;status('Using saved offline snapshot · '+database.meta.scrape_end)}catch(x){log(x.message)}}
+  }finally{busy=false;$('refresh').disabled=false}
+}
+$('refresh').onclick=()=>refreshDatabase(false);
+$('clear').onclick=async()=>{
+  if(!confirm('Delete the saved EVE Ref archive from this browser?'))return;
+  await dbClear();database=null;contractsReady=false;$('go').disabled=true;progress(0);
+  dbStatus('Local/session archive deleted.');status('Database removed. Press Check for update to download it again.');
+};
+
+async function resolveNames(ids){
+  const unique=[...new Set(ids.filter(x=>x>0&&x<1e12))],out={};
+  for(let i=0;i<unique.length;i+=500){
+    try{
+      const r=await esi('/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(unique.slice(i,i+500))});
+      (await r.json()).forEach(x=>out[x.id]=x.name);
+    }catch(e){log('Some names could not be resolved: '+e.message);break}
+  }
+  return out;
+}
+function searchItems(target){
+  if(!database)throw new Error('Database is not ready.');
+  const region=Number($('region').value), station=Number($('station').value);
+  const maxVolText=$('maxvol').value.trim().replace(',','.'),maxVol=maxVolText===''?null:Number(maxVolText);
+  const number=id=>{const v=$(id).value.trim().replace(/[ ,]/g,'');return v===''?null:Number(v)};
+  const minP=number('minprice'),maxP=number('maxprice'),single=$('single').checked;
+  const candidates=new Map();
+  for(const c of database.contractMap.values()){
+    if(region&&c.region_id!==region)continue;
+    if(station&&c.station_id!==station)continue;
+    if(single&&Math.abs(c.volume-.01)>.0005)continue;
+    if(!single&&maxVol!==null&&Number.isFinite(maxVol)&&c.volume>maxVol)continue;
+    if(minP!==null&&c.price<minP)continue;
+    if(maxP!==null&&c.price>maxP)continue;
+    candidates.set(c.contract_id,{c,items:0,matches:[]});
+  }
+  status('Searching '+candidates.size.toLocaleString()+' candidate contracts in local database…');
+  const headers=csvObjectHeaders(database.itemsText), ix=Object.fromEntries(headers.map((x,i)=>[x,i]));
+  let scanned=0;
+  eachCSV(database.itemsText,row=>{
+    if(row[0]==='is_included')return;
+    const id=Number(row[ix.contract_id]), entry=candidates.get(id);
+    if(!entry)return;
+    entry.items++;
+    if(row[ix.is_included]==='true'&&Number(row[ix.type_id])===target){
+      entry.matches.push({
+        is_included:true,type_id:target,is_blueprint_copy:row[ix.is_blueprint_copy]==='true',
+        material_efficiency:row[ix.material_efficiency]===''?0:Number(row[ix.material_efficiency]),
+        time_efficiency:row[ix.time_efficiency]===''?0:Number(row[ix.time_efficiency]),
+        quantity:Number(row[ix.quantity])||1,runs:row[ix.runs]===''?null:Number(row[ix.runs])
+      });
+    }
+    scanned++;
+    if(scanned%50000===0)status('Searching local item database… '+scanned.toLocaleString()+' item rows');
+  });
+  const maxResults=Number($('limit').value)||100;
+  return [...candidates.values()].filter(x=>x.matches.length)
+    .sort((a,b)=>(a.c.price||0)-(b.c.price||0))
+    .slice(0,maxResults);
+}
+
+function renderResults(hits,names){
+  if(!hits.length){$('results').innerHTML='<section class="card">No active contracts matched this blueprint and your filters in the downloaded snapshot.</section>';return}
+  $('results').innerHTML=hits.map(({c,items,matches},i)=>{
+    const other=Math.max(0,items-matches.length);
+    const detail=matches.map(b=>{
+      const copy=b.is_blueprint_copy,me=b.material_efficiency,te=b.time_efficiency;
+      let desc=copy?`Blueprint copy (BPC), ${b.runs??'?'} run(s). `:'Blueprint original (BPO), unlimited runs. ';
+      desc+=me>=10&&te>=20?'Fully researched (ME 10 / TE 20).':me===0&&te===0?'Not researched (ME 0 / TE 0).':`ME ${me} saves ${me}% materials; TE ${te} cuts build time by ${te}%.`;
+      return `<span class="cf-tag ${copy?'bpc':'bpo'}">${copy?'BPC':'BPO'}</span><span class="cf-tag">ME ${me}</span><span class="cf-tag">TE ${te}</span>${copy?`<span class="cf-tag">${esc(b.runs??'?')} runs</span>`:''}${b.quantity>1?`<span class="cf-tag">x${b.quantity}</span>`:''}<p>${esc(desc)}</p>`;
+    }).join('');
+    const only=matches.length===1&&other===0&&matches[0].is_blueprint_copy&&matches[0].runs>0&&c.price;
+    const price=c.type==='auction'?`Auction from ${isk(c.price)}${c.buyout?`, buyout ${isk(c.buyout)}`:''}`:`${isk(c.price)}${only?` (about ${isk(c.price/matches[0].runs)} per run)`:''}`;
+    return `<section class="card cf-result ${i===0?'cf-best':''}"><h3>${esc(selected.n)}${i===0?' · lowest price':''}</h3>${detail}
+      <dl><dt>Price</dt><dd>${esc(price)}${other?' · bundled with '+other+' other item(s)':''}</dd>
+      <dt>Where</dt><dd>${esc(names[c.start_location_id]||('Location '+c.start_location_id))}</dd>
+      <dt>Seller</dt><dd>${esc(names[c.issuer_id]||c.issuer_id)}${c.for_corporation?' (for '+esc(names[c.issuer_corporation_id]||'corporation')+')':''}</dd>
+      <dt>Expires</dt><dd>in ${left(c.date_expired)}</dd>
+      <dt>Contract</dt><dd>#${c.contract_id}${c.title?' · “'+esc(c.title)+'”':''}</dd>
+      <dt>Issued</dt><dd>${new Date(c.date_issued).toLocaleString()}</dd></dl></section>`;
+  }).join('');
+}
+$('go').onclick=async()=>{
+  if(!selected){status('Please choose a blueprint from the suggestions first.');return}
+  if(!database){status('Database is not ready.');return}
+  $('go').disabled=true;$('results').innerHTML='';$('log').textContent='';
+  try{
+    const hits=searchItems(selected.id);
+    status('Found '+hits.length+' matching contract(s). Resolving seller and station names…');
+    const names=await resolveNames(hits.flatMap(x=>[x.c.start_location_id,x.c.issuer_id,x.c.issuer_corporation_id]));
+    renderResults(hits,names);
+    status('Search complete · '+hits.length+' matching contract(s) · no per-contract ESI item requests were made.');
+  }catch(e){status('Search failed: '+e.message);log(e.stack||e)}
+  $('go').disabled=false;
+};
+
+// Load the local cache first, then check the remote index for a newer snapshot.
+(async()=>{
+  try{
+    status('Loading blueprint names…');dbStatus('Starting scanner…');
+    await loadBlueprints();
+    $('q').disabled=false;
+    $('picked').textContent=BP.length.toLocaleString()+' blueprint types loaded. Start typing.';
+    await refreshDatabase(false);
+  }catch(e){status('Startup error: '+e.message);log(e.stack||e)}
+})();
+
+})();
+</script>
+
+<script>
+(function initBlueprintContractFinder(){
+
+
+const $ = id => document.getElementById('cf-' + id);
+const INDEX_URL = 'https://data.everef.net/public-contracts/index.json';
+const FILE_NAME = 'public-contracts-latest.v2.tar.bz2';
+const DB_NAME = 'eve-contract-finder-v2';
+const STORE = 'archive';
+const BP_KEY = 'eveBpListV2';
+const ESI = 'https://esi.evetech.net/latest';
+let BP = [], selected = null, contractsReady = false, busy = false;
+// Some embedded previews (including static.app previews) deny IndexedDB.
+// Fall back to an in-memory cache so the scanner can still run in that session.
+let memoryArchive = null, memoryOnly = false, storageWarningShown = false;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let bz2Decompress = null;
+function withTimeout(promise, ms, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(label + ' timed out after ' + Math.round(ms/1000) + ' seconds.')), ms); })
+  ]).finally(() => clearTimeout(timer));
+}
+async function fetchTimed(url, options={}, ms=12000, label='Request') {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, {...options, signal: controller.signal});
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error(label + ' timed out after ' + Math.round(ms/1000) + ' seconds.');
+    throw e;
+  } finally { clearTimeout(timer); }
+}
+async function loadBzip2() {
+  if (bz2Decompress) return bz2Decompress;
+  // SheetJS bz2 is a browser UMD build: it attaches { decompress } to window.bz2.
+  // Importing its CommonJS wrapper as an ES module can succeed but expose no named exports.
+  dbStatus('Loading archive decompression engine…');
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/bz2@1.0.1/index.js',
+    'https://unpkg.com/bz2@1.0.1/index.js'
+  ];
+  const failures = [];
+  for (const url of sources) {
+    try {
+      log('Loading decompressor from ' + new URL(url).hostname + '…');
+      await withTimeout(new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.onload = () => {
+          const fn = window.bz2 && window.bz2.decompress;
+          if (typeof fn === 'function') resolve(fn);
+          else reject(new Error('Script loaded, but window.bz2.decompress was not exposed.'));
+        };
+        script.onerror = () => reject(new Error('Browser could not load the decompression script.'));
+        document.head.appendChild(script);
+      }), 15000, 'Decompression library download').then(fn => { bz2Decompress = fn; });
+      if (bz2Decompress) {
+        log('Decompression engine loaded successfully.');
+        return bz2Decompress;
+      }
+    } catch (e) {
+      failures.push(new URL(url).hostname + ': ' + e.message);
+      log('Could not load from ' + new URL(url).hostname + ': ' + e.message);
+    }
+  }
+  throw new Error('Could not load a working BZIP2 decompressor. Check your connection, content blockers, or browser preview restrictions. Details: ' + failures.join(' | '));
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isk = n => n == null ? '—' : Number(n).toLocaleString('en-US',{maximumFractionDigits:0}) + ' ISK';
+const left = d => { const ms = new Date(d)-Date.now(); if(ms<=0)return 'expired'; const h=Math.floor(ms/36e5); return h>=48?Math.floor(h/24)+'d '+h%24+'h':h+'h '+Math.floor(ms%36e5/6e4)+'m'; };
+function status(s){$('status').textContent=s}
+function dbStatus(s){$('dbStatus').textContent=s}
+function log(s){$('log').textContent += s+'\n';$('log').scrollTop=$('log').scrollHeight}
+function progress(p){$('progress').style.width=Math.max(0,Math.min(100,p))+'%'}
+
+async function openDB(){
+  if(memoryOnly) return null;
+  try {
+    if(!window.indexedDB) throw new Error('IndexedDB is unavailable in this browser context.');
+    return await new Promise((resolve,reject)=>{
+      let req;
+      try { req=indexedDB.open(DB_NAME,1); }
+      catch(e) { reject(e); return; }
+      req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE)};
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error || new Error('IndexedDB could not be opened.'));
+      req.onblocked=()=>reject(new Error('IndexedDB open request was blocked.'));
+    });
+  } catch(e) {
+    memoryOnly=true;
+    if(!storageWarningShown){
+      storageWarningShown=true;
+      log('Persistent browser storage is blocked in this preview. Continuing with temporary in-memory storage; the archive will need to be downloaded again after closing this page. Open the HTML directly in Chrome to enable device storage.');
+      dbStatus('Preview blocks local database storage · using temporary session memory');
+    }
+    return null;
+  }
+}
+async function dbGet(key){
+  const db=await openDB();
+  if(!db) return key==='current' ? memoryArchive : null;
+  return new Promise((resolve,reject)=>{const r=db.transaction(STORE,'readonly').objectStore(STORE).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+}
+async function dbPut(key,value){
+  const db=await openDB();
+  if(!db){if(key==='current')memoryArchive=value;return;}
+  return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(value,key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
+}
+async function dbClear(){
+  const db=await openDB();
+  memoryArchive=null;
+  if(!db)return;
+  return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).clear();tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
+}
+
+async function fetchIndex(){
+  const r=await fetchTimed(INDEX_URL,{cache:'no-store'},12000,'EVE Ref update check');
+  if(!r.ok)throw new Error('EVE Ref index request failed (HTTP '+r.status+').');
+  const index=await r.json();
+  const f=(index.files||[]).find(x=>x.name===FILE_NAME);
+  if(!f)throw new Error('Could not find '+FILE_NAME+' in EVE Ref index.');
+  return f;
+}
+async function getArchive(force=false){
+  dbStatus('Checking EVE Ref snapshot timestamp…');
+  let remote=null, old=null;
+  try{remote=await fetchIndex()}catch(e){
+    old=await dbGet('current');
+    if(old?.blob){log('Could not check online; using the locally saved archive. '+e.message);return old}
+    throw e;
+  }
+  old=await dbGet('current');
+  const same=old && old.last_modified===remote.last_modified && old.etag===remote.etag && old.blob;
+  if(same && !force){
+    dbStatus('Up to date · saved locally · '+new Date(remote.last_modified).toLocaleString());
+    log('Snapshot unchanged. Reusing the archive already saved on this device.');
+    return old;
+  }
+  dbStatus('Downloading new snapshot ('+(remote.size/1048576).toFixed(2)+' MiB)…');
+  status('Downloading EVE Ref archive…');
+  const r=await fetchTimed(remote.url,{cache:'no-store'},90000,'EVE Ref archive download');
+  if(!r.ok)throw new Error('Archive download failed (HTTP '+r.status+').');
+  const reader=r.body?.getReader();
+  let blob;
+  if(reader){
+    const chunks=[];let got=0,total=Number(r.headers.get('content-length'))||remote.size;
+    while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;progress(got/total*100);status('Downloading archive… '+(got/1048576).toFixed(1)+' / '+(total/1048576).toFixed(1)+' MiB');}
+    blob=new Blob(chunks,{type:'application/x-bzip2'});
+  }else blob=await r.blob();
+  const record={blob,last_modified:remote.last_modified,etag:remote.etag,size:remote.size,name:remote.name,downloaded_at:new Date().toISOString()};
+  await dbPut('current',record);
+  progress(100);
+  dbStatus('Downloaded and saved locally · '+new Date(remote.last_modified).toLocaleString());
+  log('Saved '+remote.name+' ('+(blob.size/1048576).toFixed(2)+' MiB) in this browser/device.');
+  return record;
+}
+
+function tarFiles(bytes){
+  const files={};let off=0;
+  const dec=new TextDecoder();
+  while(off+512<=bytes.length){
+    const h=bytes.subarray(off,off+512);
+    if(h.every(x=>x===0))break;
+    const name=dec.decode(h.subarray(0,100)).replace(/\0.*$/s,'');
+    const prefix=dec.decode(h.subarray(345,500)).replace(/\0.*$/s,'');
+    const full=(prefix?prefix+'/':'')+name;
+    const sizeText=dec.decode(h.subarray(124,136)).replace(/\0.*$/s,'').trim();
+    const size=parseInt(sizeText||'0',8)||0;
+    const start=off+512;
+    if(['meta.json','contracts.csv','contract_items.csv'].includes(name)||['meta.json','contracts.csv','contract_items.csv'].includes(full.split('/').pop())){
+      files[name]=bytes.subarray(start,start+size);
+    }
+    off=start+Math.ceil(size/512)*512;
+  }
+  for(const n of ['meta.json','contracts.csv','contract_items.csv'])if(!files[n])throw new Error('Archive is missing '+n+'.');
+  return files;
+}
+
+// CSV parser handles commas, escaped quotes, CRLF and quoted line breaks without building a giant row array.
+function eachCSV(text, callback){
+  let row=[], field='', quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"' && text[i+1]==='"'){field+='"';i++}
+      else if(ch==='"')quoted=false;
+      else field+=ch;
+    }else if(ch==='"'){quoted=true}
+    else if(ch===','){row.push(field);field=''}
+    else if(ch==='\n'){row.push(field);callback(row);row=[];field=''}
+    else if(ch!=='\r')field+=ch;
+  }
+  if(field.length||row.length){row.push(field);callback(row)}
+}
+function csvObjectHeaders(text){
+  const line=text.slice(0,text.indexOf('\n')<0?text.length:text.indexOf('\n')).replace(/\r$/,'');
+  // Header names in this dataset do not contain quoted commas.
+  return line.split(',').map(x=>x.replace(/^"|"$/g,''));
+}
+async function parseArchive(record){
+  status('Opening saved archive…');progress(0);
+  const compressed=new Uint8Array(await record.blob.arrayBuffer());
+  status('Decompressing BZIP2 archive…');
+  const decompress=await loadBzip2();
+  status('Decompressing BZIP2 archive…');
+  await new Promise(resolve=>setTimeout(resolve,50));
+  const tar=decompress(compressed,true);
+  const files=tarFiles(tar);
+  const decoder=new TextDecoder('utf-8');
+  const meta=JSON.parse(decoder.decode(files['meta.json']));
+  const contractsText=decoder.decode(files['contracts.csv']);
+  const itemsText=decoder.decode(files['contract_items.csv']);
+  status('Indexing contracts…');
+  const ch=csvObjectHeaders(contractsText), ci=Object.fromEntries(ch.map((x,i)=>[x,i]));
+  const contractMap=new Map();
+  eachCSV(contractsText,(row)=>{
+    if(row[0]==='collateral')return;
+    const type=row[ci.type], id=Number(row[ci.contract_id]);
+    if(!id || (type!=='item_exchange'&&type!=='auction'))return;
+    if(new Date(row[ci.date_expired]).getTime()<=Date.now())return;
+    const c={
+      contract_id:id,type,date_expired:row[ci.date_expired],date_issued:row[ci.date_issued],
+      start_location_id:Number(row[ci.start_location_id]),issuer_id:Number(row[ci.issuer_id]),
+      issuer_corporation_id:Number(row[ci.issuer_corporation_id]),for_corporation:row[ci.for_corporation]==='true',
+      price:Number(row[ci.price])||0,buyout:Number(row[ci.buyout])||0,volume:Number(row[ci.volume])||0,
+      title:row[ci.title]||'',region_id:Number(row[ci.region_id]),station_id:Number(row[ci.station_id])
+    };
+    contractMap.set(id,c);
+  });
+  status('Database loaded · indexing '+contractMap.size.toLocaleString()+' active contracts…');
+  return {meta,contractMap,itemsText};
+}
+
+function setBlueprints(groups,rows){
+  BP=rows.map(r=>({id:Number(r[0]),n:r[1],l:r[1].toLowerCase(),g:groups[r[2]]}));
+}
+async function esi(path,opts){
+  const r=await fetchTimed(ESI+path,opts,20000,'EVE Online API request');
+  if(!r.ok)throw new Error('ESI request failed: HTTP '+r.status);
+  return r;
+}
+async function loadBlueprints(){
+  try{const cached=JSON.parse(localStorage.getItem(BP_KEY)||'null');if(cached?.rows?.length>500){setBlueprints(cached.groups,cached.rows);return}}catch(e){}
+  $('picked').textContent='Building blueprint name list (first run)…';
+  const cat=await (await esi('/universe/categories/9/')).json();
+  const groups=[], typeGroup={};let done=0;
+  for(let i=0;i<cat.groups.length;i+=5){
+    await Promise.all(cat.groups.slice(i,i+5).map(async gid=>{
+      const r=await esi('/universe/groups/'+gid+'/');const g=await r.json();
+      if(g.types?.length){const gi=groups.push(g.name)-1;g.types.forEach(t=>typeGroup[t]=gi)}
+      done++;$('picked').textContent='Building blueprint list… '+done+'/'+cat.groups.length;
+    }));
+  }
+  const ids=Object.keys(typeGroup).map(Number),rows=[];
+  for(let i=0;i<ids.length;i+=500){
+    const r=await esi('/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ids.slice(i,i+500))});
+    (await r.json()).forEach(x=>rows.push([x.id,x.name,typeGroup[x.id]]));
+  }
+  if(rows.length<500)throw new Error('Blueprint name list was incomplete.');
+  setBlueprints(groups,rows);
+  try{localStorage.setItem(BP_KEY,JSON.stringify({groups,rows}))}catch(e){}
+}
+function suggest(){
+  selected=null;$('go').disabled=true;$('picked').textContent='';
+  const q=$('q').value.trim().toLowerCase();
+  if(q.length<2){$('sug').innerHTML='';return}
+  const words=q.split(/\s+/);
+  const matches=BP.filter(b=>words.every(w=>b.l.includes(w)));
+  matches.sort((a,b)=>(Number(b.l.startsWith(q))-Number(a.l.startsWith(q)))||a.n.length-b.n.length||a.n.localeCompare(b.n));
+  $('sug').innerHTML=matches.slice(0,10).map(b=>`<button data-id="${b.id}">${esc(b.n)}<small>${esc(b.g||'')} · Type ID ${b.id}</small></button>`).join('')||'<span class="dim">No blueprint matches.</span>';
+  if(matches.length>10)$('sug').insertAdjacentHTML('beforeend',`<p class="dim small">${matches.length-10} more matches — type more letters to narrow it down.</p>`);
+}
+function pick(b){selected=b;$('q').value=b.n;$('sug').innerHTML='';$('picked').textContent='Selected: '+b.n+' · Type ID '+b.id;$('go').disabled=!database}
+$('q').addEventListener('input',suggest);
+$('sug').addEventListener('click',e=>{const b=e.target.closest('button');if(b){const found=BP.find(x=>x.id===Number(b.dataset.id));if(found)pick(found)}});
+
+let database=null;
+async function refreshDatabase(force=false){
+  if(busy)return;busy=true;dbStatus('Starting database check…');status('Checking EVE Ref for a newer snapshot…');$('refresh').disabled=true;$('go').disabled=true;$('log').textContent='';
+  try{
+    const record=await getArchive(force);
+    database=await parseArchive(record);
+    contractsReady=true;
+    const d=database.meta.scrape_end||record.last_modified;
+    status('Ready · snapshot scrape ended '+new Date(d).toLocaleString()+' · '+database.contractMap.size.toLocaleString()+' active contracts indexed.');
+    dbStatus((memoryOnly?'Session copy ready (not saved after closing)':'Local copy ready')+' · scrape ended '+new Date(d).toLocaleString());
+    $('go').disabled=!selected;
+  }catch(e){
+    status('Database error: '+e.message);
+    dbStatus('Could not load database. '+e.message);
+    log('If this preview blocks browser storage, the scanner can still work for this session using memory. For persistent device caching, open the HTML directly in Chrome rather than an embedded preview.');
+    const old=await dbGet('current').catch(()=>null);
+    if(old?.blob){try{database=await parseArchive(old);contractsReady=true;$('go').disabled=!selected;status('Using saved offline snapshot · '+database.meta.scrape_end)}catch(x){log(x.message)}}
+  }finally{busy=false;$('refresh').disabled=false}
+}
+$('refresh').onclick=()=>refreshDatabase(false);
+$('clear').onclick=async()=>{
+  if(!confirm('Delete the saved EVE Ref archive from this browser?'))return;
+  await dbClear();database=null;contractsReady=false;$('go').disabled=true;progress(0);
+  dbStatus('Local/session archive deleted.');status('Database removed. Press Check for update to download it again.');
+};
+
+async function resolveNames(ids){
+  const unique=[...new Set(ids.filter(x=>x>0&&x<1e12))],out={};
+  for(let i=0;i<unique.length;i+=500){
+    try{
+      const r=await esi('/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(unique.slice(i,i+500))});
+      (await r.json()).forEach(x=>out[x.id]=x.name);
+    }catch(e){log('Some names could not be resolved: '+e.message);break}
+  }
+  return out;
+}
+function searchItems(target){
+  if(!database)throw new Error('Database is not ready.');
+  const region=Number($('region').value), station=Number($('station').value);
+  const maxVolText=$('maxvol').value.trim().replace(',','.'),maxVol=maxVolText===''?null:Number(maxVolText);
+  const number=id=>{const v=$(id).value.trim().replace(/[ ,]/g,'');return v===''?null:Number(v)};
+  const minP=number('minprice'),maxP=number('maxprice'),single=$('single').checked;
+  const candidates=new Map();
+  for(const c of database.contractMap.values()){
+    if(region&&c.region_id!==region)continue;
+    if(station&&c.station_id!==station)continue;
+    if(single&&Math.abs(c.volume-.01)>.0005)continue;
+    if(!single&&maxVol!==null&&Number.isFinite(maxVol)&&c.volume>maxVol)continue;
+    if(minP!==null&&c.price<minP)continue;
+    if(maxP!==null&&c.price>maxP)continue;
+    candidates.set(c.contract_id,{c,items:0,matches:[]});
+  }
+  status('Searching '+candidates.size.toLocaleString()+' candidate contracts in local database…');
+  const headers=csvObjectHeaders(database.itemsText), ix=Object.fromEntries(headers.map((x,i)=>[x,i]));
+  let scanned=0;
+  eachCSV(database.itemsText,row=>{
+    if(row[0]==='is_included')return;
+    const id=Number(row[ix.contract_id]), entry=candidates.get(id);
+    if(!entry)return;
+    entry.items++;
+    if(row[ix.is_included]==='true'&&Number(row[ix.type_id])===target){
+      entry.matches.push({
+        is_included:true,type_id:target,is_blueprint_copy:row[ix.is_blueprint_copy]==='true',
+        material_efficiency:row[ix.material_efficiency]===''?0:Number(row[ix.material_efficiency]),
+        time_efficiency:row[ix.time_efficiency]===''?0:Number(row[ix.time_efficiency]),
+        quantity:Number(row[ix.quantity])||1,runs:row[ix.runs]===''?null:Number(row[ix.runs])
+      });
+    }
+    scanned++;
+    if(scanned%50000===0)status('Searching local item database… '+scanned.toLocaleString()+' item rows');
+  });
+  const maxResults=Number($('limit').value)||100;
+  return [...candidates.values()].filter(x=>x.matches.length)
+    .sort((a,b)=>(a.c.price||0)-(b.c.price||0))
+    .slice(0,maxResults);
+}
+
+function renderResults(hits,names){
+  if(!hits.length){$('results').innerHTML='<section class="card">No active contracts matched this blueprint and your filters in the downloaded snapshot.</section>';return}
+  $('results').innerHTML=hits.map(({c,items,matches},i)=>{
+    const other=Math.max(0,items-matches.length);
+    const detail=matches.map(b=>{
+      const copy=b.is_blueprint_copy,me=b.material_efficiency,te=b.time_efficiency;
+      let desc=copy?`Blueprint copy (BPC), ${b.runs??'?'} run(s). `:'Blueprint original (BPO), unlimited runs. ';
+      desc+=me>=10&&te>=20?'Fully researched (ME 10 / TE 20).':me===0&&te===0?'Not researched (ME 0 / TE 0).':`ME ${me} saves ${me}% materials; TE ${te} cuts build time by ${te}%.`;
+      return `<span class="cf-tag ${copy?'bpc':'bpo'}">${copy?'BPC':'BPO'}</span><span class="cf-tag">ME ${me}</span><span class="cf-tag">TE ${te}</span>${copy?`<span class="cf-tag">${esc(b.runs??'?')} runs</span>`:''}${b.quantity>1?`<span class="cf-tag">x${b.quantity}</span>`:''}<p>${esc(desc)}</p>`;
+    }).join('');
+    const only=matches.length===1&&other===0&&matches[0].is_blueprint_copy&&matches[0].runs>0&&c.price;
+    const price=c.type==='auction'?`Auction from ${isk(c.price)}${c.buyout?`, buyout ${isk(c.buyout)}`:''}`:`${isk(c.price)}${only?` (about ${isk(c.price/matches[0].runs)} per run)`:''}`;
+    return `<section class="card cf-result ${i===0?'cf-best':''}"><h3>${esc(selected.n)}${i===0?' · lowest price':''}</h3>${detail}
+      <dl><dt>Price</dt><dd>${esc(price)}${other?' · bundled with '+other+' other item(s)':''}</dd>
+      <dt>Where</dt><dd>${esc(names[c.start_location_id]||('Location '+c.start_location_id))}</dd>
+      <dt>Seller</dt><dd>${esc(names[c.issuer_id]||c.issuer_id)}${c.for_corporation?' (for '+esc(names[c.issuer_corporation_id]||'corporation')+')':''}</dd>
+      <dt>Expires</dt><dd>in ${left(c.date_expired)}</dd>
+      <dt>Contract</dt><dd>#${c.contract_id}${c.title?' · “'+esc(c.title)+'”':''}</dd>
+      <dt>Issued</dt><dd>${new Date(c.date_issued).toLocaleString()}</dd></dl></section>`;
+  }).join('');
+}
+$('go').onclick=async()=>{
+  if(!selected){status('Please choose a blueprint from the suggestions first.');return}
+  if(!database){status('Database is not ready.');return}
+  $('go').disabled=true;$('results').innerHTML='';$('log').textContent='';
+  try{
+    const hits=searchItems(selected.id);
+    status('Found '+hits.length+' matching contract(s). Resolving seller and station names…');
+    const names=await resolveNames(hits.flatMap(x=>[x.c.start_location_id,x.c.issuer_id,x.c.issuer_corporation_id]));
+    renderResults(hits,names);
+    status('Search complete · '+hits.length+' matching contract(s) · no per-contract ESI item requests were made.');
+  }catch(e){status('Search failed: '+e.message);log(e.stack||e)}
+  $('go').disabled=false;
+};
+
+// Load the local cache first, then check the remote index for a newer snapshot.
+(async()=>{
+  try{
+    status('Loading blueprint names…');dbStatus('Starting scanner…');
+    await loadBlueprints();
+    $('q').disabled=false;
+    $('picked').textContent=BP.length.toLocaleString()+' blueprint types loaded. Start typing.';
+    await refreshDatabase(false);
+  }catch(e){status('Startup error: '+e.message);log(e.stack||e)}
+})();
+
+})();
+</script>
+</body></html>

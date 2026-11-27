@@ -432,18 +432,20 @@ async function getBook(id,region){
   b={t:Date.now(),sell:lv(orders.filter(o=>!o.is_buy_order),true),buy:lv(orders.filter(o=>o.is_buy_order),false)};
   bookMem.set(k,b);sdeCachePut(k,b).catch(()=>{});return b;
 }
+let publishedWhy='';
 async function loadPublished(region=10000002){
   // Jita's book keeps the original name; the other hubs are published as market-<regionId>.json.
   const marketFile=region===10000002?'data/market.json':`data/market-${region}.json`;
   try{
     const [cr,mr]=await Promise.all([fetch('data/contracts.json',{cache:'no-cache'}),fetch(marketFile,{cache:'no-cache'}).catch(()=>null)]);
-    if(!cr.ok)return null;
-    const c=await cr.json();
-    if(!c.updated||Date.now()-Date.parse(c.updated)>6*3600*1000)return null;
+    if(!cr.ok){publishedWhy=`no published data found (data/contracts.json gave HTTP ${cr.status}); open the site from your GitHub Pages address and make sure the build has run`;return null}
+    const c=await cr.json(),age=Date.now()-Date.parse(c.updated);
+    if(!c.updated||!(age<=6*3600*1000)){publishedWhy=`published data is ${c.updated?Math.round(age/36e5)+' hours':'of unknown age'} old (limit is 6 hours); run the build workflow`;return null}
     let m=null;try{if(mr&&mr.ok)m=await mr.json()}catch(e){}
+    publishedWhy=(m&&m.books)?'':`no published prices for this market yet (${marketFile} is missing); run the build workflow`;
     // No published book for this hub: keep the published contracts, the scan then falls back to live market data.
     return {c,m:m&&m.books?m:{region:0,books:{},updated:c.updated}};
-  }catch(e){return null}
+  }catch(e){publishedWhy='could not load the published data files ('+e.message+'); open the site from your GitHub Pages address, not as a local file';return null}
 }
 async function runOpportunityScan(){
   const btn=$('#runOpportunityScan'),stop=$('#stopOpportunityScan'),st=$('#scanStatus'),bar=$('#scanProgressBar'),out=$('#scanResults');
@@ -457,7 +459,7 @@ async function runOpportunityScan(){
     if(!sdeBlueprints.length)throw Error('Blueprint database is not available.');
     st.textContent='Loading contracts…';
     const stationId=+$('#scanStation').value||0,hubRegion={60003760:10000002,60008494:10000043,60011866:10000032,60004588:10000030,60005686:10000042},now=Date.now();
-    const region=+$('#scanMarket').value||10000002,pub=await loadPublished(region);
+    const region=+$('#scanMarket').value||10000002,pub=await loadPublished(region),why=pub?(pub.m.region===region?'':(publishedWhy||'no published prices for this market yet')):publishedWhy;
     const hits=pub?pub.c.contracts.filter(r=>r[3]>now&&(!stationId||r[2]===stationId)).map(r=>({c:{contract_id:r[0],price:r[1],type:'item_exchange',station_id:r[2]},items:r[4],matches:r[5].map(b=>({type_id:b[0],is_blueprint_copy:!!b[1],material_efficiency:b[2],time_efficiency:b[3],quantity:b[4],runs:b[5]}))})):await window.eveContractScan({station:stationId,region:hubRegion[stationId]||0});
     const S=plannerSettings(),num=(v,d)=>(v===''||v==null||!Number.isFinite(+v))?d:+v;
     const idx=num(S.index,4)/100,fac=num(S.facility,0)/100,scc=num(S.scc,4)/100,matB=Math.min(1,num(S.matBonus,0)/100),timeB=Math.min(1,num(S.timeBonus,0)/100),fee=(num(S.tax,4.5)+num(S.broker,3))/100;

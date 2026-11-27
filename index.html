@@ -90,7 +90,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-offset:2px
 <details style="margin-top:12px"><summary style="cursor:pointer;color:var(--gold);font-weight:700">Advanced production settings</summary><div class="formgrid" style="margin-top:10px"><div class="field"><label>Blueprint ME (%)</label><input id="planME" type="number" min="0" max="10" value="0"></div><div class="field"><label>Blueprint TE (%)</label><input id="planTE" type="number" min="0" max="20" value="0"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" min="0" value="0"></div><div class="field"><label>SCC surcharge (%)</label><input id="planSCC" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Structure / rig material bonus (%)</label><input id="planMatBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Structure / rig time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Facility preset name</label><input id="planFacilityName" placeholder="e.g. Jita Azbel · Rigged"></div><div class="field"><label>Load saved facility</label><select id="facilityPreset"><option value="">Choose saved preset…</option></select></div><div class="field"><label>Blueprint copy runs</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Manual product sell price (ISK)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:8px"><button class="secondary" id="saveFacilityPreset">Save facility preset</button><button class="secondary" id="loadSDE">Refresh blueprint database</button><span id="sdeStatus" class="tiny">Checking local cache when planner opens…</span></div></details>
 <div class="row" style="margin-top:14px"><button id="calculatePlan">Calculate complete plan</button><button class="secondary" id="savePlan">Save plan</button><button class="secondary" id="addToQueue">Add to queue</button><button class="secondary" id="findPlanBpc">Find BPC contracts</button></div><div id="planProgressWrap" class="plan-progress-wrap" hidden><div class="between"><span id="planProgressLabel" class="tiny">Preparing calculation…</span><span id="planProgressPct" class="tiny">0%</span></div><div class="progress plan-progress"><div id="planProgressBar"></div></div><div id="planProgressSteps" class="plan-steps"><span>Blueprint</span><span>Materials</span><span>Market</span><span>Profit</span></div></div>
 <div id="planBpcPanel" class="notice" style="margin-top:12px"><b>Optional BPC sourcing</b><div id="planBpcStatus" class="tiny" style="margin-top:5px">Contract lookup is not started automatically. Use the Blueprint Contract Finder below if you want to source a copy.</div><div id="planBpcSummary" style="margin-top:8px"></div></div><div id="planMaterialTable"></div><div id="planResult"></div></div>
-<div id="plannerScanner" class="card" style="display:none;margin-top:10px"><div class="between"><div><h2 style="margin:0">Most profitable contracts</h2><div class="tiny">Prices every blueprint in every contract for sale, then ranks contracts by profit. Market data is cached for 1 hour.</div></div><span class="pill">On demand</span></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Contract station</label><select id="scanStation"><option value="60003760" selected>Jita IV - Moon 4</option><option value="60008494">Amarr VIII (Oris)</option><option value="60011866">Dodixie IX - Moon 20</option><option value="60004588">Rens VI - Moon 8</option><option value="60005686">Hek VIII - Moon 12</option><option value="0">Any station (all regions)</option></select></div><div class="field"><label>Market for prices</label><select id="scanMarket"><option value="10000002">Jita</option><option value="10000043">Amarr</option><option value="10000032">Dodixie</option><option value="10000030">Rens</option><option value="10000042">Hek</option></select></div><div class="field"><label>Show top</label><select id="scanTopN"><option value="10" selected>10 contracts</option><option value="25">25 contracts</option><option value="50">50 contracts</option><option value="100">100 contracts</option></select></div><div class="field"><label>Runs to assume per BPO</label><input id="scanBpoRuns" type="number" min="1" value="10"></div></div><div class="row" style="margin-top:12px"><button id="runOpportunityScan">Find most profitable contracts</button><button class="secondary" id="stopOpportunityScan" disabled>Stop scan</button><span id="scanStatus" class="tiny">Not running</span></div><div class="progress" style="margin-top:9px"><div id="scanProgressBar"></div></div><div id="scanResults" style="margin-top:12px"></div></div>
+<div id="plannerScanner" class="card" style="display:none;margin-top:10px"><div class="between"><div><h2 style="margin:0">Most profitable contracts</h2><div class="tiny">Prices every blueprint in every contract for sale, then ranks contracts by profit. Market data is cached for 1 hour.</div></div><span class="pill">On demand</span></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Contract station</label><select id="scanStation"><option value="60003760" selected>Jita IV - Moon 4</option><option value="60008494">Amarr VIII (Oris)</option><option value="60011866">Dodixie IX - Moon 20</option><option value="60004588">Rens VI - Moon 8</option><option value="60005686">Hek VIII - Moon 12</option><option value="0">Any station (all regions)</option></select></div><div class="field"><label>Market for prices</label><select id="scanMarket"><option value="10000002">Jita</option><option value="10000043">Amarr</option><option value="10000032">Dodixie</option><option value="10000030">Rens</option><option value="10000042">Hek</option></select></div><div class="field"><label>Show top</label><select id="scanTopN"><option value="10" selected>10 contracts</option><option value="25">25 contracts</option><option value="50">50 contracts</option><option value="100">100 contracts</option></select></div></div><div class="row" style="margin-top:12px"><button id="runOpportunityScan">Find most profitable contracts</button><button class="secondary" id="stopOpportunityScan" disabled>Stop scan</button><span id="scanStatus" class="tiny">Not running</span></div><div class="progress" style="margin-top:9px"><div id="scanProgressBar"></div></div><div id="scanResults" style="margin-top:12px"></div></div>
 <div class="card" style="margin-top:14px"><h2 style="margin-top:0">Production queue</h2><div class="tiny">Add calculated plans to a batch. The queue combines material quantities into one shopping list.</div><div id="productionQueue"></div><div class="row" style="margin-top:9px"><button class="secondary" id="clearProductionQueue">Clear queue</button><button class="secondary" id="exportQueueCsv">Export queue CSV</button></div></div><div class="card" style="margin-top:14px"><h2 style="margin-top:0">Saved production plans</h2><div id="savedPlans"></div></div>
 <div class="card" id="contractBlueprintFinder" style="margin-top:14px"><h2>Blueprint contract finder</h2>
 <div class="cf-intro muted">Search blueprint originals and copies across public contracts using EVE Ref’s bulk snapshot. The archive is cached locally on this device, so contract contents are indexed without one ESI request per contract.</div>
@@ -432,12 +432,14 @@ async function getBook(id,region){
   b={t:Date.now(),sell:lv(orders.filter(o=>!o.is_buy_order),true),buy:lv(orders.filter(o=>o.is_buy_order),false)};
   bookMem.set(k,b);sdeCachePut(k,b).catch(()=>{});return b;
 }
-async function scanPrices(){
-  let c=null;try{c=await sdeCacheGet('prices')}catch(e){}
-  if(c&&Date.now()-c.t<BOOK_TTL)return c.px;
-  const r=await fetch(ESI+'/markets/prices/');if(!r.ok)throw Error('Price list '+r.status);
-  const px={};(await r.json()).forEach(x=>px[x.type_id]=x.average_price||x.adjusted_price||0);
-  sdeCachePut('prices',{t:Date.now(),px}).catch(()=>{});return px;
+async function loadPublished(){
+  try{
+    const [cr,mr]=await Promise.all([fetch('data/contracts.json',{cache:'no-cache'}),fetch('data/market.json',{cache:'no-cache'})]);
+    if(!cr.ok||!mr.ok)return null;
+    const c=await cr.json(),m=await mr.json();
+    if(!c.updated||Date.now()-Date.parse(c.updated)>6*3600*1000)return null;
+    return {c,m};
+  }catch(e){return null}
 }
 async function runOpportunityScan(){
   const btn=$('#runOpportunityScan'),stop=$('#stopOpportunityScan'),st=$('#scanStatus'),bar=$('#scanProgressBar'),out=$('#scanResults');
@@ -447,47 +449,39 @@ async function runOpportunityScan(){
     if(!sdeBlueprints.length)await loadSDE(false);
     if(!sdeBlueprints.length)throw Error('Blueprint database is not available.');
     st.textContent='Loading contracts…';
-    const stationId=+$('#scanStation').value||0,hubRegion={60003760:10000002,60008494:10000043,60011866:10000032,60004588:10000030,60005686:10000042};
-    const hits=await window.eveContractScan({station:stationId,region:hubRegion[stationId]||0});
+    const stationId=+$('#scanStation').value||0,hubRegion={60003760:10000002,60008494:10000043,60011866:10000032,60004588:10000030,60005686:10000042},now=Date.now();
+    const pub=await loadPublished();
+    const hits=pub?pub.c.contracts.filter(r=>r[3]>now&&(!stationId||r[2]===stationId)).map(r=>({c:{contract_id:r[0],price:r[1],type:'item_exchange',station_id:r[2]},items:r[4],matches:r[5].map(b=>({type_id:b[0],is_blueprint_copy:!!b[1],material_efficiency:b[2],time_efficiency:b[3],quantity:b[4],runs:b[5]}))})):await window.eveContractScan({station:stationId,region:hubRegion[stationId]||0});
     const S=plannerSettings(),num=(v,d)=>(v===''||v==null||!Number.isFinite(+v))?d:+v;
     const idx=num(S.index,4)/100,fac=num(S.facility,0)/100,scc=num(S.scc,4)/100,matB=Math.min(1,num(S.matBonus,0)/100),timeB=Math.min(1,num(S.timeBonus,0)/100),fee=(num(S.tax,4.5)+num(S.broker,3))/100;
-    const bpoRuns=Math.max(1,+$('#scanBpoRuns').value||10),topN=+$('#scanTopN').value||10,region=+$('#scanMarket').value||10000002;
+    const topN=+$('#scanTopN').value||10,region=+$('#scanMarket').value||10000002;
     const bpMap=new Map(sdeBlueprints.map(b=>[String(b.blueprintTypeID??b._key??b.typeID),b]));
     const need=(m,R,me)=>Math.max(R,Math.ceil(m.quantity*R*(1-me/100)*(1-matB)));
-    const list=[];
+    const list=[];let bpoSkipped=0;
     for(const {c,items,matches} of hits){
       if(c.type!=='item_exchange'||!(c.price>0))continue;
-      const lines=[];
+      const lines=[];let hasBpo=false;
       for(const m of matches){
         const b=bpMap.get(String(m.type_id)),act=b&&b.activities&&b.activities.manufacturing,prod=act&&act.products&&act.products[0];
         if(!prod)continue;
-        const R=(m.is_blueprint_copy?(m.runs||0):bpoRuns)*(m.quantity||1);
+        if(!m.is_blueprint_copy){hasBpo=true;break}
+        const R=(m.runs||0)*(m.quantity||1);
         if(R<1)continue;
         lines.push({m,act,prod,R,me:m.material_efficiency||0,te:m.time_efficiency||0});
       }
+      if(hasBpo){bpoSkipped++;continue}
       if(lines.length)list.push({c,other:items-matches.length,lines});
     }
-    st.textContent='Ranking '+list.length.toLocaleString()+' contracts with blueprints…';
-    const px=await scanPrices();
-    for(const x of list){
-      let r=-x.c.price,ok=true;
-      for(const l of x.lines){
-        const pp=px[l.prod.typeID];if(!pp){ok=false;break}
-        let mat=0;for(const m of l.act.materials||[]){const mp=px[m.typeID];if(!mp){ok=false;break}mat+=need(m,l.R,l.me)*mp}
-        if(!ok)break;
-        r+=l.prod.quantity*l.R*pp*(1-fee)-mat*(1+idx*(1+fac+scc));
-      }
-      x.rough=ok?r:-Infinity;
-    }
-    // Quick estimate picks the best candidates; only those get full market-depth pricing (keeps CCP requests low).
-    const cand=list.filter(x=>x.rough>-Infinity).sort((a,b)=>b.rough-a.rough).slice(0,Math.min(200,Math.max(60,topN*3)));
+    const cand=list;
     const types=new Set();
     for(const x of cand)for(const l of x.lines){types.add(l.prod.typeID);for(const m of l.act.materials||[])types.add(m.typeID)}
     const ids=[...types],books=new Map();let done=0,failed=0;
-    await mapLimit(ids,4,async id=>{
+    const usePub=!!pub&&pub.m.region===region;
+    if(usePub){for(const id of ids){const b=pub.m.books[id];if(b)books.set(id,{sell:b[0],buy:b[1]})}}
+    else await mapLimit(ids,4,async id=>{
       if(opportunityScanStop)return;
       try{books.set(id,await getBook(id,region))}catch(e){failed++}
-      done++;st.textContent=`Market data ${done}/${ids.length} (cached for 1 hour)`;prog(done,ids.length);
+      done++;st.textContent=`Live market data ${done}/${ids.length} (cached for 1 hour)`;prog(done,ids.length);
     });
     if(opportunityScanStop){st.textContent='Stopped';return}
     const fill=(lv,n)=>{let left=n,cost=0;for(const [p,v] of lv){if(left<=0)break;const k=Math.min(left,v);cost+=k*p;left-=k}return {units:n-left,cost,left}};
@@ -509,7 +503,7 @@ async function runOpportunityScan(){
     results.sort((a,b)=>b.profit-a.profit);
     const top=results.slice(0,topN);window._evePlannerScanRows=top;
     out.innerHTML=top.length?`<h3>Top ${top.length} contracts by estimated profit</h3>`+top.map((r,i)=>`<div class="card" style="margin-top:8px"><div class="between"><b>#${i+1} · Contract ${r.c.contract_id}</b><b>${fmtMoney(r.profit)}</b></div><div class="tiny">Price ${fmtMoney(r.c.price)} · ${fmt(r.units)} blueprint(s) · ${fmt(r.runs)} runs · ROI ${pct(r.roi)} · ${fmtMoney(r.perRun)}/run · ${fmtMoney(r.perBp)}/blueprint · ${fmtMoney(r.perHour)}/h · materials ${fmtMoney(r.mat)} · ${r.hours.toFixed(1)} h${r.other?` · ${r.other} non-blueprint item(s) valued at 0`:''}${r.unpriced?` · ${r.unpriced} blueprint(s) without prices, valued at 0`:''}</div><details style="margin-top:6px"><summary>Blueprint breakdown</summary>${table(['Blueprint','Runs','ME/TE','Materials','Sale proceeds','Profit'],r.rows.map(b=>b.skip?[esc(b.name),fmt(b.R),b.me+'/'+b.te,'–','no price data','–']:[esc(b.name),fmt(b.R),b.me+'/'+b.te,fmtMoney(b.mat),fmtMoney(b.rev)+(b.covered<b.out?` (${fmt(b.covered)}/${fmt(b.out)} sold)`:''),fmtMoney(b.profit)]))}</details></div>`).join(''):'<div class="empty">No contracts with priced blueprints found for this station.</div>';
-    st.textContent=`Done · ${list.length.toLocaleString()} contracts with blueprints · ${cand.length} priced in detail`+(failed?` · ${failed} market lookups failed`:'');prog(1,1);
+    st.textContent=`Done · ${list.length.toLocaleString()} contracts with blueprints · ${cand.length} fully priced · ${usePub?'published data from '+new Date(pub.m.updated).toLocaleString():'live market data'}`+(bpoSkipped?` · ${bpoSkipped} contracts with BPOs skipped (unlimited runs, not valued)`:'')+(failed?` · ${failed} market lookups failed`:'');prog(1,1);
   }catch(e){st.textContent='Scan failed: '+e.message}
   finally{btn.disabled=false;stop.disabled=true}
 }

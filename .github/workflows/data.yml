@@ -1,6 +1,8 @@
 name: Build data and deploy site
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '25 */3 * * *'
   push:
     branches: [main]
 permissions:

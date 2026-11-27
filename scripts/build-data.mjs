@@ -1,11 +1,14 @@
-// Builds data/contracts.json + data/market.json (The Forge market) for the Pages site. Runs inside GitHub Actions.
+// Builds data/contracts.json + market books for the five trade hubs for the Pages site. Runs inside GitHub Actions.
+// Market data comes from EVE Ref's market-order snapshot (one download), so this script makes NO per-item ESI requests.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import readline from 'node:readline';
-import {execFileSync} from 'node:child_process';
+import {execFileSync, spawn} from 'node:child_process';
 
-const OUT = process.argv[2] || 'site/data', REGION = 10000002;
+const OUT = process.argv[2] || 'site/data';
+const HUBS = [10000002, 10000043, 10000032, 10000030, 10000042]; // Forge (Jita), Domain (Amarr), Sinq Laison (Dodixie), Heimatar (Rens), Metropolis (Hek)
+const SNAP_BASE = 'https://data.everef.net/market-orders/', LEVELS = 40, MAX_SNAPSHOT_AGE_MS = 3 * 3600 * 1000;
 const STATIONS = new Set([60003760, 60008494, 60011866, 60004588, 60005686]); // Jita, Amarr, Dodixie, Rens, Hek
 const UA = {'User-Agent': 'EVE-Ledger data builder (github.com/mrdarky99/Eve-stats)'};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -16,9 +19,51 @@ async function get(url) {
   }
   return null;
 }
-async function pool(items, limit, fn) {
-  let n = 0;
-  await Promise.all(Array.from({length: limit}, async () => { while (n < items.length) await fn(items[n++]); }));
+
+// Streams EVE Ref's bzip2 CSV through the system bzip2 and keeps the best LEVELS sell/buy levels per wanted type, per hub region.
+async function readSnapshot(file, wanted, hubs) {
+  const books = Object.fromEntries(hubs.map(r => [r, {}])), snap = {}, regions = new Set(hubs);
+  let ix = null, scanned = 0, kept = 0;
+  const proc = spawn('bzip2', ['-dc', file], {stdio: ['ignore', 'pipe', 'inherit']});
+  const exited = new Promise((res, rej) => { proc.on('error', rej); proc.on('close', code => code === 0 ? res() : rej(new Error('bzip2 exited with code ' + code))); });
+  exited.catch(() => {});
+  for await (const raw of readline.createInterface({input: proc.stdout, crlfDelay: Infinity})) {
+    if (!raw) continue;
+    const row = raw.split(',');
+    if (!ix) {
+      ix = {}; row.forEach((x, i) => ix[x.replace(/"/g, '').trim()] = i);
+      for (const k of ['is_buy_order', 'price', 'type_id', 'volume_remain', 'region_id']) if (ix[k] === undefined) throw new Error(`Snapshot has an unexpected format (missing column ${k}).`);
+      continue;
+    }
+    scanned++;
+    const reg = +row[ix.region_id];
+    if (!regions.has(reg)) continue;
+    const t = +row[ix.type_id];
+    if (!wanted.has(t)) continue;
+    const b = books[reg][t] || (books[reg][t] = [[], []]);
+    b[/^(true|1)$/i.test(row[ix.is_buy_order]) ? 1 : 0].push([+row[ix.price], +row[ix.volume_remain]]);
+    kept++;
+    if (!snap[reg] && ix.http_last_modified !== undefined && row[ix.http_last_modified]) snap[reg] = row[ix.http_last_modified];
+  }
+  await exited;
+  for (const reg of hubs) for (const t in books[reg]) {
+    const [sells, buys] = books[reg][t];
+    sells.sort((a, b) => a[0] - b[0]); buys.sort((a, b) => b[0] - a[0]);
+    if (sells.length > LEVELS) sells.length = LEVELS;
+    if (buys.length > LEVELS) buys.length = LEVELS;
+  }
+  return {books, snap, scanned, kept};
+}
+async function snapshotUrl() {
+  const r = await get(SNAP_BASE + 'index.json');
+  if (r) {
+    try {
+      const files = ((await r.json()).files || []).filter(f => /\.csv\.bz2$/i.test(f.name || ''));
+      const f = files.find(x => /latest/i.test(x.name)) || files.sort((a, b) => String(b.last_modified || b.name).localeCompare(String(a.last_modified || a.name)))[0];
+      if (f) return f.url || SNAP_BASE + f.name;
+    } catch {}
+  }
+  return SNAP_BASE + 'market-orders-latest.v3.csv.bz2';
 }
 const walk = d => fs.readdirSync(d, {withFileTypes: true}).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
 function eachCSV(text, cb) { // fast path for unquoted lines, slow path for quoted records
@@ -100,28 +145,35 @@ for await (const line of rl) {
 const kept = [...contracts.values()].filter(c => c.rows.length);
 console.log(`${kept.length} contracts contain blueprints.`);
 
-// 4) Market depth for every product and material those blueprints need
+// 4) Market depth for every product and material those blueprints need, from EVE Ref's market snapshot (no ESI calls)
 const types = new Set();
 for (const c of kept) for (const r of c.rows) { const rc = recipes.get(String(r[0])); types.add(rc.product); rc.mats.forEach(m => types.add(m)); }
-console.log(`Fetching market data for ${types.size} item types…`);
-const books = {}; let failed = 0, done = 0;
-async function book(id) {
-  const base = `https://esi.evetech.net/latest/markets/${REGION}/orders/?order_type=all&type_id=${id}&page=`;
-  const r = await get(base + 1); if (!r) throw new Error('ESI failed for ' + id);
-  const orders = await r.json(), pages = Math.min(5, Number(r.headers.get('x-pages')) || 1);
-  for (let p = 2; p <= pages; p++) { const x = await get(base + p); if (x) orders.push(...await x.json()); }
-  const lv = (a, asc) => a.sort((x, y) => asc ? x.price - y.price : y.price - x.price).slice(0, 40).map(o => [o.price, o.volume_remain]);
-  return [lv(orders.filter(o => !o.is_buy_order), true), lv(orders.filter(o => o.is_buy_order), false)];
+console.log(`Need market data for ${types.size} item types.`);
+const snapUrl = await snapshotUrl();
+console.log('Downloading market snapshot…', snapUrl);
+const snapRes = await get(snapUrl);
+if (!snapRes) throw new Error('Could not download the EVE Ref market snapshot; keeping the previous deployment (no fallback to ESI on purpose).');
+const snapFile = path.join(tmp, 'orders.csv.bz2');
+fs.writeFileSync(snapFile, Buffer.from(await snapRes.arrayBuffer()));
+console.log(`Reading ${(fs.statSync(snapFile).size / 1048576).toFixed(1)} MiB snapshot…`);
+const snapshot = await readSnapshot(snapFile, types, HUBS);
+console.log(`${snapshot.scanned.toLocaleString()} orders scanned, ${snapshot.kept.toLocaleString()} kept.`);
+if (snapshot.scanned < 200000) throw new Error(`Snapshot looks incomplete (${snapshot.scanned} orders); keeping the previous deployment.`);
+const jitaAt = Date.parse(snapshot.snap[HUBS[0]]);
+if (Number.isFinite(jitaAt) && Date.now() - jitaAt > MAX_SNAPSHOT_AGE_MS) throw new Error(`Snapshot is too old (${snapshot.snap[HUBS[0]]}); keeping the previous deployment.`);
+for (const reg of HUBS) {
+  const have = Object.keys(snapshot.books[reg]).length;
+  console.log(`  region ${reg}: books for ${have}/${types.size} item types`);
 }
-await pool([...types], 8, async id => {
-  try { books[id] = await book(id); } catch { failed++; }
-  if (++done % 500 === 0) console.log(`  ${done}/${types.size}`);
-});
-if (failed > types.size * 0.05) throw new Error(`Too many market failures (${failed}/${types.size}); keeping the previous deployment.`);
+if (Object.keys(snapshot.books[HUBS[0]]).length < types.size * 0.5) throw new Error('Too few Jita markets found in the snapshot; keeping the previous deployment.');
 
 // 5) Write the files
 fs.mkdirSync(OUT, {recursive: true});
 const updated = new Date().toISOString();
 fs.writeFileSync(path.join(OUT, 'contracts.json'), JSON.stringify({updated, scrape_end: meta.scrape_end, contracts: kept.map(c => [c.id, c.price, c.station, c.exp, c.items, c.rows])}));
-fs.writeFileSync(path.join(OUT, 'market.json'), JSON.stringify({updated, region: REGION, books}));
+// Jita keeps the original file name and format; the other hubs get market-<regionId>.json in the same format.
+for (const reg of HUBS) {
+  const file = reg === HUBS[0] ? 'market.json' : `market-${reg}.json`;
+  fs.writeFileSync(path.join(OUT, file), JSON.stringify({updated, region: reg, snapshot: snapshot.snap[reg] || null, source: 'everef-market-orders', books: snapshot.books[reg]}));
+}
 console.log('Done.', updated);

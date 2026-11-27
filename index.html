@@ -45,7 +45,7 @@ h1{font-size:25px;margin:0 0 4px}h2{font-size:17px;margin:22px 0 10px}h3{font-si
 <section class="section" id="assets"><h1>Assets</h1><div class="row"><input id="assetSearch" class="search" placeholder="Search item or location"><select id="assetSort"><option value="value">Value</option><option value="name">Name</option><option value="quantity">Quantity</option></select></div><div id="assetCards" class="cards" style="margin-top:12px"></div><h2>Assets by location</h2><div id="locationTable"></div><h2>Asset list</h2><div id="assetTable"></div></section>
 <section class="section" id="industry"><h1>Industry</h1><div id="industryCards" class="cards"></div><h2>Active and recent jobs</h2><div id="jobsTable"></div><h2>Mining record (30 days)</h2><div id="miningTable"></div><h2>Recent losses</h2><div id="lossTable"></div></section>
 <section class="section" id="markets"><h1>Market tools</h1><div class="notice warn">Market scan is an indicative comparison, not an executable quote. Orders can change and available quantity is not guaranteed. This scan checks the selected items at five hubs.</div><div class="row"><button id="scanTop">Scan top traded items</button><button class="secondary" id="scanAssets">Scan selected asset items</button></div><div id="marketResult" style="margin-top:12px"></div></section>
-<section class="section" id="planner"><h1>Production planner</h1><div class="muted">SDE-powered blueprint search, material calculation, ME/TE modifiers, market quotes and facility/job cost estimates.</div><div class="card" style="margin-top:12px"><div class="row"><button id="loadSDE">Load / refresh blueprint database</button><span id="sdeStatus" class="tiny">SDE not loaded</span></div><div class="formgrid" style="margin-top:10px"><div class="field"><label>Search product</label><input id="bpSearch" placeholder="Search blueprint or product"></div><div class="field"><label>Blueprint / product</label><select id="bpSelect"><option value="">Load database first</option></select></div><div class="field"><label>Runs</label><input id="planRuns" type="number" min="1" value="1"></div><div class="field"><label>Material Efficiency (ME %)</label><input id="planME" type="number" min="0" max="10" value="10"></div><div class="field"><label>Time Efficiency (TE %)</label><input id="planTE" type="number" min="0" max="20" value="20"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" value="0"></div><div class="field"><label>Facility material bonus (%)</label><input id="planMatBonus" type="number" step=".01" value="0"></div><div class="field"><label>Facility time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" value="0"></div><div class="field"><label>System / facility name</label><input id="planFacilityName" placeholder="System / station / structure"></div><div class="field"><label>Blueprint copy runs (optional)</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Product sell price (ISK/unit)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:10px"><button id="priceMaterials">Price materials in Jita</button><button class="secondary" id="priceProduct">Price product in Jita</button><button id="calculatePlan">Calculate</button><button class="secondary" id="savePlan">Save plan</button></div><div id="planMaterialTable"></div><div id="planResult"></div></div><div class="card" id="contractBlueprintFinder" style="margin-top:14px"><h2>Blueprint contract finder</h2>
+<section class="section" id="planner"><h1>Production planner</h1><div class="muted">SDE-powered blueprint search, material calculation, ME/TE modifiers, market quotes and facility/job cost estimates.</div><div class="card" style="margin-top:12px"><div class="row"><button id="loadSDE">Load / refresh blueprint database</button><span id="sdeStatus" class="tiny">SDE not loaded</span></div><div class="formgrid" style="margin-top:10px"><div class="field"><label>Search product</label><input id="bpSearch" placeholder="Search blueprint or product"></div><div class="field"><label>Blueprint / product</label><select id="bpSelect"><option value="">Load database first</option></select></div><div class="field"><label>Runs</label><input id="planRuns" type="number" min="1" value="1"></div><div class="field"><label>Material Efficiency (ME %)</label><input id="planME" type="number" min="0" max="10" value="10"></div><div class="field"><label>Time Efficiency (TE %)</label><input id="planTE" type="number" min="0" max="20" value="20"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" value="0"></div><div class="field"><label>Facility material bonus (%)</label><input id="planMatBonus" type="number" step=".01" value="0"></div><div class="field"><label>Facility time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" value="0"></div><div class="field"><label>System / facility name</label><input id="planFacilityName" placeholder="System / station / structure"></div><div class="field"><label>Blueprint copy runs (optional)</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Product sell price (ISK/unit)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:10px"><button id="priceMaterials">Price materials in Jita</button><button class="secondary" id="priceProduct">Price product in Jita</button><button id="calculatePlan">Calculate</button><button class="secondary" id="savePlan">Save plan</button></div><div id="planBpcPanel" class="notice" style="margin-top:10px"><b>BPC contract sourcing</b><div id="planBpcStatus" class="tiny" style="margin-top:5px">Select a blueprint to find the cheapest available BPC runs automatically.</div><div id="planBpcSummary" style="margin-top:8px"></div></div><div id="planMaterialTable"></div><div id="planResult"></div></div><div class="card" id="contractBlueprintFinder" style="margin-top:14px"><h2>Blueprint contract finder</h2>
 <div class="cf-intro muted">Search blueprint originals and copies across public contracts using EVE Ref’s bulk snapshot. The archive is cached locally on this device, so contract contents are indexed without one ESI request per contract.</div>
 <div class="cf-panel">
   <b>Local contract database</b>
@@ -158,7 +158,7 @@ function render(){populateSelect();switch(current){case'overview':renderOverview
 function materialRow(){return `<div class="formgrid material-row" style="margin:8px 0"><div class="field"><label>Material name</label><input class="mat-name" placeholder="Mineral / component"></div><div class="field"><label>Quantity required</label><input class="mat-qty" type="number" min="0" value="0"></div><div class="field"><label>Price per unit (ISK)</label><input class="mat-price" type="number" min="0" value="0"></div><div class="field"><label>Owned quantity</label><input class="mat-owned" type="number" min="0" value="0"></div></div>`}
 function calcPlan(){let product=$('#planProduct').value||'Unnamed product',runs=Math.max(1,+$('#planRuns').value||1),bpc=+$('#planBpc').value||0,job=+$('#planJob').value||0,sell=+$('#planSell').value||0,tax=(+$('#planTax').value||0)/100,broker=(+$('#planBroker').value||0)/100,time=(+$('#planTime').value||0)*runs,rows=[...document.querySelectorAll('.material-row')].map(r=>({name:r.querySelector('.mat-name').value,qty:+r.querySelector('.mat-qty').value||0,price:+r.querySelector('.mat-price').value||0,owned:+r.querySelector('.mat-owned').value||0})).filter(x=>x.name||x.qty);let material=rows.reduce((s,x)=>s+x.qty*x.price,0),buy=rows.reduce((s,x)=>s+Math.max(0,x.qty-x.owned)*x.price,0),gross=sell*runs,fees=gross*(tax+broker),cost=material+bpc+job,net=gross-fees-cost,perh=time?net/time:null,need=rows.map(x=>({...x,short:Math.max(0,x.qty-x.owned),cost:Math.max(0,x.qty-x.owned)*x.price}));let plan={product,runs,bpc,job,sell,tax:tax*100,broker:broker*100,time,materials:rows,material,cost,gross,fees,net,perh,buy,need,created:Date.now()};$('#planResult').innerHTML=`<div class="cards" style="margin-top:12px">${card('Materials total',fmtMoney(material))}${card('Materials still to buy',fmtMoney(buy))}${card('Total cost',fmtMoney(cost))}${card('Estimated net profit',fmtMoney(net),net>=0?'':'Loss estimate')}${card('Profit per production hour',perh==null?'–':fmtMoney(perh))}${card('Estimated time',time.toFixed(1)+' h')}</div><h3>Shopping list</h3>${table(['Material','Needed','Owned','To buy','Cost for missing'],need.map(x=>[esc(x.name),fmt(x.qty),fmt(x.owned),fmt(x.short),fmtMoney(x.cost)]))}<div class="notice warn">This plan uses manual material quantities, costs, blueprint cost, job cost and selling-price inputs. It does not yet calculate blueprint requirements from EVE's blueprint database or account for facility bonuses, time modifiers, hauling, market depth or taxes beyond your entered percentages.</div>`;return plan}
 
-let sdeBlueprints=[],sdeTypes={},plannerRecipe=null,plannerQuotes={};
+let sdeBlueprints=[],sdeTypes={},plannerRecipe=null,plannerQuotes={},plannerBpcLots=[],plannerBpcAllocation=null;
 // Large SDE datasets belong in IndexedDB, not the small localStorage quota.
 const SDE_DB='eve-ledger-sde-cache',SDE_STORE='datasets';
 function sdeDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return reject(Error('IndexedDB unavailable'));const r=indexedDB.open(SDE_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(SDE_STORE);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error||Error('IndexedDB open failed'));});}
@@ -169,12 +169,16 @@ function bpProduct(b){let a=b.activities?.manufacturing;if(!a)return null;let pr
 function bpName(b){let p=bpProduct(b);return p?(sdeTypes[p.typeID]||('Type '+p.typeID)):''}
 function populateBlueprints(){let q=($('#bpSearch')?.value||'').toLowerCase(),list=sdeBlueprints.filter(b=>bpProduct(b)&&bpName(b).toLowerCase().includes(q)).slice(0,500);$('#bpSelect').innerHTML=list.map(b=>{let p=bpProduct(b);return `<option value="${b.blueprintTypeID||b._key||b.typeID}">${esc(bpName(b))} · ${esc(sdeTypes[b.blueprintTypeID||b._key||b.typeID]||'Blueprint')}</option>`}).join('')||'<option value="">No matches</option>';}
 function getBlueprint(id){return sdeBlueprints.find(b=>String(b.blueprintTypeID||b._key||b.typeID)===String(id))||sdeBlueprints.find(b=>bpProduct(b)&&String(bpProduct(b).typeID)===String(id))}
-function selectRecipe(){let b=getBlueprint($('#bpSelect').value);if(!b)return;let a=b.activities.manufacturing,p=a.products?.[0];plannerRecipe={bp:b,activity:a,product:p};$('#planSell').value=plannerQuotes[p.typeID]?.sell||$('#planSell').value||0;renderPlanMaterials()}
+function selectRecipe(){let b=getBlueprint($('#bpSelect').value);if(!b)return;let a=b.activities.manufacturing,p=a.products?.[0];plannerRecipe={bp:b,activity:a,product:p};plannerBpcLots=[];plannerBpcAllocation=null;$('#planSell').value=plannerQuotes[p.typeID]?.sell||$('#planSell').value||0;renderPlanMaterials();refreshPlannerBpc();}
+function allocatePlannerBpc(){if(!plannerBpcLots.length){plannerBpcAllocation=null;return null;}let need=Math.max(1,+$('#planRuns').value||1),remaining=need,chosen=[],purchaseCost=0,usedRuns=0,meTotal=0,teTotal=0,leftover=0;for(const lot of [...plannerBpcLots].sort((a,b)=>a.perRun-b.perRun||a.price-b.price)){if(remaining<=0)break;const capacity=lot.capacity;const use=Math.min(remaining,capacity);chosen.push({...lot,usedRuns:use,unusedRuns:capacity-use});purchaseCost+=lot.price;usedRuns+=use;meTotal+=lot.me*use;teTotal+=lot.te*use;leftover+=capacity-use;remaining-=use;}if(remaining>0)return {shortfall:remaining,chosen,purchaseCost,usedRuns,me:usedRuns?meTotal/usedRuns:0,te:usedRuns?teTotal/usedRuns:0,leftover};return {shortfall:0,chosen,purchaseCost,usedRuns,me:meTotal/usedRuns,te:teTotal/usedRuns,leftover};}
+function renderPlannerBpc(){const box=$('#planBpcSummary'),status=$('#planBpcStatus');if(!box||!status)return;const a=allocatePlannerBpc();plannerBpcAllocation=a;if(!a){box.innerHTML='';if(!window.eveContractLookup){status.textContent='Contract archive is still loading. BPC values remain manual until it is ready.';}else{status.textContent='No suitable single-blueprint BPC contracts found. You can enter ME / TE manually.';}return;}if(a.shortfall){status.textContent=`Not enough BPC runs found: ${a.usedRuns} available, ${a.shortfall} still needed. Showing the available contracts.`;}else{status.textContent=`Automatically selected the cheapest ${a.usedRuns} BPC runs from ${a.chosen.length} contract(s).`;$('#planME').value=a.me.toFixed(2);$('#planTE').value=a.te.toFixed(2);}box.innerHTML=`<div class="cards"><div><span class="tiny">BPC purchase cost</span><div class="metric">${fmtMoney(a.purchaseCost)}</div></div><div><span class="tiny">Weighted ME</span><div class="metric">${a.me.toFixed(2)}%</div></div><div><span class="tiny">Weighted TE</span><div class="metric">${a.te.toFixed(2)}%</div></div><div><span class="tiny">Unused runs bought</span><div class="metric">${fmt(a.leftover)}</div></div></div><div class="tiny" style="margin-top:8px">${a.chosen.map(x=>`#${x.contractId}: ${fmtMoney(x.price)} · ${fmt(x.capacity)} runs · ${fmtMoney(x.perRun)}/run · ME ${x.me} / TE ${x.te}${x.unusedRuns?` · ${fmt(x.unusedRuns)} unused`:''}`).join('<br>')}</div>`;}
+async function refreshPlannerBpc(){const status=$('#planBpcStatus');if(!plannerRecipe)return;if(!window.eveContractLookup){status.textContent='Waiting for contract archive to finish loading…';return;}status.textContent='Searching the cached contract archive for BPCs…';try{const id=plannerRecipe.bp.blueprintTypeID||plannerRecipe.bp._key||plannerRecipe.bp.typeID;const hits=await window.eveContractLookup(id);plannerBpcLots=hits;renderPlannerBpc();if(!hits.length)status.textContent='No eligible BPC contracts found in the selected region/station filters. Manual ME / TE remains available.';renderPlanMaterials();}catch(e){status.textContent='BPC lookup failed: '+e.message;}}
+
 function renderPlanMaterials(){if(!plannerRecipe)return;let runs=Math.max(1,+$('#planRuns').value||1),me=Math.max(0,Math.min(10,+$('#planME').value||0)),bonus=Math.max(0,+$('#planMatBonus').value||0),rows=(plannerRecipe.activity.materials||[]).map(m=>{let base=Math.max(runs,Math.ceil(m.quantity*runs*(1-me/100)*(1-bonus/100)));let quote=plannerQuotes[m.typeID]||{};return {id:m.typeID,name:sdeTypes[m.typeID]||('Type '+m.typeID),qty:base,price:quote.buy||quote.sell||0,owned:0}});$('#planMaterialTable').innerHTML='<h3>Material requirements (ME + facility material bonus)</h3>'+table(['Material','Required','Market price (ISK)','Cost estimate'],rows.map(x=>[esc(x.name),fmt(x.qty),`<input class="mat-price" data-id="${x.id}" type="number" value="${x.price}" min="0" style="width:130px">`,fmtMoney(x.qty*x.price)]));}
 async function quoteType(id,region=10000002){let r=await fetch(`${ESI}/markets/${region}/orders/?order_type=all&type_id=${id}`);if(!r.ok)throw Error('Market quote '+r.status);let orders=await r.json(),sell=orders.filter(o=>!o.is_buy_order),buy=orders.filter(o=>o.is_buy_order);return {sell:sell.length?Math.min(...sell.map(o=>o.price)):0,buy:buy.length?Math.max(...buy.map(o=>o.price)):0,volSell:sell.reduce((s,o)=>s+o.volume_remain,0),volBuy:buy.reduce((s,o)=>s+o.volume_remain,0)}}
 async function priceMaterials(){if(!plannerRecipe)return showMsg('Select a blueprint first.','warn');let mats=plannerRecipe.activity.materials||[];$('#sdeStatus').textContent='Fetching market prices…';for(let m of mats){try{plannerQuotes[m.typeID]=await quoteType(m.typeID)}catch(e){plannerQuotes[m.typeID]={}}}renderPlanMaterials();$('#sdeStatus').textContent='Quotes refreshed (Jita / The Forge)';}
 async function priceProduct(){if(!plannerRecipe)return showMsg('Select a blueprint first.','warn');let id=plannerRecipe.product.typeID;try{plannerQuotes[id]=await quoteType(id);$('#planSell').value=plannerQuotes[id].sell;showMsg('Product quote refreshed.','good')}catch(e){showMsg(e.message,'bad')}}
-function calcAutoPlan(){if(!plannerRecipe)return showMsg('Choose a blueprint first.','warn');let runs=Math.max(1,+$('#planRuns').value||1),me=Math.max(0,Math.min(10,+$('#planME').value||0)),te=Math.max(0,Math.min(20,+$('#planTE').value||0)),idx=(+$('#planIndex').value||0)/100,fac=(+$('#planFacility').value||0)/100,tbonus=(+$('#planTimeBonus').value||0)/100,matbonus=(+$('#planMatBonus').value||0)/100,materials=(plannerRecipe.activity.materials||[]).map(m=>{let qty=Math.max(runs,Math.ceil(m.quantity*runs*(1-me/100)*(1-matbonus))),price=+(document.querySelector(`.mat-price[data-id="${m.typeID}"]`)?.value||plannerQuotes[m.typeID]?.buy||0);return {id:m.typeID,name:sdeTypes[m.typeID]||('Type '+m.typeID),qty,price,cost:qty*price}}),matcost=materials.reduce((a,x)=>a+x.cost,0),product=plannerRecipe.product,output=product.quantity*runs,price=+$('#planSell').value||plannerQuotes[product.typeID]?.sell||0,baseTime=+(plannerRecipe.activity.time||0)*runs/3600*(1-te/100)*(1-tbonus),eiv=materials.reduce((s,x)=>s+x.cost,0),job=eiv*idx*(1+fac),tax=(+$('#planTax').value||0)/100,broker=(+$('#planBroker').value||0)/100,gross=output*price,fees=gross*(tax+broker),net=gross-matcost-job-fees,perh=baseTime?net/baseTime:0;$('#planResult').innerHTML=`<div class="cards" style="margin-top:12px">${card('Output',fmt(output)+' units')}${card('Material cost',fmtMoney(matcost))}${card('Estimated job installation',fmtMoney(job))}${card('Gross sale estimate',fmtMoney(gross))}${card('Fees / taxes',fmtMoney(fees))}${card('Net profit estimate',fmtMoney(net),net>=0?'':'Loss estimate')}${card('Profit/hour',baseTime?fmtMoney(perh):'–')}${card('Estimated time',baseTime.toFixed(2)+' h')}</div><h3>Shopping list</h3>${table(['Material','Required','Price/unit','Cost'],materials.map(x=>[esc(x.name),fmt(x.qty),fmtMoney(x.price),fmtMoney(x.cost)]))}<div class="notice">Product: ${esc(sdeTypes[product.typeID]||product.typeID)} · ${fmt(product.quantity)} per run. Formula: material quantities adjusted for ME and facility bonus; installation cost approximated from material value × system index × facility multiplier. Time is adjusted for TE/facility bonus. Skills, rig-specific effects, structure-specific bonuses, invention, reactions, market depth, and multi-step recursive component builds aren't yet included.</div>`;let saved={product:sdeTypes[product.typeID]||String(product.typeID),runs,bpc:0,job, sell:price,tax:tax*100,broker:broker*100,time:baseTime,runtime:true,materials,material:matcost,cost:matcost+job,gross,fees,net,perh,created:Date.now()};return saved}
+function calcAutoPlan(){if(!plannerRecipe)return showMsg('Choose a blueprint first.','warn');let runs=Math.max(1,+$('#planRuns').value||1),alloc=allocatePlannerBpc(),me=alloc&&!alloc.shortfall?alloc.me:Math.max(0,Math.min(10,+$('#planME').value||0)),te=alloc&&!alloc.shortfall?alloc.te:Math.max(0,Math.min(20,+$('#planTE').value||0)),bpcCost=alloc?alloc.purchaseCost:0,idx=(+$('#planIndex').value||0)/100,fac=(+$('#planFacility').value||0)/100,tbonus=(+$('#planTimeBonus').value||0)/100,matbonus=(+$('#planMatBonus').value||0)/100,materials=(plannerRecipe.activity.materials||[]).map(m=>{let qty=Math.max(runs,Math.ceil(m.quantity*runs*(1-me/100)*(1-matbonus))),price=+(document.querySelector(`.mat-price[data-id="${m.typeID}"]`)?.value||plannerQuotes[m.typeID]?.buy||0);return {id:m.typeID,name:sdeTypes[m.typeID]||('Type '+m.typeID),qty,price,cost:qty*price}}),matcost=materials.reduce((a,x)=>a+x.cost,0),product=plannerRecipe.product,output=product.quantity*runs,price=+$('#planSell').value||plannerQuotes[product.typeID]?.sell||0,baseTime=+(plannerRecipe.activity.time||0)*runs/3600*(1-te/100)*(1-tbonus),eiv=materials.reduce((s,x)=>s+x.cost,0),job=eiv*idx*(1+fac),tax=(+$('#planTax').value||0)/100,broker=(+$('#planBroker').value||0)/100,gross=output*price,fees=gross*(tax+broker),net=gross-matcost-job-fees-bpcCost,perh=baseTime?net/baseTime:0;$('#planResult').innerHTML=`<div class="cards" style="margin-top:12px">${card('Output',fmt(output)+' units')}${card('Material cost',fmtMoney(matcost))}${card('BPC contract cost',fmtMoney(bpcCost),'Cheapest whole contracts selected to cover requested runs')}${card('Estimated job installation',fmtMoney(job))}${card('Gross sale estimate',fmtMoney(gross))}${card('Fees / taxes',fmtMoney(fees))}${card('Net profit estimate',fmtMoney(net),net>=0?'':'Loss estimate')}${card('Profit/hour',baseTime?fmtMoney(perh):'–')}${card('Estimated time',baseTime.toFixed(2)+' h')}</div><h3>Shopping list</h3>${table(['Material','Required','Price/unit','Cost'],materials.map(x=>[esc(x.name),fmt(x.qty),fmtMoney(x.price),fmtMoney(x.cost)]))}<div class="notice">Product: ${esc(sdeTypes[product.typeID]||product.typeID)} · ${fmt(product.quantity)} per run. Formula: material quantities adjusted for ME and facility bonus; installation cost approximated from material value × system index × facility multiplier. Time is adjusted for TE/facility bonus. Skills, rig-specific effects, structure-specific bonuses, invention, reactions, market depth, and multi-step recursive component builds aren't yet included.</div>`;let saved={product:sdeTypes[product.typeID]||String(product.typeID),runs,bpc:bpcCost,job, sell:price,tax:tax*100,broker:broker*100,time:baseTime,runtime:true,materials,material:matcost,cost:matcost+job+bpcCost,gross,fees,net,perh,created:Date.now()};return saved}
 function renderSavedPlans(){let plans=store.get('plans',[]);$('#savedPlans').innerHTML=table(['Product','Runs','Estimated profit','Saved','Action'],plans.map((p,i)=>[esc(p.product),fmt(p.runs),fmtMoney(p.net),new Date(p.created).toLocaleDateString(),`<button class="secondary loadPlan" data-i="${i}">Load</button> <button class="danger delPlan" data-i="${i}">Delete</button>`]))}
 function loadPlan(p){$('#planProduct').value=p.product;$('#planRuns').value=p.runs;$('#planBpc').value=p.bpc;$('#planJob').value=p.job;$('#planSell').value=p.sell;$('#planTax').value=p.tax;$('#planBroker').value=p.broker;$('#planTime').value=p.time/p.runs;$('#materialRows').innerHTML=p.materials.map(x=>materialRow()).join('');document.querySelectorAll('.material-row').forEach((r,i)=>{let x=p.materials[i];r.querySelector('.mat-name').value=x.name;r.querySelector('.mat-qty').value=x.qty;r.querySelector('.mat-price').value=x.price;r.querySelector('.mat-owned').value=x.owned});calcPlan()}
 async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let orders=await request(`/markets/${region}/orders/?order_type=all&type_id=${item}`,null,false);let sell=orders.filter(o=>!o.is_buy_order),buy=orders.filter(o=>o.is_buy_order);per[n]={sell:sell.length?Math.min(...sell.map(o=>o.price)):0,buy:buy.length?Math.max(...buy.map(o=>o.price)):0,sellVol:sell.filter(o=>o.price===Math.min(...sell.map(x=>x.price))).reduce((s,o)=>s+o.volume_remain,0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
@@ -189,7 +193,7 @@ $('#addChar').onclick=login;$('#syncAll').onclick=syncSelected;
 document.querySelectorAll('.range').forEach(b=>b.onclick=()=>{range=+b.dataset.range;renderFinance()});
 $('#assetSearch').addEventListener('input',renderAssets);$('#assetSort').addEventListener('change',renderAssets);
 $('#scanTop').onclick=scanTop;$('#scanAssets').onclick=scanAssetItems;
-$('#loadSDE').onclick=loadSDE;$('#bpSearch').addEventListener('input',populateBlueprints);$('#bpSelect').addEventListener('change',selectRecipe);$('#planRuns').addEventListener('input',renderPlanMaterials);$('#planME').addEventListener('input',renderPlanMaterials);$('#planMatBonus').addEventListener('input',renderPlanMaterials);$('#priceMaterials').onclick=priceMaterials;$('#priceProduct').onclick=priceProduct;$('#calculatePlan').onclick=calcAutoPlan;$('#savePlan').onclick=()=>{let p=calcAutoPlan();if(!p)return;let plans=store.get('plans',[]);plans.unshift(p);store.set('plans',plans);renderSavedPlans();showMsg('Plan saved.','good')};
+$('#loadSDE').onclick=loadSDE;window.addEventListener('eve-contracts-ready',()=>{if(plannerRecipe)refreshPlannerBpc()});$('#bpSearch').addEventListener('input',populateBlueprints);$('#bpSelect').addEventListener('change',selectRecipe);$('#planRuns').addEventListener('input',()=>{renderPlannerBpc();renderPlanMaterials();});$('#planME').addEventListener('input',renderPlanMaterials);$('#planMatBonus').addEventListener('input',renderPlanMaterials);$('#priceMaterials').onclick=priceMaterials;$('#priceProduct').onclick=priceProduct;$('#calculatePlan').onclick=calcAutoPlan;$('#savePlan').onclick=()=>{let p=calcAutoPlan();if(!p)return;let plans=store.get('plans',[]);plans.unshift(p);store.set('plans',plans);renderSavedPlans();showMsg('Plan saved.','good')};
 $('#savedPlans').addEventListener('click',e=>{let l=e.target.closest('.loadPlan'),d=e.target.closest('.delPlan'),plans=store.get('plans',[]);if(l)loadPlan(plans[+l.dataset.i]);if(d){plans.splice(+d.dataset.i,1);store.set('plans',plans);renderSavedPlans()}});
 $('#settingsChars').addEventListener('click',e=>{let b=e.target.closest('.removeChar');if(b)removeCharacter(b.dataset.id)});
 $('#saveSettings').onclick=()=>{store.set('cfg',{tax:+$('#cfgTax').value||0,broker:+$('#cfgBroker').value||0});renderTrading();showMsg('Settings saved.','good')};
@@ -593,6 +597,25 @@ $('go').onclick=async()=>{
   $('go').disabled=false;
 };
 
+// Bridge: expose BPC contract lots to the Production Planner without duplicate data entry.
+window.eveContractLookup = async function(blueprintTypeId){
+  if(!database||!contractsReady)throw new Error('Contract archive is not ready yet.');
+  const bp=BP.find(x=>x.id===Number(blueprintTypeId));
+  if(!bp)throw new Error('Blueprint is not present in the contract finder type list.');
+  selected=bp;
+  const hits=searchItems(Number(blueprintTypeId));
+  const lots=[];
+  for(const hit of hits){
+    const {c,items,matches}=hit;
+    // A bundled contract has no reliable per-blueprint price allocation; auctions are bids, not a confirmed buy price.
+    if(c.type!=='item_exchange'||items!==matches.length||matches.length!==1||!(c.price>0))continue;
+    const b=matches[0];
+    if(!b.is_blueprint_copy||!(b.runs>0)||!(b.quantity>0))continue;
+    const capacity=b.runs*b.quantity;
+    lots.push({contractId:c.contract_id,price:c.price,capacity,perRun:c.price/capacity,me:b.material_efficiency,te:b.time_efficiency});
+  }
+  return lots.sort((a,b)=>a.perRun-b.perRun||a.price-b.price);
+};
 // Load the local cache first, then check the remote index for a newer snapshot.
 (async()=>{
   try{
@@ -601,415 +624,12 @@ $('go').onclick=async()=>{
     $('q').disabled=false;
     $('picked').textContent=BP.length.toLocaleString()+' blueprint types loaded. Start typing.';
     await refreshDatabase(false);
+    if(database){window.dispatchEvent(new Event('eve-contracts-ready'));}
   }catch(e){status('Startup error: '+e.message);log(e.stack||e)}
 })();
 
 })();
 </script>
 
-<script>
-(function initBlueprintContractFinder(){
 
-
-const $ = id => document.getElementById('cf-' + id);
-const INDEX_URL = 'https://data.everef.net/public-contracts/index.json';
-const FILE_NAME = 'public-contracts-latest.v2.tar.bz2';
-const DB_NAME = 'eve-contract-finder-v2';
-const STORE = 'archive';
-const BP_KEY = 'eveBpListV2';
-const ESI = 'https://esi.evetech.net/latest';
-let BP = [], selected = null, contractsReady = false, busy = false;
-// Some embedded previews (including static.app previews) deny IndexedDB.
-// Fall back to an in-memory cache so the scanner can still run in that session.
-let memoryArchive = null, memoryOnly = false, storageWarningShown = false;
-
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-let bz2Decompress = null;
-function withTimeout(promise, ms, label) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(label + ' timed out after ' + Math.round(ms/1000) + ' seconds.')), ms); })
-  ]).finally(() => clearTimeout(timer));
-}
-async function fetchTimed(url, options={}, ms=12000, label='Request') {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), ms);
-  try {
-    return await fetch(url, {...options, signal: controller.signal});
-  } catch (e) {
-    if (e.name === 'AbortError') throw new Error(label + ' timed out after ' + Math.round(ms/1000) + ' seconds.');
-    throw e;
-  } finally { clearTimeout(timer); }
-}
-async function loadBzip2() {
-  if (bz2Decompress) return bz2Decompress;
-  // SheetJS bz2 is a browser UMD build: it attaches { decompress } to window.bz2.
-  // Importing its CommonJS wrapper as an ES module can succeed but expose no named exports.
-  dbStatus('Loading archive decompression engine…');
-  const sources = [
-    'https://cdn.jsdelivr.net/npm/bz2@1.0.1/index.js',
-    'https://unpkg.com/bz2@1.0.1/index.js'
-  ];
-  const failures = [];
-  for (const url of sources) {
-    try {
-      log('Loading decompressor from ' + new URL(url).hostname + '…');
-      await withTimeout(new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        script.onload = () => {
-          const fn = window.bz2 && window.bz2.decompress;
-          if (typeof fn === 'function') resolve(fn);
-          else reject(new Error('Script loaded, but window.bz2.decompress was not exposed.'));
-        };
-        script.onerror = () => reject(new Error('Browser could not load the decompression script.'));
-        document.head.appendChild(script);
-      }), 15000, 'Decompression library download').then(fn => { bz2Decompress = fn; });
-      if (bz2Decompress) {
-        log('Decompression engine loaded successfully.');
-        return bz2Decompress;
-      }
-    } catch (e) {
-      failures.push(new URL(url).hostname + ': ' + e.message);
-      log('Could not load from ' + new URL(url).hostname + ': ' + e.message);
-    }
-  }
-  throw new Error('Could not load a working BZIP2 decompressor. Check your connection, content blockers, or browser preview restrictions. Details: ' + failures.join(' | '));
-}
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const isk = n => n == null ? '—' : Number(n).toLocaleString('en-US',{maximumFractionDigits:0}) + ' ISK';
-const left = d => { const ms = new Date(d)-Date.now(); if(ms<=0)return 'expired'; const h=Math.floor(ms/36e5); return h>=48?Math.floor(h/24)+'d '+h%24+'h':h+'h '+Math.floor(ms%36e5/6e4)+'m'; };
-function status(s){$('status').textContent=s}
-function dbStatus(s){$('dbStatus').textContent=s}
-function log(s){$('log').textContent += s+'\n';$('log').scrollTop=$('log').scrollHeight}
-function progress(p){$('progress').style.width=Math.max(0,Math.min(100,p))+'%'}
-
-async function openDB(){
-  if(memoryOnly) return null;
-  try {
-    if(!window.indexedDB) throw new Error('IndexedDB is unavailable in this browser context.');
-    return await new Promise((resolve,reject)=>{
-      let req;
-      try { req=indexedDB.open(DB_NAME,1); }
-      catch(e) { reject(e); return; }
-      req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE))req.result.createObjectStore(STORE)};
-      req.onsuccess=()=>resolve(req.result);
-      req.onerror=()=>reject(req.error || new Error('IndexedDB could not be opened.'));
-      req.onblocked=()=>reject(new Error('IndexedDB open request was blocked.'));
-    });
-  } catch(e) {
-    memoryOnly=true;
-    if(!storageWarningShown){
-      storageWarningShown=true;
-      log('Persistent browser storage is blocked in this preview. Continuing with temporary in-memory storage; the archive will need to be downloaded again after closing this page. Open the HTML directly in Chrome to enable device storage.');
-      dbStatus('Preview blocks local database storage · using temporary session memory');
-    }
-    return null;
-  }
-}
-async function dbGet(key){
-  const db=await openDB();
-  if(!db) return key==='current' ? memoryArchive : null;
-  return new Promise((resolve,reject)=>{const r=db.transaction(STORE,'readonly').objectStore(STORE).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
-}
-async function dbPut(key,value){
-  const db=await openDB();
-  if(!db){if(key==='current')memoryArchive=value;return;}
-  return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(value,key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
-}
-async function dbClear(){
-  const db=await openDB();
-  memoryArchive=null;
-  if(!db)return;
-  return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).clear();tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)});
-}
-
-async function fetchIndex(){
-  const r=await fetchTimed(INDEX_URL,{cache:'no-store'},12000,'EVE Ref update check');
-  if(!r.ok)throw new Error('EVE Ref index request failed (HTTP '+r.status+').');
-  const index=await r.json();
-  const f=(index.files||[]).find(x=>x.name===FILE_NAME);
-  if(!f)throw new Error('Could not find '+FILE_NAME+' in EVE Ref index.');
-  return f;
-}
-async function getArchive(force=false){
-  dbStatus('Checking EVE Ref snapshot timestamp…');
-  let remote=null, old=null;
-  try{remote=await fetchIndex()}catch(e){
-    old=await dbGet('current');
-    if(old?.blob){log('Could not check online; using the locally saved archive. '+e.message);return old}
-    throw e;
-  }
-  old=await dbGet('current');
-  const same=old && old.last_modified===remote.last_modified && old.etag===remote.etag && old.blob;
-  if(same && !force){
-    dbStatus('Up to date · saved locally · '+new Date(remote.last_modified).toLocaleString());
-    log('Snapshot unchanged. Reusing the archive already saved on this device.');
-    return old;
-  }
-  dbStatus('Downloading new snapshot ('+(remote.size/1048576).toFixed(2)+' MiB)…');
-  status('Downloading EVE Ref archive…');
-  const r=await fetchTimed(remote.url,{cache:'no-store'},90000,'EVE Ref archive download');
-  if(!r.ok)throw new Error('Archive download failed (HTTP '+r.status+').');
-  const reader=r.body?.getReader();
-  let blob;
-  if(reader){
-    const chunks=[];let got=0,total=Number(r.headers.get('content-length'))||remote.size;
-    while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;progress(got/total*100);status('Downloading archive… '+(got/1048576).toFixed(1)+' / '+(total/1048576).toFixed(1)+' MiB');}
-    blob=new Blob(chunks,{type:'application/x-bzip2'});
-  }else blob=await r.blob();
-  const record={blob,last_modified:remote.last_modified,etag:remote.etag,size:remote.size,name:remote.name,downloaded_at:new Date().toISOString()};
-  await dbPut('current',record);
-  progress(100);
-  dbStatus('Downloaded and saved locally · '+new Date(remote.last_modified).toLocaleString());
-  log('Saved '+remote.name+' ('+(blob.size/1048576).toFixed(2)+' MiB) in this browser/device.');
-  return record;
-}
-
-function tarFiles(bytes){
-  const files={};let off=0;
-  const dec=new TextDecoder();
-  while(off+512<=bytes.length){
-    const h=bytes.subarray(off,off+512);
-    if(h.every(x=>x===0))break;
-    const name=dec.decode(h.subarray(0,100)).replace(/\0.*$/s,'');
-    const prefix=dec.decode(h.subarray(345,500)).replace(/\0.*$/s,'');
-    const full=(prefix?prefix+'/':'')+name;
-    const sizeText=dec.decode(h.subarray(124,136)).replace(/\0.*$/s,'').trim();
-    const size=parseInt(sizeText||'0',8)||0;
-    const start=off+512;
-    if(['meta.json','contracts.csv','contract_items.csv'].includes(name)||['meta.json','contracts.csv','contract_items.csv'].includes(full.split('/').pop())){
-      files[name]=bytes.subarray(start,start+size);
-    }
-    off=start+Math.ceil(size/512)*512;
-  }
-  for(const n of ['meta.json','contracts.csv','contract_items.csv'])if(!files[n])throw new Error('Archive is missing '+n+'.');
-  return files;
-}
-
-// CSV parser handles commas, escaped quotes, CRLF and quoted line breaks without building a giant row array.
-function eachCSV(text, callback){
-  let row=[], field='', quoted=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(quoted){
-      if(ch==='"' && text[i+1]==='"'){field+='"';i++}
-      else if(ch==='"')quoted=false;
-      else field+=ch;
-    }else if(ch==='"'){quoted=true}
-    else if(ch===','){row.push(field);field=''}
-    else if(ch==='\n'){row.push(field);callback(row);row=[];field=''}
-    else if(ch!=='\r')field+=ch;
-  }
-  if(field.length||row.length){row.push(field);callback(row)}
-}
-function csvObjectHeaders(text){
-  const line=text.slice(0,text.indexOf('\n')<0?text.length:text.indexOf('\n')).replace(/\r$/,'');
-  // Header names in this dataset do not contain quoted commas.
-  return line.split(',').map(x=>x.replace(/^"|"$/g,''));
-}
-async function parseArchive(record){
-  status('Opening saved archive…');progress(0);
-  const compressed=new Uint8Array(await record.blob.arrayBuffer());
-  status('Decompressing BZIP2 archive…');
-  const decompress=await loadBzip2();
-  status('Decompressing BZIP2 archive…');
-  await new Promise(resolve=>setTimeout(resolve,50));
-  const tar=decompress(compressed,true);
-  const files=tarFiles(tar);
-  const decoder=new TextDecoder('utf-8');
-  const meta=JSON.parse(decoder.decode(files['meta.json']));
-  const contractsText=decoder.decode(files['contracts.csv']);
-  const itemsText=decoder.decode(files['contract_items.csv']);
-  status('Indexing contracts…');
-  const ch=csvObjectHeaders(contractsText), ci=Object.fromEntries(ch.map((x,i)=>[x,i]));
-  const contractMap=new Map();
-  eachCSV(contractsText,(row)=>{
-    if(row[0]==='collateral')return;
-    const type=row[ci.type], id=Number(row[ci.contract_id]);
-    if(!id || (type!=='item_exchange'&&type!=='auction'))return;
-    if(new Date(row[ci.date_expired]).getTime()<=Date.now())return;
-    const c={
-      contract_id:id,type,date_expired:row[ci.date_expired],date_issued:row[ci.date_issued],
-      start_location_id:Number(row[ci.start_location_id]),issuer_id:Number(row[ci.issuer_id]),
-      issuer_corporation_id:Number(row[ci.issuer_corporation_id]),for_corporation:row[ci.for_corporation]==='true',
-      price:Number(row[ci.price])||0,buyout:Number(row[ci.buyout])||0,volume:Number(row[ci.volume])||0,
-      title:row[ci.title]||'',region_id:Number(row[ci.region_id]),station_id:Number(row[ci.station_id])
-    };
-    contractMap.set(id,c);
-  });
-  status('Database loaded · indexing '+contractMap.size.toLocaleString()+' active contracts…');
-  return {meta,contractMap,itemsText};
-}
-
-function setBlueprints(groups,rows){
-  BP=rows.map(r=>({id:Number(r[0]),n:r[1],l:r[1].toLowerCase(),g:groups[r[2]]}));
-}
-async function esi(path,opts){
-  const r=await fetchTimed(ESI+path,opts,20000,'EVE Online API request');
-  if(!r.ok)throw new Error('ESI request failed: HTTP '+r.status);
-  return r;
-}
-async function loadBlueprints(){
-  try{const cached=JSON.parse(localStorage.getItem(BP_KEY)||'null');if(cached?.rows?.length>500){setBlueprints(cached.groups,cached.rows);return}}catch(e){}
-  $('picked').textContent='Building blueprint name list (first run)…';
-  const cat=await (await esi('/universe/categories/9/')).json();
-  const groups=[], typeGroup={};let done=0;
-  for(let i=0;i<cat.groups.length;i+=5){
-    await Promise.all(cat.groups.slice(i,i+5).map(async gid=>{
-      const r=await esi('/universe/groups/'+gid+'/');const g=await r.json();
-      if(g.types?.length){const gi=groups.push(g.name)-1;g.types.forEach(t=>typeGroup[t]=gi)}
-      done++;$('picked').textContent='Building blueprint list… '+done+'/'+cat.groups.length;
-    }));
-  }
-  const ids=Object.keys(typeGroup).map(Number),rows=[];
-  for(let i=0;i<ids.length;i+=500){
-    const r=await esi('/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ids.slice(i,i+500))});
-    (await r.json()).forEach(x=>rows.push([x.id,x.name,typeGroup[x.id]]));
-  }
-  if(rows.length<500)throw new Error('Blueprint name list was incomplete.');
-  setBlueprints(groups,rows);
-  try{localStorage.setItem(BP_KEY,JSON.stringify({groups,rows}))}catch(e){}
-}
-function suggest(){
-  selected=null;$('go').disabled=true;$('picked').textContent='';
-  const q=$('q').value.trim().toLowerCase();
-  if(q.length<2){$('sug').innerHTML='';return}
-  const words=q.split(/\s+/);
-  const matches=BP.filter(b=>words.every(w=>b.l.includes(w)));
-  matches.sort((a,b)=>(Number(b.l.startsWith(q))-Number(a.l.startsWith(q)))||a.n.length-b.n.length||a.n.localeCompare(b.n));
-  $('sug').innerHTML=matches.slice(0,10).map(b=>`<button data-id="${b.id}">${esc(b.n)}<small>${esc(b.g||'')} · Type ID ${b.id}</small></button>`).join('')||'<span class="dim">No blueprint matches.</span>';
-  if(matches.length>10)$('sug').insertAdjacentHTML('beforeend',`<p class="dim small">${matches.length-10} more matches — type more letters to narrow it down.</p>`);
-}
-function pick(b){selected=b;$('q').value=b.n;$('sug').innerHTML='';$('picked').textContent='Selected: '+b.n+' · Type ID '+b.id;$('go').disabled=!database}
-$('q').addEventListener('input',suggest);
-$('sug').addEventListener('click',e=>{const b=e.target.closest('button');if(b){const found=BP.find(x=>x.id===Number(b.dataset.id));if(found)pick(found)}});
-
-let database=null;
-async function refreshDatabase(force=false){
-  if(busy)return;busy=true;dbStatus('Starting database check…');status('Checking EVE Ref for a newer snapshot…');$('refresh').disabled=true;$('go').disabled=true;$('log').textContent='';
-  try{
-    const record=await getArchive(force);
-    database=await parseArchive(record);
-    contractsReady=true;
-    const d=database.meta.scrape_end||record.last_modified;
-    status('Ready · snapshot scrape ended '+new Date(d).toLocaleString()+' · '+database.contractMap.size.toLocaleString()+' active contracts indexed.');
-    dbStatus((memoryOnly?'Session copy ready (not saved after closing)':'Local copy ready')+' · scrape ended '+new Date(d).toLocaleString());
-    $('go').disabled=!selected;
-  }catch(e){
-    status('Database error: '+e.message);
-    dbStatus('Could not load database. '+e.message);
-    log('If this preview blocks browser storage, the scanner can still work for this session using memory. For persistent device caching, open the HTML directly in Chrome rather than an embedded preview.');
-    const old=await dbGet('current').catch(()=>null);
-    if(old?.blob){try{database=await parseArchive(old);contractsReady=true;$('go').disabled=!selected;status('Using saved offline snapshot · '+database.meta.scrape_end)}catch(x){log(x.message)}}
-  }finally{busy=false;$('refresh').disabled=false}
-}
-$('refresh').onclick=()=>refreshDatabase(false);
-$('clear').onclick=async()=>{
-  if(!confirm('Delete the saved EVE Ref archive from this browser?'))return;
-  await dbClear();database=null;contractsReady=false;$('go').disabled=true;progress(0);
-  dbStatus('Local/session archive deleted.');status('Database removed. Press Check for update to download it again.');
-};
-
-async function resolveNames(ids){
-  const unique=[...new Set(ids.filter(x=>x>0&&x<1e12))],out={};
-  for(let i=0;i<unique.length;i+=500){
-    try{
-      const r=await esi('/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(unique.slice(i,i+500))});
-      (await r.json()).forEach(x=>out[x.id]=x.name);
-    }catch(e){log('Some names could not be resolved: '+e.message);break}
-  }
-  return out;
-}
-function searchItems(target){
-  if(!database)throw new Error('Database is not ready.');
-  const region=Number($('region').value), station=Number($('station').value);
-  const maxVolText=$('maxvol').value.trim().replace(',','.'),maxVol=maxVolText===''?null:Number(maxVolText);
-  const number=id=>{const v=$(id).value.trim().replace(/[ ,]/g,'');return v===''?null:Number(v)};
-  const minP=number('minprice'),maxP=number('maxprice'),single=$('single').checked;
-  const candidates=new Map();
-  for(const c of database.contractMap.values()){
-    if(region&&c.region_id!==region)continue;
-    if(station&&c.station_id!==station)continue;
-    if(single&&Math.abs(c.volume-.01)>.0005)continue;
-    if(!single&&maxVol!==null&&Number.isFinite(maxVol)&&c.volume>maxVol)continue;
-    if(minP!==null&&c.price<minP)continue;
-    if(maxP!==null&&c.price>maxP)continue;
-    candidates.set(c.contract_id,{c,items:0,matches:[]});
-  }
-  status('Searching '+candidates.size.toLocaleString()+' candidate contracts in local database…');
-  const headers=csvObjectHeaders(database.itemsText), ix=Object.fromEntries(headers.map((x,i)=>[x,i]));
-  let scanned=0;
-  eachCSV(database.itemsText,row=>{
-    if(row[0]==='is_included')return;
-    const id=Number(row[ix.contract_id]), entry=candidates.get(id);
-    if(!entry)return;
-    entry.items++;
-    if(row[ix.is_included]==='true'&&Number(row[ix.type_id])===target){
-      entry.matches.push({
-        is_included:true,type_id:target,is_blueprint_copy:row[ix.is_blueprint_copy]==='true',
-        material_efficiency:row[ix.material_efficiency]===''?0:Number(row[ix.material_efficiency]),
-        time_efficiency:row[ix.time_efficiency]===''?0:Number(row[ix.time_efficiency]),
-        quantity:Number(row[ix.quantity])||1,runs:row[ix.runs]===''?null:Number(row[ix.runs])
-      });
-    }
-    scanned++;
-    if(scanned%50000===0)status('Searching local item database… '+scanned.toLocaleString()+' item rows');
-  });
-  const maxResults=Number($('limit').value)||100;
-  return [...candidates.values()].filter(x=>x.matches.length)
-    .sort((a,b)=>(a.c.price||0)-(b.c.price||0))
-    .slice(0,maxResults);
-}
-
-function renderResults(hits,names){
-  if(!hits.length){$('results').innerHTML='<section class="card">No active contracts matched this blueprint and your filters in the downloaded snapshot.</section>';return}
-  $('results').innerHTML=hits.map(({c,items,matches},i)=>{
-    const other=Math.max(0,items-matches.length);
-    const detail=matches.map(b=>{
-      const copy=b.is_blueprint_copy,me=b.material_efficiency,te=b.time_efficiency;
-      let desc=copy?`Blueprint copy (BPC), ${b.runs??'?'} run(s). `:'Blueprint original (BPO), unlimited runs. ';
-      desc+=me>=10&&te>=20?'Fully researched (ME 10 / TE 20).':me===0&&te===0?'Not researched (ME 0 / TE 0).':`ME ${me} saves ${me}% materials; TE ${te} cuts build time by ${te}%.`;
-      return `<span class="cf-tag ${copy?'bpc':'bpo'}">${copy?'BPC':'BPO'}</span><span class="cf-tag">ME ${me}</span><span class="cf-tag">TE ${te}</span>${copy?`<span class="cf-tag">${esc(b.runs??'?')} runs</span>`:''}${b.quantity>1?`<span class="cf-tag">x${b.quantity}</span>`:''}<p>${esc(desc)}</p>`;
-    }).join('');
-    const only=matches.length===1&&other===0&&matches[0].is_blueprint_copy&&matches[0].runs>0&&c.price;
-    const price=c.type==='auction'?`Auction from ${isk(c.price)}${c.buyout?`, buyout ${isk(c.buyout)}`:''}`:`${isk(c.price)}${only?` (about ${isk(c.price/matches[0].runs)} per run)`:''}`;
-    return `<section class="card cf-result ${i===0?'cf-best':''}"><h3>${esc(selected.n)}${i===0?' · lowest price':''}</h3>${detail}
-      <dl><dt>Price</dt><dd>${esc(price)}${other?' · bundled with '+other+' other item(s)':''}</dd>
-      <dt>Where</dt><dd>${esc(names[c.start_location_id]||('Location '+c.start_location_id))}</dd>
-      <dt>Seller</dt><dd>${esc(names[c.issuer_id]||c.issuer_id)}${c.for_corporation?' (for '+esc(names[c.issuer_corporation_id]||'corporation')+')':''}</dd>
-      <dt>Expires</dt><dd>in ${left(c.date_expired)}</dd>
-      <dt>Contract</dt><dd>#${c.contract_id}${c.title?' · “'+esc(c.title)+'”':''}</dd>
-      <dt>Issued</dt><dd>${new Date(c.date_issued).toLocaleString()}</dd></dl></section>`;
-  }).join('');
-}
-$('go').onclick=async()=>{
-  if(!selected){status('Please choose a blueprint from the suggestions first.');return}
-  if(!database){status('Database is not ready.');return}
-  $('go').disabled=true;$('results').innerHTML='';$('log').textContent='';
-  try{
-    const hits=searchItems(selected.id);
-    status('Found '+hits.length+' matching contract(s). Resolving seller and station names…');
-    const names=await resolveNames(hits.flatMap(x=>[x.c.start_location_id,x.c.issuer_id,x.c.issuer_corporation_id]));
-    renderResults(hits,names);
-    status('Search complete · '+hits.length+' matching contract(s) · no per-contract ESI item requests were made.');
-  }catch(e){status('Search failed: '+e.message);log(e.stack||e)}
-  $('go').disabled=false;
-};
-
-// Load the local cache first, then check the remote index for a newer snapshot.
-(async()=>{
-  try{
-    status('Loading blueprint names…');dbStatus('Starting scanner…');
-    await loadBlueprints();
-    $('q').disabled=false;
-    $('picked').textContent=BP.length.toLocaleString()+' blueprint types loaded. Start typing.';
-    await refreshDatabase(false);
-  }catch(e){status('Startup error: '+e.message);log(e.stack||e)}
-})();
-
-})();
-</script>
 </body></html>

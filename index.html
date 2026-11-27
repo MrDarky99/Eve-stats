@@ -432,13 +432,17 @@ async function getBook(id,region){
   b={t:Date.now(),sell:lv(orders.filter(o=>!o.is_buy_order),true),buy:lv(orders.filter(o=>o.is_buy_order),false)};
   bookMem.set(k,b);sdeCachePut(k,b).catch(()=>{});return b;
 }
-async function loadPublished(){
+async function loadPublished(region=10000002){
+  // Jita's book keeps the original name; the other hubs are published as market-<regionId>.json.
+  const marketFile=region===10000002?'data/market.json':`data/market-${region}.json`;
   try{
-    const [cr,mr]=await Promise.all([fetch('data/contracts.json',{cache:'no-cache'}),fetch('data/market.json',{cache:'no-cache'})]);
-    if(!cr.ok||!mr.ok)return null;
-    const c=await cr.json(),m=await mr.json();
+    const [cr,mr]=await Promise.all([fetch('data/contracts.json',{cache:'no-cache'}),fetch(marketFile,{cache:'no-cache'}).catch(()=>null)]);
+    if(!cr.ok)return null;
+    const c=await cr.json();
     if(!c.updated||Date.now()-Date.parse(c.updated)>6*3600*1000)return null;
-    return {c,m};
+    let m=null;try{if(mr&&mr.ok)m=await mr.json()}catch(e){}
+    // No published book for this hub: keep the published contracts, the scan then falls back to live market data.
+    return {c,m:m&&m.books?m:{region:0,books:{},updated:c.updated}};
   }catch(e){return null}
 }
 async function runOpportunityScan(){
@@ -453,11 +457,11 @@ async function runOpportunityScan(){
     if(!sdeBlueprints.length)throw Error('Blueprint database is not available.');
     st.textContent='Loading contracts…';
     const stationId=+$('#scanStation').value||0,hubRegion={60003760:10000002,60008494:10000043,60011866:10000032,60004588:10000030,60005686:10000042},now=Date.now();
-    const pub=await loadPublished();
+    const region=+$('#scanMarket').value||10000002,pub=await loadPublished(region);
     const hits=pub?pub.c.contracts.filter(r=>r[3]>now&&(!stationId||r[2]===stationId)).map(r=>({c:{contract_id:r[0],price:r[1],type:'item_exchange',station_id:r[2]},items:r[4],matches:r[5].map(b=>({type_id:b[0],is_blueprint_copy:!!b[1],material_efficiency:b[2],time_efficiency:b[3],quantity:b[4],runs:b[5]}))})):await window.eveContractScan({station:stationId,region:hubRegion[stationId]||0});
     const S=plannerSettings(),num=(v,d)=>(v===''||v==null||!Number.isFinite(+v))?d:+v;
     const idx=num(S.index,4)/100,fac=num(S.facility,0)/100,scc=num(S.scc,4)/100,matB=Math.min(1,num(S.matBonus,0)/100),timeB=Math.min(1,num(S.timeBonus,0)/100),fee=(num(S.tax,4.5)+num(S.broker,3))/100;
-    const topN=+$('#scanTopN').value||10,region=+$('#scanMarket').value||10000002;
+    const topN=+$('#scanTopN').value||10;
     const bpMap=new Map(sdeBlueprints.map(b=>[String(b.blueprintTypeID??b._key??b.typeID),b]));
     const need=(m,R,me)=>Math.max(R,Math.ceil(m.quantity*R*(1-me/100)*(1-matB)));
     const list=[];let bpoSkipped=0;

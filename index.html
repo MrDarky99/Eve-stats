@@ -624,80 +624,127 @@ async function getArchive(force=false){
   return record;
 }
 
-function tarFiles(bytes){
-  const files={};let off=0;
-  const dec=new TextDecoder();
-  while(off+512<=bytes.length){
-    const h=bytes.subarray(off,off+512);
-    if(h.every(x=>x===0))break;
+// Self-contained on purpose: it is stringified into a Web Worker, and also usable on the main thread as a fallback.
+function parseContractsArchive(tar,bpIds,report){
+  const dec=new TextDecoder(),want=['meta.json','contracts.csv','contract_items.csv'],files={};
+  for(let off=0;off+512<=tar.length;){
+    const h=tar.subarray(off,off+512);let blank=true;
+    for(let k=0;k<512;k++){if(h[k]!==0){blank=false;break}}
+    if(blank)break;
     const name=dec.decode(h.subarray(0,100)).replace(/\0.*$/s,'');
-    const prefix=dec.decode(h.subarray(345,500)).replace(/\0.*$/s,'');
-    const full=(prefix?prefix+'/':'')+name;
-    const sizeText=dec.decode(h.subarray(124,136)).replace(/\0.*$/s,'').trim();
-    const size=parseInt(sizeText||'0',8)||0;
-    const start=off+512;
-    if(['meta.json','contracts.csv','contract_items.csv'].includes(name)||['meta.json','contracts.csv','contract_items.csv'].includes(full.split('/').pop())){
-      files[name]=bytes.subarray(start,start+size);
+    const size=parseInt(dec.decode(h.subarray(124,136)).replace(/\0.*$/s,'').trim()||'0',8)||0;
+    const base=name.split('/').pop();
+    if(want.includes(base))files[base]=tar.subarray(off+512,off+512+size);
+    off+=512+Math.ceil(size/512)*512;
+  }
+  for(const n of want)if(!files[n])throw new Error('Archive is missing '+n+'.');
+  // Fast CSV reader: lines without quotes use split(); only quoted records take the slow character path.
+  const eachCSV=(text,cb)=>{
+    const n=text.length;let pos=0;
+    while(pos<n){
+      let end=text.indexOf('\n',pos);if(end<0)end=n;
+      const line=text.slice(pos,end);
+      if(line.indexOf('"')<0){
+        pos=end+1;const l=line.endsWith('\r')?line.slice(0,-1):line;
+        if(l.length)cb(l.split(','));
+      }else{
+        let row=[],field='',quoted=false,i=pos;
+        for(;i<n;i++){
+          const ch=text[i];
+          if(quoted){if(ch==='"'){if(text[i+1]==='"'){field+='"';i++}else quoted=false}else field+=ch}
+          else if(ch==='"')quoted=true;
+          else if(ch===','){row.push(field);field=''}
+          else if(ch==='\n')break;
+          else if(ch!=='\r')field+=ch;
+        }
+        row.push(field);cb(row);pos=i+1;
+      }
     }
-    off=start+Math.ceil(size/512)*512;
-  }
-  for(const n of ['meta.json','contracts.csv','contract_items.csv'])if(!files[n])throw new Error('Archive is missing '+n+'.');
-  return files;
-}
-
-// CSV parser handles commas, escaped quotes, CRLF and quoted line breaks without building a giant row array.
-function eachCSV(text, callback){
-  let row=[], field='', quoted=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(quoted){
-      if(ch==='"' && text[i+1]==='"'){field+='"';i++}
-      else if(ch==='"')quoted=false;
-      else field+=ch;
-    }else if(ch==='"'){quoted=true}
-    else if(ch===','){row.push(field);field=''}
-    else if(ch==='\n'){row.push(field);callback(row);row=[];field=''}
-    else if(ch!=='\r')field+=ch;
-  }
-  if(field.length||row.length){row.push(field);callback(row)}
-}
-function csvObjectHeaders(text){
-  const line=text.slice(0,text.indexOf('\n')<0?text.length:text.indexOf('\n')).replace(/\r$/,'');
-  // Header names in this dataset do not contain quoted commas.
-  return line.split(',').map(x=>x.replace(/^"|"$/g,''));
-}
-async function parseArchive(record){
-  status('Opening saved archive…');progress(0);
-  const compressed=new Uint8Array(await record.blob.arrayBuffer());
-  status('Decompressing BZIP2 archive…');
-  const decompress=await loadBzip2();
-  status('Decompressing BZIP2 archive…');
-  await new Promise(resolve=>setTimeout(resolve,50));
-  const tar=decompress(compressed,true);
-  const files=tarFiles(tar);
-  const decoder=new TextDecoder('utf-8');
-  const meta=JSON.parse(decoder.decode(files['meta.json']));
-  const contractsText=decoder.decode(files['contracts.csv']);
-  const itemsText=decoder.decode(files['contract_items.csv']);
-  status('Indexing contracts…');
-  const ch=csvObjectHeaders(contractsText), ci=Object.fromEntries(ch.map((x,i)=>[x,i]));
-  const contractMap=new Map();
-  eachCSV(contractsText,(row)=>{
-    if(row[0]==='collateral')return;
-    const type=row[ci.type], id=Number(row[ci.contract_id]);
-    if(!id || (type!=='item_exchange'&&type!=='auction'))return;
-    if(new Date(row[ci.date_expired]).getTime()<=Date.now())return;
-    const c={
-      contract_id:id,type,date_expired:row[ci.date_expired],date_issued:row[ci.date_issued],
+  };
+  const meta=JSON.parse(dec.decode(files['meta.json'])),now=Date.now(),contracts=new Map();
+  if(report)report('Indexing contracts…');
+  let ci=null;
+  eachCSV(dec.decode(files['contracts.csv']),row=>{
+    if(!ci){ci={};row.forEach((x,i)=>ci[x]=i);return}
+    const type=row[ci.type],id=Number(row[ci.contract_id]);
+    if(!id||(type!=='item_exchange'&&type!=='auction'))return;
+    const expMs=new Date(row[ci.date_expired]).getTime();
+    if(expMs<=now)return;
+    contracts.set(id,{contract_id:id,type,date_expired:row[ci.date_expired],date_issued:row[ci.date_issued],
       start_location_id:Number(row[ci.start_location_id]),issuer_id:Number(row[ci.issuer_id]),
       issuer_corporation_id:Number(row[ci.issuer_corporation_id]),for_corporation:row[ci.for_corporation]==='true',
       price:Number(row[ci.price])||0,buyout:Number(row[ci.buyout])||0,volume:Number(row[ci.volume])||0,
-      title:row[ci.title]||'',region_id:Number(row[ci.region_id]),station_id:Number(row[ci.station_id])
-    };
-    contractMap.set(id,c);
+      title:row[ci.title]||'',region_id:Number(row[ci.region_id]),station_id:Number(row[ci.station_id]),expMs,items:0});
   });
-  status('Database loaded · indexing '+contractMap.size.toLocaleString()+' active contracts…');
-  return {meta,contractMap,itemsText};
+  if(report)report('Scanning contract items…');
+  // Keep only blueprint rows. Contracts without a blueprint can never match a search, so they are dropped.
+  const bp=new Set(bpIds),rows=new Map();let ii=null,seen=0;
+  eachCSV(dec.decode(files['contract_items.csv']),row=>{
+    if(!ii){ii={};row.forEach((x,i)=>ii[x]=i);return}
+    if(report&&++seen%250000===0)report('Scanning contract items… '+seen.toLocaleString());
+    const c=contracts.get(Number(row[ii.contract_id]));
+    if(!c)return;
+    c.items++;
+    if(row[ii.is_included]!=='true')return;
+    const t=Number(row[ii.type_id]);
+    if(!bp.has(t))return;
+    let list=rows.get(c.contract_id);if(!list)rows.set(c.contract_id,list=[]);
+    list.push([t,row[ii.is_blueprint_copy]==='true',
+      row[ii.material_efficiency]===''?0:Number(row[ii.material_efficiency]),
+      row[ii.time_efficiency]===''?0:Number(row[ii.time_efficiency]),
+      Number(row[ii.quantity])||1,row[ii.runs]===''?null:Number(row[ii.runs])]);
+  });
+  return {meta,contracts:[...rows.keys()].map(id=>contracts.get(id)),rows:[...rows]};
+}
+const CONTRACT_WORKER_SRC=`self.window=self;
+${parseContractsArchive.toString()}
+onmessage=e=>{try{
+  const {bytes,bpIds}=e.data;let fn=null;const errs=[];
+  for(const u of ['https://cdn.jsdelivr.net/npm/bz2@1.0.1/index.js','https://unpkg.com/bz2@1.0.1/index.js']){
+    try{importScripts(u);fn=self.bz2&&self.bz2.decompress;if(typeof fn==='function')break;errs.push(u+': decompress not exposed')}catch(x){errs.push(u+': '+x.message)}
+  }
+  if(typeof fn!=='function')throw new Error('Worker could not load the bzip2 decoder ('+errs.join(' | ')+')');
+  postMessage({type:'status',msg:'Decompressing archive in the background…'});
+  const tar=fn(bytes,true);
+  postMessage({type:'done',out:parseContractsArchive(tar,bpIds,m=>postMessage({type:'status',msg:m}))});
+}catch(x){postMessage({type:'error',msg:String((x&&x.message)||x)})}};`;
+function parseInWorker(bytes,bpIds){
+  return new Promise((resolve,reject)=>{
+    let w,url;
+    try{url=URL.createObjectURL(new Blob([CONTRACT_WORKER_SRC],{type:'text/javascript'}));w=new Worker(url)}
+    catch(e){if(url)URL.revokeObjectURL(url);return reject(e)}
+    const finish=()=>{w.terminate();URL.revokeObjectURL(url)};
+    w.onmessage=e=>{const m=e.data;
+      if(m.type==='status')status(m.msg);
+      else if(m.type==='done'){finish();resolve(m.out)}
+      else if(m.type==='error'){finish();reject(new Error(m.msg))}};
+    w.onerror=e=>{finish();reject(new Error(e.message||'worker failed to start'))};
+    w.postMessage({bytes,bpIds});
+  });
+}
+async function parseArchive(record){
+  status('Opening saved archive…');progress(0);
+  if(!BP.length)throw new Error('Blueprint list is not loaded yet.');
+  const key=[record.etag,record.last_modified,record.size,BP.length].join('|');
+  const build=out=>({meta:out.meta,contractMap:new Map(out.contracts.map(c=>[c.contract_id,c])),rows:new Map(out.rows)});
+  // Fast path: the snapshot was already processed on this device, so nothing is decompressed.
+  if(!memoryOnly){
+    try{const cached=await dbGet('parsed');
+      if(cached&&cached.key===key&&cached.out){log('Using the saved contract index (no decompression needed).');progress(100);return build(cached.out)}}catch(e){}
+  }
+  const bpIds=BP.map(b=>b.id),compressed=new Uint8Array(await record.blob.arrayBuffer());
+  let out;
+  try{out=await parseInWorker(compressed,bpIds)}
+  catch(e){
+    log('Background worker unavailable ('+e.message+'); decompressing on the main thread.');
+    status('Decompressing BZIP2 archive… (page may pause)');
+    const decompress=await loadBzip2();
+    await new Promise(r=>setTimeout(r,50));
+    out=parseContractsArchive(decompress(compressed,true),bpIds,status);
+  }
+  if(!memoryOnly){try{await dbPut('parsed',{key,out})}catch(e){log('Could not save the processed index: '+e.message)}}
+  progress(100);
+  return build(out);
 }
 
 function setBlueprints(groups,rows){
@@ -751,7 +798,7 @@ async function refreshDatabase(force=false){
     database=await parseArchive(record);
     contractsReady=true;
     const d=database.meta.scrape_end||record.last_modified;
-    status('Ready · snapshot scrape ended '+new Date(d).toLocaleString()+' · '+database.contractMap.size.toLocaleString()+' active contracts indexed.');
+    status('Ready · snapshot scrape ended '+new Date(d).toLocaleString()+' · '+database.contractMap.size.toLocaleString()+' blueprint contracts indexed.');
     dbStatus((memoryOnly?'Session copy ready (not saved after closing)':'Local copy ready')+' · scrape ended '+new Date(d).toLocaleString());
     $('go').disabled=!selected;
   }catch(e){
@@ -784,40 +831,25 @@ function searchItems(target,limitOverride=null){
   const region=Number($('region').value), station=Number($('station').value);
   const maxVolText=$('maxvol').value.trim().replace(',','.'),maxVol=maxVolText===''?null:Number(maxVolText);
   const number=id=>{const v=$(id).value.trim().replace(/[ ,]/g,'');return v===''?null:Number(v)};
-  const minP=number('minprice'),maxP=number('maxprice'),single=$('single').checked;
-  const candidates=new Map();
+  const minP=number('minprice'),maxP=number('maxprice'),single=$('single').checked,now=Date.now(),hits=[];
+  status('Searching the local contract index…');
   for(const c of database.contractMap.values()){
+    if(c.expMs<=now)continue;
     if(region&&c.region_id!==region)continue;
     if(station&&c.station_id!==station)continue;
     if(single&&Math.abs(c.volume-.01)>.0005)continue;
     if(!single&&maxVol!==null&&Number.isFinite(maxVol)&&c.volume>maxVol)continue;
     if(minP!==null&&c.price<minP)continue;
     if(maxP!==null&&c.price>maxP)continue;
-    candidates.set(c.contract_id,{c,items:0,matches:[]});
-  }
-  status('Searching '+candidates.size.toLocaleString()+' candidate contracts in local database…');
-  const headers=csvObjectHeaders(database.itemsText), ix=Object.fromEntries(headers.map((x,i)=>[x,i]));
-  let scanned=0;
-  eachCSV(database.itemsText,row=>{
-    if(row[0]==='is_included')return;
-    const id=Number(row[ix.contract_id]), entry=candidates.get(id);
-    if(!entry)return;
-    entry.items++;
-    if(row[ix.is_included]==='true'&&Number(row[ix.type_id])===target){
-      entry.matches.push({
-        is_included:true,type_id:target,is_blueprint_copy:row[ix.is_blueprint_copy]==='true',
-        material_efficiency:row[ix.material_efficiency]===''?0:Number(row[ix.material_efficiency]),
-        time_efficiency:row[ix.time_efficiency]===''?0:Number(row[ix.time_efficiency]),
-        quantity:Number(row[ix.quantity])||1,runs:row[ix.runs]===''?null:Number(row[ix.runs])
-      });
+    const matches=[];
+    for(const r of (database.rows.get(c.contract_id)||[])){
+      if(r[0]!==target)continue;
+      matches.push({is_included:true,type_id:target,is_blueprint_copy:r[1],material_efficiency:r[2],time_efficiency:r[3],quantity:r[4],runs:r[5]});
     }
-    scanned++;
-    if(scanned%50000===0)status('Searching local item database… '+scanned.toLocaleString()+' item rows');
-  });
+    if(matches.length)hits.push({c,items:c.items,matches});
+  }
   const maxResults=limitOverride||Number($('limit').value)||100;
-  return [...candidates.values()].filter(x=>x.matches.length)
-    .sort((a,b)=>(a.c.price||0)-(b.c.price||0))
-    .slice(0,maxResults);
+  return hits.sort((a,b)=>(a.c.price||0)-(b.c.price||0)).slice(0,maxResults);
 }
 
 function renderResults(hits,names){

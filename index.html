@@ -38,7 +38,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-offset:2px
 
 
 </head><body>
-<header><div class="brand">EVE <span>LEDGER</span></div><div class="top-actions"><select id="charSelect" aria-label="Character selection"><option value="all">All characters</option></select><button class="secondary" id="syncAll">Sync all</button><button id="addChar">Add character</button></div></header>
+<header><div class="brand">EVE <span>LEDGER</span></div><div class="top-actions"><select id="charSelect" aria-label="Character selection"><option value="all">All characters</option></select><span id="charCount" class="pill" aria-live="polite">0 characters</span><button class="secondary" id="syncAll">Sync all</button><button id="addChar" title="Authorize another EVE character; existing characters are kept">+ Add character</button></div></header>
 <div class="shell"><nav id="nav"></nav><main>
 <div id="status" class="notice" style="display:none"></div><div id="syncProgress" style="display:none"><div class="tiny" id="progressText"></div><div class="progress"><div id="progressBar"></div></div></div>
 <section class="section active" id="overview"><div class="between"><div><h1>Overview</h1><div class="muted">Your EVE economy at a glance</div></div><span class="pill" id="lastSync">No data yet</span></div><div id="overviewCards" class="cards" style="margin-top:14px"></div><h2>Wealth history</h2><canvas id="wealthChart" class="chart"></canvas><h2>Characters</h2><div id="characterTable"></div><h2>Data health</h2><div id="health"></div></section>
@@ -96,7 +96,14 @@ let selected='all',current='overview',range=30;
 function chars(){return store.get('chars',{})}function ids(){return Object.keys(chars())}function charIds(){return selected==='all'?ids():[selected]}function data(id){return store.get('data:'+id,{})}function name(id){return chars()[id]?.name||id}function allData(k){return charIds().flatMap(id=>data(id)[k]||[])}function showMsg(t,kind=''){const s=$('#status');s.style.display=t?'block':'none';s.className='notice '+kind;s.textContent=t||''}
 function navDraw(){ $('#nav').innerHTML=NAV.map(([id,label])=>`<button class="navbtn ${id===current?'active':''}" data-page="${id}">${label}</button>`).join(''); }
 function page(id){current=id;document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));navDraw();render();if(id==='planner')ensurePlannerSDE()}
-function populateSelect(){const c=chars();$('#charSelect').innerHTML='<option value="all">All characters</option>'+ids().map(i=>`<option value="${i}">${esc(c[i].name)}</option>`).join('');$('#charSelect').value=selected}
+function populateSelect(){
+  const c=chars(),all=ids();
+  $('#charSelect').innerHTML='<option value="all">All characters</option>'+all.map(i=>`<option value="${i}">${esc(c[i].name||('Character '+i))}</option>`).join('');
+  if(selected!=='all'&&!c[selected])selected='all';
+  $('#charSelect').value=selected;
+  const badge=$('#charCount');
+  if(badge)badge.textContent=all.length+' character'+(all.length===1?'':'s')+' connected';
+}
 function cfg(){return store.get('cfg',{tax:4.5,broker:3})}
 function fmtMoney(n){return fmt(n)+' ISK'}
 function latest(id){const d=data(id);return d.syncAt||0}
@@ -104,10 +111,60 @@ function priceMap(){return store.get('prices',{})}
 async function request(path,id=null,auth=true){let headers={};if(auth&&id)headers.Authorization='Bearer '+await token(id);let r=await fetch(ESI+path,{headers});if(!r.ok)throw Error('ESI '+r.status+' · '+path.split('?')[0]);return r.json()}
 async function paged(path,id,maxPages=100){let arr=[],p=1,total=1;do{let r=await fetch(ESI+path+(path.includes('?')?'&':'?')+'page='+p,{headers:{Authorization:'Bearer '+await token(id)}});if(!r.ok)throw Error('ESI '+r.status+' · '+path.split('?')[0]);total=+(r.headers.get('X-Pages')||1);arr.push(...await r.json());p++}while(p<=total&&p<=maxPages);return {rows:arr,pages:total,complete:p>total}}
 function token(id){return new Promise(async(resolve,reject)=>{let c=chars()[id];if(!c)return reject(Error('Character not found'));if(Date.now()<c.exp)return resolve(c.access);try{const j=await exchange({grant_type:'refresh_token',refresh_token:c.refresh});resolve(chars()[id].access)}catch(e){reject(e)}})}
-async function exchange(body){let r=await fetch('https://login.eveonline.com/v2/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:CLIENT_ID,...body})});if(!r.ok)throw Error('OAuth token exchange failed ('+r.status+')');let j=await r.json(),payload=JSON.parse(atob(j.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))),id=payload.name?+payload.sub.split(':')[2]:0;let C=chars();C[id]={...(C[id]||{}),name:payload.name||C[id]?.name,access:j.access_token,refresh:j.refresh_token||C[id]?.refresh,exp:Date.now()+(j.expires_in-60)*1000};store.set('chars',C);return j}
+function decodeJwtPayload(token){
+  const part=String(token||'').split('.')[1];
+  if(!part)throw Error('EVE returned an invalid access token.');
+  const normalized=part.replace(/-/g,'+').replace(/_/g,'/');
+  const padded=normalized+'='.repeat((4-normalized.length%4)%4);
+  return JSON.parse(decodeURIComponent(Array.from(atob(padded),c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join('')));
+}
+async function exchange(body){
+  const r=await fetch('https://login.eveonline.com/v2/oauth/token',{
+    method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams({client_id:CLIENT_ID,...body})
+  });
+  if(!r.ok)throw Error('OAuth token exchange failed ('+r.status+').');
+  const j=await r.json(),payload=decodeJwtPayload(j.access_token);
+  const match=String(payload.sub||'').match(/^CHARACTER:EVE:(\d+)$/i);
+  if(!match)throw Error('Could not identify the EVE character in the authorization token.');
+  const id=match[1],C=chars(),previous=C[id]||{};
+  C[id]={...previous,name:payload.name||previous.name||('Character '+id),
+    access:j.access_token,refresh:j.refresh_token||previous.refresh,
+    exp:Date.now()+(Number(j.expires_in||1200)-60)*1000};
+  store.set('chars',C);
+  return {...j,characterId:id,characterName:C[id].name};
+}
 async function login(){let verifier=base64url(crypto.getRandomValues(new Uint8Array(32))),state=base64url(crypto.getRandomValues(new Uint8Array(16))),hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier));store.set('oauth',{verifier,state});location.href='https://login.eveonline.com/v2/oauth/authorize/?'+new URLSearchParams({response_type:'code',redirect_uri:REDIRECT,client_id:CLIENT_ID,scope:SCOPES.join(' '),code_challenge:base64url(hash),code_challenge_method:'S256',state})}
 function base64url(b){return btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
-async function handleOAuth(){let p=new URLSearchParams(location.search);if(!p.get('code'))return;let saved=store.get('oauth');try{if(!saved||p.get('state')!==saved.state)throw Error('OAuth state check failed. Please try connecting again.');let j=await exchange({grant_type:'authorization_code',code:p.get('code'),code_verifier:saved.verifier});selected=String(+j.access_token.split('.')[0]||selected);let C=chars();selected=ids().at(-1)||selected;store.del('oauth');history.replaceState(null,'',REDIRECT);populateSelect();await refreshSharedMarketPrices();await syncCharacter(selected);page('overview')}catch(e){showMsg(e.message,'bad');history.replaceState(null,'',REDIRECT)}}
+async function handleOAuth(){
+  const p=new URLSearchParams(location.search);
+  if(!p.get('code'))return;
+  const saved=store.get('oauth');
+  try{
+    if(!saved||p.get('state')!==saved.state)throw Error('OAuth state check failed. Please try connecting again.');
+    const j=await exchange({grant_type:'authorization_code',code:p.get('code'),code_verifier:saved.verifier});
+    // Use the exact character ID from the returned EVE token. Never infer it from
+    // Object.keys(chars()).at(-1): numeric object keys are sorted, not insertion ordered.
+    selected=String(j.characterId);
+    store.del('oauth');
+    history.replaceState(null,'',REDIRECT);
+    populateSelect();
+    render();
+    showMsg(j.characterName+' connected. '+ids().length+' character(s) are now saved in this browser.','good');
+    try{
+      await refreshSharedMarketPrices();
+      await syncCharacter(selected);
+      page('overview');
+    }catch(syncError){
+      // Keep the newly authorized character even if its first data sync fails.
+      populateSelect();render();
+      showMsg(j.characterName+' is connected, but its first sync failed: '+syncError.message,'warn');
+    }
+  }catch(e){
+    showMsg(e.message,'bad');
+    history.replaceState(null,'',REDIRECT);
+  }
+}
 async function resolveNames(typeIds,locIds=[]){let nm=store.get('names',{}),need=[...new Set([...typeIds,...locIds].filter(x=>x&& !nm[x]&&x<1e8))];for(let i=0;i<need.length;i+=500){try{let r=await fetch(ESI+'/universe/names/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(need.slice(i,i+500))});if(r.ok)(await r.json()).forEach(x=>nm[x.id]=x.name)}catch{}}for(let l of [...new Set(locIds)].filter(l=>l>1e12&&!nm[l])){try{nm[l]=(await request('/universe/structures/'+l+'/',null,false)).name}catch{nm[l]='Structure '+l}}nm={...names(),...nm};store.set('names',nm);return nm}
 async function syncCharacter(id,options={}){if(!id)throw Error('No character selected');const old=data(id),result={...(old.status||{})};let failures=[];
 const update=async(label,fn)=>{result[label]={state:'loading',at:Date.now()};saveSectionStatus(id,result);try{let val=await fn();result[label]={state:'ok',at:Date.now()};return val}catch(e){result[label]={state:'failed',at:Date.now(),error:e.message};failures.push(label+': '+e.message);return undefined}};

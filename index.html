@@ -90,7 +90,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-offset:2px
 <details style="margin-top:12px"><summary style="cursor:pointer;color:var(--gold);font-weight:700">Advanced production settings</summary><div class="formgrid" style="margin-top:10px"><div class="field"><label>Blueprint ME (%)</label><input id="planME" type="number" min="0" max="10" value="0"></div><div class="field"><label>Blueprint TE (%)</label><input id="planTE" type="number" min="0" max="20" value="0"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" min="0" value="0"></div><div class="field"><label>SCC surcharge (%)</label><input id="planSCC" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Structure / rig material bonus (%)</label><input id="planMatBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Structure / rig time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Facility preset name</label><input id="planFacilityName" placeholder="e.g. Jita Azbel · Rigged"></div><div class="field"><label>Load saved facility</label><select id="facilityPreset"><option value="">Choose saved preset…</option></select></div><div class="field"><label>Blueprint copy runs</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Manual product sell price (ISK)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:8px"><button class="secondary" id="saveFacilityPreset">Save facility preset</button><button class="secondary" id="loadSDE">Refresh blueprint database</button><span id="sdeStatus" class="tiny">Checking local cache when planner opens…</span></div></details>
 <div class="row" style="margin-top:14px"><button id="calculatePlan">Calculate complete plan</button><button class="secondary" id="savePlan">Save plan</button><button class="secondary" id="addToQueue">Add to queue</button><button class="secondary" id="findPlanBpc">Find BPC contracts</button></div><div id="planProgressWrap" class="plan-progress-wrap" hidden><div class="between"><span id="planProgressLabel" class="tiny">Preparing calculation…</span><span id="planProgressPct" class="tiny">0%</span></div><div class="progress plan-progress"><div id="planProgressBar"></div></div><div id="planProgressSteps" class="plan-steps"><span>Blueprint</span><span>Materials</span><span>Market</span><span>Profit</span></div></div>
 <div id="planBpcPanel" class="notice" style="margin-top:12px"><b>Optional BPC sourcing</b><div id="planBpcStatus" class="tiny" style="margin-top:5px">Contract lookup is not started automatically. Use the Blueprint Contract Finder below if you want to source a copy.</div><div id="planBpcSummary" style="margin-top:8px"></div></div><div id="planMaterialTable"></div><div id="planResult"></div></div>
-<div id="plannerScanner" class="card" style="display:none;margin-top:10px"><div class="between"><div><h2 style="margin:0">Most profitable contracts</h2><div class="tiny">Prices every blueprint in every contract for sale, then ranks contracts by profit. Market data is cached for 1 hour.</div></div><span class="pill">On demand</span></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Contract station</label><select id="scanStation"><option value="60003760" selected>Jita IV - Moon 4</option><option value="60008494">Amarr VIII (Oris)</option><option value="60011866">Dodixie IX - Moon 20</option><option value="60004588">Rens VI - Moon 8</option><option value="60005686">Hek VIII - Moon 12</option><option value="0">Any station (all regions)</option></select></div><div class="field"><label>Market for prices</label><select id="scanMarket"><option value="10000002">Jita</option><option value="10000043">Amarr</option><option value="10000032">Dodixie</option><option value="10000030">Rens</option><option value="10000042">Hek</option></select></div><div class="field"><label>Show top</label><select id="scanTopN"><option value="10" selected>10 contracts</option><option value="25">25 contracts</option><option value="50">50 contracts</option><option value="100">100 contracts</option></select></div><div class="field"><label>Min profit (ISK) · 0 = any</label><input id="scanMinProfit" inputmode="decimal" autocomplete="off" value="0" placeholder="e.g. 50m"></div><div class="field"><label>Max profit (ISK) · 0 = no cap</label><input id="scanMaxProfit" inputmode="decimal" autocomplete="off" value="0" placeholder="e.g. 500m"></div></div><div class="row" style="margin-top:12px"><button id="runOpportunityScan">Find most profitable contracts</button><button class="secondary" id="stopOpportunityScan" disabled>Stop scan</button><span id="scanStatus" class="tiny">Not running</span></div><div class="progress" style="margin-top:9px"><div id="scanProgressBar"></div></div><div id="scanResults" style="margin-top:12px"></div></div>
+<div id="plannerScanner" class="card" style="display:none;margin-top:10px"><div class="between"><div><h2 style="margin:0">Most profitable contracts</h2><div class="tiny">Prices every blueprint in every contract for sale, then ranks contracts by profit. Market data is cached for 1 hour.</div></div><span class="pill">On demand</span></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Contract station</label><select id="scanStation"><option value="60003760" selected>Jita IV - Moon 4</option><option value="60008494">Amarr VIII (Oris)</option><option value="60011866">Dodixie IX - Moon 20</option><option value="60004588">Rens VI - Moon 8</option><option value="60005686">Hek VIII - Moon 12</option><option value="0">Any station (all regions)</option></select></div><div class="field"><label>Market for prices</label><select id="scanMarket"><option value="10000002">Jita</option><option value="10000043">Amarr</option><option value="10000032">Dodixie</option><option value="10000030">Rens</option><option value="10000042">Hek</option></select></div><div class="field"><label>Show top</label><select id="scanTopN"><option value="10" selected>10 contracts</option><option value="25">25 contracts</option><option value="50">50 contracts</option><option value="100">100 contracts</option></select></div><div class="field"><label>Min profit (ISK) · 0 = any</label><input id="scanMinProfit" inputmode="decimal" autocomplete="off" value="0" placeholder="e.g. 50m"></div><div class="field"><label>Max profit (ISK) · 0 = no cap</label><input id="scanMaxProfit" inputmode="decimal" autocomplete="off" value="0" placeholder="e.g. 500m"></div></div><div class="row" style="margin-top:12px"><button id="runOpportunityScan">Find most profitable contracts</button><button class="secondary" id="stopOpportunityScan" disabled>Stop scan</button><button class="secondary" id="redownloadAll" title="Force a fresh download of the EVE Ref market orders and contract archive">Redownload all data</button><span id="scanStatus" class="tiny">Not running</span></div><div class="progress" style="margin-top:9px"><div id="scanProgressBar"></div></div><div id="scanResults" style="margin-top:12px"></div></div>
 <div class="card" style="margin-top:14px"><h2 style="margin-top:0">Production queue</h2><div class="tiny">Add calculated plans to a batch. The queue combines material quantities into one shopping list.</div><div id="productionQueue"></div><div class="row" style="margin-top:9px"><button class="secondary" id="clearProductionQueue">Clear queue</button><button class="secondary" id="exportQueueCsv">Export queue CSV</button></div></div><div class="card" style="margin-top:14px"><h2 style="margin-top:0">Saved production plans</h2><div id="savedPlans"></div></div>
 <div class="card" id="contractBlueprintFinder" style="margin-top:14px"><h2>Blueprint contract finder</h2>
 <div class="cf-intro muted">Search blueprint originals and copies across public contracts using EVE Ref’s bulk snapshot. The archive is cached locally on this device, so contract contents are indexed without one ESI request per contract.</div>
@@ -316,7 +316,17 @@ const MARKET_TTL=30*60*1000,PUB_MAX_AGE=6*3600*1000,LIVE_TTL=60*60*1000,marketFi
 const HUB_REGIONS=[10000002,10000043,10000032,10000030,10000042];
 const EVEREF_ORDERS='https://data.everef.net/market-orders/';
 const BZ2_SOURCES=['https://cdn.jsdelivr.net/npm/bz2@1.0.1/index.js','https://unpkg.com/bz2@1.0.1/index.js'];
-let marketNote=null,snapDl=null,livePending=null;
+let marketNote=null,snapDl=null,livePending=null,liveSince=0,marketBarEl=null;
+function setMarketBar(p){if(marketBarEl)marketBarEl.style.width=Math.round(Math.max(0,Math.min(1,p))*100)+'%'}
+// bzip2 decompression is one blocking call inside the worker and reports nothing while it runs, so the bar is an ESTIMATE:
+// it advances from the time this device needed per MiB of compressed data last time (remembered), then holds near the end until the worker reports it is done.
+function estimateDecompress(bytesLen,key,onTick){
+  let rate=2;try{rate=+localStorage.getItem(key)||2}catch(e){}
+  const mib=Math.max(bytesLen/1048576,.1),expected=Math.max(3,mib*rate),t0=Date.now();
+  const id=setInterval(()=>{const sec=(Date.now()-t0)/1000;onTick(sec<expected?.9*sec/expected:.9+.08*(1-Math.exp(-(sec-expected)/expected)),sec)},250);
+  return ok=>{clearInterval(id);if(ok){try{localStorage.setItem(key,String(Math.max(.05,(Date.now()-t0)/1000/mib)))}catch(e){}}};
+}
+const preferLive=()=>liveSince&&Date.now()-liveSince<LIVE_TTL;
 function note(m){try{if(marketNote)marketNote(m);else{const e=$('#sdeStatus');if(e)e.textContent=m}}catch(e){}}
 
 /*PARSER_START*/
@@ -378,7 +388,20 @@ function parseInWorker(bytes,opts){
     let url,w;
     try{url=URL.createObjectURL(new Blob([workerSource()],{type:'text/javascript'}));w=new Worker(url)}catch(e){if(url)URL.revokeObjectURL(url);return reject(e)}
     const done=()=>{w.terminate();URL.revokeObjectURL(url)};
-    w.onmessage=e=>{const m=e.data;if(m.type==='status')note(m.msg);else if(m.type==='done'){done();resolve(m.out)}else if(m.type==='error'){done();reject(new Error(m.msg))}};
+    let stopEst=null;
+    w.onmessage=e=>{const m=e.data;
+      if(m.type==='status'){
+        if(/^Decompressing/.test(m.msg)){
+          note(m.msg);setMarketBar(.35);
+          if(!stopEst)stopEst=estimateDecompress(bytes.length,'eveBz2Rate:market',(p,sec)=>{setMarketBar(.35+.4*p);note('Decompressing EVE Ref snapshot… ~'+Math.round(p*100)+'% (estimated) · '+sec.toFixed(0)+' s')});
+        }else{
+          if(stopEst){stopEst(true);stopEst=null;setMarketBar(.75)}
+          const pm=/Reading orders… (\d+)%/.exec(m.msg);if(pm)setMarketBar(.75+.25*pm[1]/100);
+          note(m.msg);
+        }
+      }
+      else if(m.type==='done'){if(stopEst)stopEst(true);done();setMarketBar(1);resolve(m.out)}
+      else if(m.type==='error'){if(stopEst)stopEst(false);done();reject(new Error(m.msg))}};
     w.onerror=e=>{done();reject(new Error(e.message||'worker failed to start'))};
     w.postMessage({bytes,opts});
   });
@@ -406,18 +429,18 @@ async function downloadSnapshot(file){
   if(!r.ok)throw new Error('EVE Ref snapshot download failed: HTTP '+r.status);
   const total=Number(r.headers.get('content-length'))||file.size||0,reader=r.body.getReader(),chunks=[];let got=0;
   for(;;){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;
-    note('Downloading EVE Ref market snapshot… '+(got/1048576).toFixed(1)+(total?' / '+(total/1048576).toFixed(1):'')+' MiB')}
+    if(total)setMarketBar(.35*got/total);note('Downloading EVE Ref market snapshot… '+(got/1048576).toFixed(1)+(total?' / '+(total/1048576).toFixed(1):'')+' MiB')}
   const bytes=new Uint8Array(got);let o=0;for(const c of chunks){bytes.set(c,o);o+=c.length}
   snapDl={url:file.url,bytes,at:Date.now()};return snapDl;
 }
 // One download + one decompression covers all five hubs and every item type; results are cached for an hour in IndexedDB.
-function liveMarket(region){
+function liveAll(){
   if(!livePending){
     livePending=(async()=>{
       const out={};let missing=false;
       for(const r of HUB_REGIONS){let c=null;try{c=await sdeCacheGet('everefBooks:'+r)}catch(e){}if(c&&c.books&&Date.now()-c.t<LIVE_TTL)out[r]=c;else missing=true}
       if(!missing)return out;
-      const d=await downloadSnapshot(await discoverSnapshot()),opts={regions:HUB_REGIONS,types:null};
+      setMarketBar(0);const d=await downloadSnapshot(await discoverSnapshot()),opts={regions:HUB_REGIONS,types:null};
       let res;
       try{res=await parseInWorker(d.bytes,opts)}
       catch(e){note('Background worker unavailable ('+e.message+'). Parsing on the main thread; the page may freeze for a while…');const fn=await loadBz2Main();await new Promise(r=>setTimeout(r,50));res=parseOrders(d.bytes,opts,fn,note)}
@@ -428,7 +451,45 @@ function liveMarket(region){
     livePending.catch(()=>{livePending=null});
     setTimeout(()=>{livePending=null},LIVE_TTL);
   }
-  return livePending.then(o=>{if(!o[region])throw Error('Region '+region+' is not one of the five hub markets.');return o[region]});
+  return livePending;
+}
+function liveMarket(region){return liveAll().then(o=>{if(!o[region])throw Error('Region '+region+' is not one of the five hub markets.');return o[region]})}
+function pricesFromBooks(all){
+  const P={},ids=new Set();for(const r of HUB_REGIONS)for(const t in all[r].books)ids.add(t);
+  const top=(r,t,side)=>{const b=all[r].books[t],x=b&&b[side][0];return x?x[0]:0};
+  for(const t of ids){
+    let p=top(HUB_REGIONS[0],t,0)||top(HUB_REGIONS[0],t,1);
+    if(!p){const v=HUB_REGIONS.slice(1).map(r=>top(r,t,0)).filter(x=>x>0);if(v.length)p=Math.min(...v)}
+    if(!p){const v=HUB_REGIONS.slice(1).map(r=>top(r,t,1)).filter(x=>x>0);if(v.length)p=Math.max(...v)}
+    if(p>0)P[t]=Math.round(p*100)/100;
+  }
+  return P;
+}
+// Manual 'Redownload all data': drops every cached copy, then downloads EVE Ref's market orders and contract archive again.
+let redownloading=false;
+async function redownloadAllData(){
+  if(redownloading)return;redownloading=true;
+  const btn=$('#redownloadAll'),st=$('#scanStatus'),say=m=>{if(st)st.textContent=m};
+  if(btn)btn.disabled=true;
+  try{
+    marketFiles.clear();livePending=null;snapDl=null;liveSince=0;
+    for(const r of HUB_REGIONS)await sdeCachePut('everefBooks:'+r,null).catch(()=>{});
+    store.set('plannerQuotes',{});
+    marketNote=say;marketBarEl=$('#scanProgressBar');setMarketBar(0);
+    say('1/2 Market orders: downloading the EVE Ref snapshot…');
+    const all=await liveAll();
+    liveSince=Date.now();
+    const P=pricesFromBooks(all),cached=priceMap();Object.assign(cached,P);store.set('prices',cached);store.set('priceCacheAt',Date.now());
+    const stamp=all[HUB_REGIONS[0]].snapshot;
+    say('Market orders done ('+Object.keys(P).length.toLocaleString()+' item prices'+(stamp?', snapshot '+stamp:'')+'). 2/2 Contracts: downloading the EVE Ref contract archive (progress shows in the Blueprint contract finder)…');
+    if(typeof window.eveContractRefresh!=='function')throw Error('Contract tools did not load.');
+    const barEl=$('#scanProgressBar');if(barEl)barEl.style.width='0%';
+    window.eveMirror={status:m=>say('2/2 Contracts: '+m),progress:p=>{if(barEl)barEl.style.width=Math.round(Math.max(0,Math.min(100,p)))+'%'}};
+    const ok=await window.eveContractRefresh();
+    say(ok?'Done · market orders and contracts redownloaded from EVE Ref at '+new Date().toLocaleTimeString()+'. Run the scan again to use them.':'Market orders redownloaded, but the contract archive could not be loaded. See the Blueprint contract finder status.');
+    try{render()}catch(e){}
+  }catch(e){say('Redownload failed: '+e.message)}
+  finally{marketNote=null;marketBarEl=null;window.eveMirror=null;redownloading=false;if(btn)btn.disabled=false}
 }
 // Order books for a hub region: the published file when it is fresh and complete, otherwise the browser-side EVE Ref snapshot.
 function marketFor(region){
@@ -436,6 +497,7 @@ function marketFor(region){
   const file=region===10000002?'data/market.json':`data/market-${region}.json`;
   const p=(async()=>{
     let why='';
+    if(preferLive())return await liveMarket(region); // user pressed 'Redownload all data'
     try{
       const r=await fetch(file,{cache:'no-cache'});
       if(!r.ok)why=`${file} gave HTTP ${r.status}`;
@@ -474,7 +536,7 @@ async function fetchPlanQuotes(force=false){
  if(wrap)wrap.hidden=false;
  const setProgress=(n,msg)=>{let pct=Math.round(n/Math.max(1,requests.length)*100);if(bar)bar.style.width=pct+'%';if(label)label.textContent=msg;if(pctEl)pctEl.textContent=pct+'%';$('#sdeStatus').textContent=msg;};
  setProgress(0,'Preparing market quotes…');
- marketNote=m=>{if(label)label.textContent=m;const e=$('#sdeStatus');if(e)e.textContent=m};
+ marketNote=m=>{if(label)label.textContent=m;const e=$('#sdeStatus');if(e)e.textContent=m};marketBarEl=bar;
  try{await marketFor(buyRegion);if(sellRegion!==buyRegion)await marketFor(sellRegion)}catch(e){}
  await mapLimit(requests,4,async x=>{
    try{plannerQuotes[x.id]=await quoteType(x.id,x.region,x.qty,force);}
@@ -594,7 +656,7 @@ async function runOpportunityScan(){
     if(!sdeBlueprints.length)throw Error('Blueprint database is not available.');
     st.textContent='Loading contracts…';
     const stationId=+$('#scanStation').value||0,hubRegion={60003760:10000002,60008494:10000043,60011866:10000032,60004588:10000030,60005686:10000042},now=Date.now();
-    const region=+$('#scanMarket').value||10000002,pub=await loadPublished(region),why=pub?(pub.m.region===region?'':(publishedWhy||'no published prices for this market yet')):publishedWhy;
+    const region=+$('#scanMarket').value||10000002,pub=preferLive()?null:await loadPublished(region),why=pub?(pub.m.region===region?'':(publishedWhy||'no published prices for this market yet')):publishedWhy;
     const hits=pub?pub.c.contracts.filter(r=>r[3]>now&&(!stationId||r[2]===stationId)).map(r=>({c:{contract_id:r[0],price:r[1],type:'item_exchange',station_id:r[2]},items:r[4],matches:r[5].map(b=>({type_id:b[0],is_blueprint_copy:!!b[1],material_efficiency:b[2],time_efficiency:b[3],quantity:b[4],runs:b[5]}))})):await window.eveContractScan({station:stationId,region:hubRegion[stationId]||0});
     const S=plannerSettings(),num=(v,d)=>(v===''||v==null||!Number.isFinite(+v))?d:+v;
     const idx=num(S.index,4)/100,fac=num(S.facility,0)/100,scc=num(S.scc,4)/100,matB=Math.min(1,num(S.matBonus,0)/100),timeB=Math.min(1,num(S.timeBonus,0)/100),fee=(num(S.tax,4.5)+num(S.broker,3))/100;
@@ -622,7 +684,7 @@ async function runOpportunityScan(){
     const ids=[...types],books=new Map();let done=0,failed=0;
     const usePub=!!pub&&pub.m.region===region;
     if(usePub){for(const id of ids){const b=pub.m.books[id];if(b)books.set(id,{sell:b[0],buy:b[1]})}}
-    else{marketNote=m=>{st.textContent=m};await marketFor(region);await mapLimit(ids,4,async id=>{
+    else{marketNote=m=>{st.textContent=m};marketBarEl=bar;await marketFor(region);await mapLimit(ids,4,async id=>{
       if(opportunityScanStop)return;
       try{books.set(id,await getBook(id,region))}catch(e){failed++}
       done++;st.textContent=`Published market data ${done}/${ids.length}`;prog(done,ids.length);
@@ -733,7 +795,7 @@ async function loadPlan(p){
  $('#planIndex').value=p.systemIndex??$('#planIndex').value;$('#planFacility').value=p.facilityTax??$('#planFacility').value;$('#planMatBonus').value=p.matBonus??$('#planMatBonus').value;$('#planTimeBonus').value=p.timeBonus??$('#planTimeBonus').value;$('#planME').value=p.me??$('#planME').value;$('#planTE').value=p.te??$('#planTE').value;$('#planFacilityName').value=p.facilityName??$('#planFacilityName').value;if(p.market)$('#planMarket').value=String(p.market);if(p.buyMarket&&$('#planBuyMarket'))$('#planBuyMarket').value=String(p.buyMarket);if(p.scc!==undefined&&$('#planSCC'))$('#planSCC').value=p.scc;savePlannerSettings();
  renderPlanMaterials();calcAutoPlan();
 }
-async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';marketNote=m=>{$('#marketResult').innerHTML='<div class="notice">'+esc(m)+'</div>'};try{await Promise.all(HUBS.map(([,r])=>marketFor(r)))}catch(e){$('#marketResult').innerHTML='<div class="notice">'+esc(e.message)+'</div>';return}for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let bk=await getBook(item,region),sell=bk.sell,buy=bk.buy;per[n]={sell:sell.length?sell[0][0]:0,buy:buy.length?buy[0][0]:0,sellVol:sell.filter(l=>l[0]===(sell[0]||[])[0]).reduce((s,l)=>s+l[1],0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
+async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';marketBarEl=null;marketNote=m=>{$('#marketResult').innerHTML='<div class="notice">'+esc(m)+'</div>'};try{await Promise.all(HUBS.map(([,r])=>marketFor(r)))}catch(e){$('#marketResult').innerHTML='<div class="notice">'+esc(e.message)+'</div>';return}for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let bk=await getBook(item,region),sell=bk.sell,buy=bk.buy;per[n]={sell:sell.length?sell[0][0]:0,buy:buy.length?buy[0][0]:0,sellVol:sell.filter(l=>l[0]===(sell[0]||[])[0]).reduce((s,l)=>s+l[1],0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
 function scanTop(){let items=fifo().sort((a,b)=>b.buyq+b.sellq-(a.buyq+a.sellq)).slice(0,8).map(x=>x.id);if(items.length)scanItems(items);else showMsg('No transaction history to scan.')}
 function scanAssetItems(){let items=[...new Set(assets().sort((a,b)=>b[4]-a[4]).slice(0,8).map(x=>x[0]))];if(items.length)scanItems(items);else showMsg('No assets to scan.')}
 function removeCharacter(id){if(!confirm('Remove '+name(id)+' and its saved data from this browser? This does not revoke authorization at EVE.'))return;let c=chars();delete c[id];store.set('chars',c);store.del('data:'+id);selected='all';populateSelect();render()}
@@ -745,7 +807,7 @@ $('#addChar').onclick=login;$('#syncAll').onclick=syncSelected;
 document.querySelectorAll('.range').forEach(b=>b.onclick=()=>{range=+b.dataset.range;renderFinance()});
 $('#assetSearch').addEventListener('input',renderAssets);$('#assetSort').addEventListener('change',renderAssets);
 $('#scanTop').onclick=scanTop;$('#scanAssets').onclick=scanAssetItems;
-$('#loadSDE').onclick=()=>loadSDE(true);window.addEventListener('eve-contracts-ready',()=>{if(plannerRecipe)refreshPlannerBpc()});$('#bpSearch').addEventListener('input',populateBlueprints);$('#bpSelect').addEventListener('change',selectRecipe);$('#planRuns').addEventListener('input',()=>{renderPlannerBpc();renderPlanMaterials();});$('#planME').addEventListener('input',()=>{renderPlanMaterials();savePlannerSettings();});$('#planMatBonus').addEventListener('input',()=>{renderPlanMaterials();savePlannerSettings();});Object.values(PLANNER_SETTING_IDS).forEach(id=>$('#'+id)?.addEventListener('change',savePlannerSettings));$('#calculatePlan').onclick=runQuickPlan;$('#addToQueue')?.addEventListener('click',addCurrentPlanToQueue);$('#saveFacilityPreset')?.addEventListener('click',saveFacilityPreset);$('#facilityPreset')?.addEventListener('change',applyFacilityPreset);$('#clearProductionQueue')?.addEventListener('click',()=>{store.set('productionQueue',[]);renderProductionQueue();});$('#exportQueueCsv')?.addEventListener('click',exportQueueCsv);$('#productionQueue')?.addEventListener('click',e=>{const b=e.target.closest('.removeQueueItem');if(!b)return;let q=productionQueue();q.splice(+b.dataset.i,1);store.set('productionQueue',q);renderProductionQueue();});$('#findPlanBpc')?.addEventListener('click',async()=>{if(!plannerRecipe)return showMsg('Choose a product first.','warn');await refreshPlannerBpc();});$('#savePlan').onclick=()=>{let p=calcAutoPlan();if(!p)return;let plans=store.get('plans',[]);plans.unshift(p);store.set('plans',plans);renderSavedPlans();showMsg('Plan saved.','good')};document.querySelectorAll('.planner-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.planner-tab').forEach(x=>{x.classList.toggle('secondary',x!==b);x.setAttribute('aria-selected',String(x===b));});$('#plannerQuick').style.display=b.dataset.plannerTab==='quick'?'block':'none';$('#plannerScanner').style.display=b.dataset.plannerTab==='scanner'?'block':'none';}));$('#runOpportunityScan').onclick=runOpportunityScan;$('#scanResults').addEventListener('click',e=>{const b=e.target.closest('.sendToCalc');if(!b)return;sendScanToCalculator(+b.dataset.i,b.dataset.j===undefined?null:+b.dataset.j).catch(err=>showMsg('Could not send to calculator: '+err.message,'bad'));});document.addEventListener('click',e=>{const b=e.target.closest('.copyShopping');if(b)copyShopping(b);});$('#scanResults').addEventListener('click',e=>{const b=e.target.closest('.sendToQueue');if(b)sendScanContractToQueue(+b.dataset.i);});$('#stopOpportunityScan').onclick=()=>{opportunityScanStop=true;$('#scanStatus').textContent='Stopping after current requests…';};
+$('#loadSDE').onclick=()=>loadSDE(true);window.addEventListener('eve-contracts-ready',()=>{if(plannerRecipe)refreshPlannerBpc()});$('#bpSearch').addEventListener('input',populateBlueprints);$('#bpSelect').addEventListener('change',selectRecipe);$('#planRuns').addEventListener('input',()=>{renderPlannerBpc();renderPlanMaterials();});$('#planME').addEventListener('input',()=>{renderPlanMaterials();savePlannerSettings();});$('#planMatBonus').addEventListener('input',()=>{renderPlanMaterials();savePlannerSettings();});Object.values(PLANNER_SETTING_IDS).forEach(id=>$('#'+id)?.addEventListener('change',savePlannerSettings));$('#calculatePlan').onclick=runQuickPlan;$('#addToQueue')?.addEventListener('click',addCurrentPlanToQueue);$('#saveFacilityPreset')?.addEventListener('click',saveFacilityPreset);$('#facilityPreset')?.addEventListener('change',applyFacilityPreset);$('#clearProductionQueue')?.addEventListener('click',()=>{store.set('productionQueue',[]);renderProductionQueue();});$('#exportQueueCsv')?.addEventListener('click',exportQueueCsv);$('#productionQueue')?.addEventListener('click',e=>{const b=e.target.closest('.removeQueueItem');if(!b)return;let q=productionQueue();q.splice(+b.dataset.i,1);store.set('productionQueue',q);renderProductionQueue();});$('#findPlanBpc')?.addEventListener('click',async()=>{if(!plannerRecipe)return showMsg('Choose a product first.','warn');await refreshPlannerBpc();});$('#savePlan').onclick=()=>{let p=calcAutoPlan();if(!p)return;let plans=store.get('plans',[]);plans.unshift(p);store.set('plans',plans);renderSavedPlans();showMsg('Plan saved.','good')};document.querySelectorAll('.planner-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.planner-tab').forEach(x=>{x.classList.toggle('secondary',x!==b);x.setAttribute('aria-selected',String(x===b));});$('#plannerQuick').style.display=b.dataset.plannerTab==='quick'?'block':'none';$('#plannerScanner').style.display=b.dataset.plannerTab==='scanner'?'block':'none';}));$('#runOpportunityScan').onclick=runOpportunityScan;$('#redownloadAll').onclick=redownloadAllData;$('#scanResults').addEventListener('click',e=>{const b=e.target.closest('.sendToCalc');if(!b)return;sendScanToCalculator(+b.dataset.i,b.dataset.j===undefined?null:+b.dataset.j).catch(err=>showMsg('Could not send to calculator: '+err.message,'bad'));});document.addEventListener('click',e=>{const b=e.target.closest('.copyShopping');if(b)copyShopping(b);});$('#scanResults').addEventListener('click',e=>{const b=e.target.closest('.sendToQueue');if(b)sendScanContractToQueue(+b.dataset.i);});$('#stopOpportunityScan').onclick=()=>{opportunityScanStop=true;$('#scanStatus').textContent='Stopping after current requests…';};
 $('#savedPlans').addEventListener('click',e=>{let l=e.target.closest('.loadPlan'),d=e.target.closest('.delPlan'),plans=store.get('plans',[]);if(l)loadPlan(plans[+l.dataset.i]);if(d){plans.splice(+d.dataset.i,1);store.set('plans',plans);renderSavedPlans()}});
 $('#settingsChars').addEventListener('click',e=>{let b=e.target.closest('.removeChar');if(b)removeCharacter(b.dataset.id)});
 $('#saveSettings').onclick=()=>{store.set('cfg',{tax:+$('#cfgTax').value||0,broker:+$('#cfgBroker').value||0});renderTrading();showMsg('Settings saved.','good')};
@@ -831,10 +893,10 @@ async function loadBzip2() {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const isk = n => n == null ? '—' : Number(n).toLocaleString('en-US',{maximumFractionDigits:0}) + ' ISK';
 const left = d => { const ms = new Date(d)-Date.now(); if(ms<=0)return 'expired'; const h=Math.floor(ms/36e5); return h>=48?Math.floor(h/24)+'d '+h%24+'h':h+'h '+Math.floor(ms%36e5/6e4)+'m'; };
-function status(s){$('status').textContent=s}
+function status(s){$('status').textContent=s;if(window.eveMirror&&window.eveMirror.status)window.eveMirror.status(s)}
 function dbStatus(s){$('dbStatus').textContent=s}
 function log(s){$('log').textContent += s+'\n';$('log').scrollTop=$('log').scrollHeight}
-function progress(p){$('progress').style.width=Math.max(0,Math.min(100,p))+'%'}
+function progress(p){$('progress').style.width=Math.max(0,Math.min(100,p))+'%';if(window.eveMirror&&window.eveMirror.progress)window.eveMirror.progress(p)}
 
 async function openDB(){
   if(memoryOnly) return null;
@@ -1008,10 +1070,20 @@ function parseInWorker(bytes,bpIds){
     try{url=URL.createObjectURL(new Blob([CONTRACT_WORKER_SRC],{type:'text/javascript'}));w=new Worker(url)}
     catch(e){if(url)URL.revokeObjectURL(url);return reject(e)}
     const finish=()=>{w.terminate();URL.revokeObjectURL(url)};
+    // bzip2 decompression is one blocking call, so this bar is an estimate based on how long this device needed per MiB last time.
+    let stopEst=null;const KEY='eveBz2Rate:contracts';
+    const estimate=()=>{let rate=2;try{rate=+localStorage.getItem(KEY)||2}catch(e){}
+      const mib=Math.max(bytes.length/1048576,.1),expected=Math.max(3,mib*rate),t0=Date.now();
+      const id=setInterval(()=>{const sec=(Date.now()-t0)/1000,p=sec<expected?.9*sec/expected:.9+.08*(1-Math.exp(-(sec-expected)/expected));
+        progress(p*80);status('Decompressing archive… ~'+Math.round(p*100)+'% (estimated) · '+sec.toFixed(0)+' s')},250);
+      return ok=>{clearInterval(id);if(ok){try{localStorage.setItem(KEY,String(Math.max(.05,(Date.now()-t0)/1000/mib)))}catch(e){}}}};
     w.onmessage=e=>{const m=e.data;
-      if(m.type==='status')status(m.msg);
-      else if(m.type==='done'){finish();resolve(m.out)}
-      else if(m.type==='error'){finish();reject(new Error(m.msg))}};
+      if(m.type==='status'){
+        if(/^Decompressing/.test(m.msg)){status(m.msg);progress(0);if(!stopEst)stopEst=estimate()}
+        else{if(stopEst){stopEst(true);stopEst=null;progress(80)}status(m.msg)}
+      }
+      else if(m.type==='done'){if(stopEst)stopEst(true);finish();progress(100);resolve(m.out)}
+      else if(m.type==='error'){if(stopEst)stopEst(false);finish();reject(new Error(m.msg))}};
     w.onerror=e=>{finish();reject(new Error(e.message||'worker failed to start'))};
     w.postMessage({bytes,bpIds});
   });
@@ -1221,6 +1293,14 @@ async function loadContractResources(){
     return !!database;
   }catch(e){status('Contract finder error: '+e.message);log(e.stack||e);throw e}
 }
+window.eveContractRefresh=async function(){ // forced redownload of the EVE Ref contract archive
+  if(contractLoadPromise)await contractLoadPromise.catch(()=>{});
+  if(!BP.length){await loadBlueprints();$('q').disabled=false;$('picked').textContent=BP.length.toLocaleString()+' blueprint types loaded. Start typing.'}
+  try{await dbPut('parsed',null)}catch(e){}
+  await refreshDatabase(true);
+  if(database&&contractsReady){window.dispatchEvent(new Event('eve-contracts-ready'));return true}
+  return false;
+};
 window.eveEnsureContractsLoaded=function(){
   if(!contractLoadPromise)contractLoadPromise=loadContractResources().finally(()=>{contractLoadPromise=null;});
   return contractLoadPromise;

@@ -238,8 +238,9 @@ if(!options.quiet){showMsg(failures.length?('Sync partially completed: '+failure
 function saveSectionStatus(id,status){let d=data(id);d.status=status;store.set('data:'+id,d)}
 async function refreshSharedMarketPrices(){
  const cached=priceMap(),stamp=store.get('priceCacheAt',0);
- if(Date.now()-stamp<6*60*60*1000&&Object.keys(cached).length)return;
- try{const p=await request('/markets/prices/',null,false);p.forEach(x=>cached[x.type_id]=x.average_price||x.adjusted_price||0);store.set('prices',cached);store.set('priceCacheAt',Date.now());}
+ if(Date.now()-stamp<60*60*1000&&Object.keys(cached).length)return;
+ // Prices come from data/prices.json, built from EVE Ref's market-order snapshot (Jita sell, falling back to Jita buy / other hubs). No ESI price calls.
+ try{const r=await fetch('data/prices.json',{cache:'no-cache'});if(!r.ok)throw Error('data/prices.json gave HTTP '+r.status);const p=await r.json();if(!p.prices||!Object.keys(p.prices).length)throw Error('prices.json is empty');Object.assign(cached,p.prices);store.set('prices',cached);store.set('priceCacheAt',Date.now());}
  catch(e){console.warn('Shared market-price refresh skipped:',e);}
 }
 async function syncAll(){
@@ -306,16 +307,28 @@ function renderPlannerBpc(){const box=$('#planBpcSummary'),status=$('#planBpcSta
 async function refreshPlannerBpc(){const status=$('#planBpcStatus');if(!plannerRecipe)return;if(plannerPinned&&plannerBpcLots.length){renderPlannerBpc();pinnedBpcNote();renderPlanMaterials();return;}if(!window.eveContractLookup){status.textContent='Contract finder is unavailable.';return;}status.textContent='Searching the cached contract archive for BPCs…';try{const id=plannerRecipe.bp.blueprintTypeID||plannerRecipe.bp._key||plannerRecipe.bp.typeID;const hits=await window.eveContractLookup(id);plannerBpcLots=hits;renderPlannerBpc();if(!hits.length)status.textContent='No eligible BPC contracts found in the selected region/station filters. Manual ME / TE remains available.';renderPlanMaterials();}catch(e){status.textContent='BPC lookup failed: '+e.message;}}
 
 function renderPlanMaterials(){if(!plannerRecipe)return;let runs=Math.max(1,+$('#planRuns').value||1),me=Math.max(0,Math.min(10,+$('#planME').value||0)),bonus=Math.max(0,+$('#planMatBonus').value||0),rows=(plannerRecipe.activity.materials||[]).map(m=>{let base=Math.max(runs,Math.ceil(m.quantity*runs*(1-me/100)*(1-bonus/100)));let quote=plannerQuotes[m.typeID]||{};return {id:m.typeID,name:sdeTypes[m.typeID]||('Type '+m.typeID),qty:base,price:quote.sell||0,owned:0}});$('#planMaterialTable').innerHTML='<h3>Material requirements (ME + facility material bonus)</h3>'+table(['Material','Required','Market price (ISK)','Cost estimate'],rows.map(x=>[esc(x.name),fmt(x.qty),`<input class="mat-price" data-id="${x.id}" type="number" value="${x.price}" min="0" style="width:130px">`,fmtMoney(x.qty*x.price)]));}
+const MARKET_TTL=30*60*1000,marketFiles=new Map();
+// Order books for a hub region from the published EVE Ref snapshot (data/market.json for Jita, data/market-<regionId>.json for the others). Loaded once per region and shared.
+function marketFor(region){
+  const hit=marketFiles.get(region);if(hit&&Date.now()-hit.t<MARKET_TTL)return hit.p;
+  const file=region===10000002?'data/market.json':`data/market-${region}.json`;
+  const p=(async()=>{
+    const r=await fetch(file,{cache:'no-cache'});
+    if(!r.ok)throw Error(`No published prices for this market (${file} gave HTTP ${r.status}). Open the site from its GitHub Pages address and make sure the build workflow has run.`);
+    const m=await r.json();if(!m||!m.books)throw Error(`${file} has no market books; run the build workflow.`);
+    return m;
+  })();
+  marketFiles.set(region,{t:Date.now(),p});p.catch(()=>marketFiles.delete(region));return p;
+}
 const PLANNER_QUOTE_TTL=60*60*1000;
 function plannerQuoteCache(){return store.get('plannerQuotes',{});}
 function savePlannerQuote(id,region,qty,q){let c=plannerQuoteCache();c[region+':'+id+':'+qty]={...q,cachedAt:Date.now()};let keys=Object.keys(c);if(keys.length>500){keys.sort((a,b)=>(c[a]?.cachedAt||0)-(c[b]?.cachedAt||0));keys.slice(0,keys.length-500).forEach(k=>delete c[k]);}store.set('plannerQuotes',c);}
 async function quoteType(id,region=10000002,qty=1,force=false){
  const key=region+':'+id+':'+qty,c=plannerQuoteCache(),cached=c[key];if(!force&&cached&&Date.now()-cached.cachedAt<PLANNER_QUOTE_TTL)return cached;
- const first=await fetch(`${ESI}/markets/${region}/orders/?order_type=all&type_id=${id}&page=1`);if(!first.ok)throw Error('Market quote '+first.status+' for type '+id);let orders=await first.json(),pages=Math.min(5,Math.max(1,Number(first.headers.get('X-Pages'))||1));
- if(pages>1){const more=await Promise.all(Array.from({length:pages-1},(_,i)=>fetch(`${ESI}/markets/${region}/orders/?order_type=all&type_id=${id}&page=${i+2}`).then(r=>r.ok?r.json():[]).catch(()=>[])));more.forEach(a=>orders.push(...a));}
- const sell=orders.filter(o=>!o.is_buy_order).sort((a,b)=>a.price-b.price),buy=orders.filter(o=>o.is_buy_order).sort((a,b)=>b.price-a.price);
+ const mk=await marketFor(region),bk=mk.books[id]||[[],[]];
+ const sell=bk[0].map(([price,volume_remain])=>({price,volume_remain})),buy=bk[1].map(([price,volume_remain])=>({price,volume_remain})); // already sorted best-first
  const depth=(arr,need)=>{let left=need,total=0,units=0;for(const o of arr){if(left<=0)break;const n=Math.min(left,o.volume_remain||0);units+=n;total+=n*o.price;left-=n;}return {units,cost:total,remaining:left,average:units?total/units:0};};
- const result={sell:sell[0]?.price||0,buy:buy[0]?.price||0,volSell:sell.reduce((a,o)=>a+(o.volume_remain||0),0),volBuy:buy.reduce((a,o)=>a+(o.volume_remain||0),0),buyDepth:depth(sell,qty),sellDepth:depth(buy,qty),sellOrders:sell.length,buyOrders:buy.length,cachedAt:Date.now(),pagesFetched:pages};savePlannerQuote(id,region,qty,result);return result;
+ const result={sell:sell[0]?.price||0,buy:buy[0]?.price||0,volSell:sell.reduce((a,o)=>a+(o.volume_remain||0),0),volBuy:buy.reduce((a,o)=>a+(o.volume_remain||0),0),buyDepth:depth(sell,qty),sellDepth:depth(buy,qty),sellOrders:sell.length,buyOrders:buy.length,cachedAt:Date.now(),source:'everef-market-orders',snapshot:mk.snapshot||null};savePlannerQuote(id,region,qty,result);return result;
 }
 async function mapLimit(items,limit,fn){let next=0,workers=Array.from({length:Math.min(limit,items.length)},async()=>{while(next<items.length){const i=next++;await fn(items[i],i);}});await Promise.all(workers);}
 function planMaterialRows(){if(!plannerRecipe)return [];let runs=Math.max(1,+$('#planRuns').value||1),me=Math.max(0,Math.min(10,+$('#planME').value||0)),bonus=Math.max(0,Math.min(100,+$('#planMatBonus').value||0))/100;return (plannerRecipe.activity.materials||[]).map(m=>{let qty=Math.max(runs,Math.ceil(m.quantity*runs*(1-me/100)*(1-bonus))),q=plannerQuotes[m.typeID]||{};return {id:m.typeID,name:sdeTypes[m.typeID]||('Type '+m.typeID),qty,price:(q.buyDepth?.units>=qty&&q.buyDepth?.average)||q.sell||0,owned:0};});}
@@ -420,18 +433,7 @@ async function runQuickPlan(){
  finally{btn.disabled=false;btn.textContent='Calculate complete plan';}
 }
 function categoryForProduct(typeID){let meta=sdeTypeMeta[typeID]||{},g=sdeGroups[meta.groupID]||{},gid=Number(meta.groupID),cat=Number(g.categoryID),gn=(g.name||'').toLowerCase();if(cat===6)return 'ships';if(cat===8)return 'ammo';if(cat===7&&/rig/.test(gn))return 'rigs';if(cat===7)return 'modules';return 'other';}
-const BOOK_TTL=60*60*1000,bookMem=new Map();
-async function getBook(id,region){
-  const k='book:'+region+':'+id;let b=bookMem.get(k);if(b&&Date.now()-b.t<BOOK_TTL)return b;
-  try{b=await sdeCacheGet(k);if(b&&Date.now()-b.t<BOOK_TTL){bookMem.set(k,b);return b}}catch(e){}
-  const base=`${ESI}/markets/${region}/orders/?order_type=all&type_id=${id}&page=`,first=await fetch(base+1);
-  if(!first.ok)throw Error('Market '+first.status+' for type '+id);
-  const orders=await first.json(),pages=Math.min(5,Math.max(1,Number(first.headers.get('X-Pages'))||1));
-  if(pages>1)(await Promise.all(Array.from({length:pages-1},(_,i)=>fetch(base+(i+2)).then(r=>r.ok?r.json():[]).catch(()=>[])))).forEach(a=>orders.push(...a));
-  const lv=(arr,asc)=>arr.sort((x,y)=>asc?x.price-y.price:y.price-x.price).slice(0,60).map(o=>[o.price,o.volume_remain||0]);
-  b={t:Date.now(),sell:lv(orders.filter(o=>!o.is_buy_order),true),buy:lv(orders.filter(o=>o.is_buy_order),false)};
-  bookMem.set(k,b);sdeCachePut(k,b).catch(()=>{});return b;
-}
+async function getBook(id,region){const m=await marketFor(region),b=m.books[id]||[[],[]];return {t:Date.parse(m.updated)||Date.now(),sell:b[0],buy:b[1]}}
 let publishedWhy='';
 async function loadPublished(region=10000002){
   // Jita's book keeps the original name; the other hubs are published as market-<regionId>.json.
@@ -490,7 +492,7 @@ async function runOpportunityScan(){
     else await mapLimit(ids,4,async id=>{
       if(opportunityScanStop)return;
       try{books.set(id,await getBook(id,region))}catch(e){failed++}
-      done++;st.textContent=`Live market data ${done}/${ids.length} (cached for 1 hour)`;prog(done,ids.length);
+      done++;st.textContent=`Published market data ${done}/${ids.length}`;prog(done,ids.length);
     });
     if(opportunityScanStop){st.textContent='Stopped';return}
     const fill=(lv,n)=>{let left=n,cost=0;for(const [p,v] of lv){if(left<=0)break;const k=Math.min(left,v);cost+=k*p;left-=k}return {units:n-left,cost,left}};
@@ -514,7 +516,7 @@ async function runOpportunityScan(){
     const rangeTxt=(minP!==0||maxP>0)?` · profit ${minP!==0?'from '+fmtMoney(minP):''}${minP!==0&&maxP>0?' ':''}${maxP>0?'up to '+fmtMoney(maxP):''}`:'';
     const top=ranged.slice(0,topN);window._evePlannerScanRows=top;
     out.innerHTML=top.length?`<h3>Top ${top.length} contracts by estimated profit${rangeTxt}</h3>`+top.map((r,i)=>`<div class="card" style="margin-top:8px"><div class="between"><b>#${i+1} · Contract ${r.c.contract_id}</b><b>${fmtMoney(r.profit)}</b></div><div class="tiny">Price ${fmtMoney(r.c.price)} · ${fmt(r.units)} blueprint(s) · ${fmt(r.runs)} runs · ROI ${pct(r.roi)} · ${fmtMoney(r.perRun)}/run · ${fmtMoney(r.perBp)}/blueprint · ${fmtMoney(r.perHour)}/h · materials ${fmtMoney(r.mat)} · ${r.hours.toFixed(1)} h${r.other?` · ${r.other} non-blueprint item(s) valued at 0`:''}${r.unpriced?` · ${r.unpriced} blueprint(s) without prices, valued at 0`:''}</div>${scanSendButtons(r,i)}<details style="margin-top:6px"><summary>Blueprint breakdown</summary>${table(['Blueprint','Runs','ME/TE','Materials','Sale proceeds','Profit','Calculator'],r.rows.map((b,j)=>b.skip?[esc(b.name),fmt(b.R),b.me+'/'+b.te,'–','no price data','–','–']:[esc(b.name),fmt(b.R),b.me+'/'+b.te,fmtMoney(b.mat),fmtMoney(b.rev)+(b.covered<b.out?` (${fmt(b.covered)}/${fmt(b.out)} sold)`:''),fmtMoney(b.profit),`<button class="secondary sendToCalc" data-i="${i}" data-j="${j}">Send</button>`]).concat(scanTotalsRows(r)))}</details></div>`).join(''):`<div class="empty">${results.length?'No contracts fall inside this profit range ('+results.length+' priced contract(s) were outside it).':'No contracts with priced blueprints found for this station.'}</div>`;
-    st.textContent=`Done · ${list.length.toLocaleString()} contracts with blueprints · ${cand.length} fully priced${(minP!==0||maxP>0)?' · '+ranged.length+' in profit range':''} · ${usePub?'published data from '+new Date(pub.m.updated).toLocaleString():'live market data'}`+(bpoSkipped?` · ${bpoSkipped} contracts with BPOs skipped (unlimited runs, not valued)`:'')+(failed?` · ${failed} market lookups failed`:'');prog(1,1);
+    st.textContent=`Done · ${list.length.toLocaleString()} contracts with blueprints · ${cand.length} fully priced${(minP!==0||maxP>0)?' · '+ranged.length+' in profit range':''} · ${usePub?'published data from '+new Date(pub.m.updated).toLocaleString():'EVE Ref market data'}`+(bpoSkipped?` · ${bpoSkipped} contracts with BPOs skipped (unlimited runs, not valued)`:'')+(failed?` · ${failed} market lookups failed`:'');prog(1,1);
   }catch(e){st.textContent='Scan failed: '+e.message}
   finally{btn.disabled=false;stop.disabled=true}
 }
@@ -598,7 +600,7 @@ async function loadPlan(p){
  $('#planIndex').value=p.systemIndex??$('#planIndex').value;$('#planFacility').value=p.facilityTax??$('#planFacility').value;$('#planMatBonus').value=p.matBonus??$('#planMatBonus').value;$('#planTimeBonus').value=p.timeBonus??$('#planTimeBonus').value;$('#planME').value=p.me??$('#planME').value;$('#planTE').value=p.te??$('#planTE').value;$('#planFacilityName').value=p.facilityName??$('#planFacilityName').value;if(p.market)$('#planMarket').value=String(p.market);if(p.buyMarket&&$('#planBuyMarket'))$('#planBuyMarket').value=String(p.buyMarket);if(p.scc!==undefined&&$('#planSCC'))$('#planSCC').value=p.scc;savePlannerSettings();
  renderPlanMaterials();calcAutoPlan();
 }
-async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let orders=await request(`/markets/${region}/orders/?order_type=all&type_id=${item}`,null,false);let sell=orders.filter(o=>!o.is_buy_order),buy=orders.filter(o=>o.is_buy_order);per[n]={sell:sell.length?Math.min(...sell.map(o=>o.price)):0,buy:buy.length?Math.max(...buy.map(o=>o.price)):0,sellVol:sell.filter(o=>o.price===Math.min(...sell.map(x=>x.price))).reduce((s,o)=>s+o.volume_remain,0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
+async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let bk=await getBook(item,region),sell=bk.sell,buy=bk.buy;per[n]={sell:sell.length?sell[0][0]:0,buy:buy.length?buy[0][0]:0,sellVol:sell.filter(l=>l[0]===(sell[0]||[])[0]).reduce((s,l)=>s+l[1],0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
 function scanTop(){let items=fifo().sort((a,b)=>b.buyq+b.sellq-(a.buyq+a.sellq)).slice(0,8).map(x=>x.id);if(items.length)scanItems(items);else showMsg('No transaction history to scan.')}
 function scanAssetItems(){let items=[...new Set(assets().sort((a,b)=>b[4]-a[4]).slice(0,8).map(x=>x[0]))];if(items.length)scanItems(items);else showMsg('No assets to scan.')}
 function removeCharacter(id){if(!confirm('Remove '+name(id)+' and its saved data from this browser? This does not revoke authorization at EVE.'))return;let c=chars();delete c[id];store.set('chars',c);store.del('data:'+id);selected='all';populateSelect();render()}

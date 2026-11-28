@@ -295,4 +295,87 @@ async function buildFacilities() {
 }
 await buildFacilities();
 
+// 7) Sold volume in The Forge (Jita's region) from EVE Ref's daily market-history dataset (no ESI).
+// The game only publishes regional daily totals, not Jita 4-4 alone, and only for completed days (so no "today").
+// NON-FATAL: a failure is written into volume.json (ok:false + checkpoints) and logged as a GitHub warning.
+// Reads every history file through the system bzip2; aggregates per type: [latest day, day 7 earlier, last-7-days sum, last-30-days sum].
+async function readHistoryFile(file, region, vol, dayTypes) {
+  let ix = null, rowsSeen = 0, rowsKept = 0;
+  const proc = spawn('bzip2', ['-dc', file], {stdio: ['ignore', 'pipe', 'inherit']});
+  const exited = new Promise((res, rej) => { proc.on('error', rej); proc.on('close', code => code === 0 ? res() : rej(new Error('bzip2 exited with code ' + code))); });
+  exited.catch(() => {});
+  for await (const raw of readline.createInterface({input: proc.stdout, crlfDelay: Infinity})) {
+    if (!raw) continue;
+    const row = raw.split(',');
+    if (!ix) {
+      ix = {}; row.forEach((x, i) => ix[x.replace(/"/g, '').trim()] = i);
+      for (const k of ['date', 'region_id', 'type_id', 'volume']) if (ix[k] === undefined) throw new Error(`History file has an unexpected format (missing column ${k}; header: ${Object.keys(ix).join(', ')}).`);
+      continue;
+    }
+    rowsSeen++;
+    if (+row[ix.region_id] !== region) continue;
+    const date = String(row[ix.date]).replace(/"/g, '').slice(0, 10), t = +row[ix.type_id], v = +row[ix.volume];
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !t || !Number.isFinite(v)) continue;
+    let m = vol.get(t); if (!m) vol.set(t, m = new Map());
+    m.set(date, v); dayTypes.set(date, (dayTypes.get(date) || 0) + 1); rowsKept++;
+  }
+  await exited;
+  return {rowsSeen, rowsKept};
+}
+function summariseVolumes(vol, dayTypes) {
+  const dates = [...dayTypes.keys()].sort(), maxN = Math.max(0, ...dayTypes.values());
+  const full = dates.filter(d => dayTypes.get(d) >= maxN * 0.5), latest = full[full.length - 1] || null; // ignores a half-uploaded newest day
+  if (!latest) return {latest: null, v: {}, days: 0};
+  const L = Date.parse(latest + 'T00:00:00Z'), key = n => new Date(L - n * 864e5).toISOString().slice(0, 10), v = {};
+  const d7 = key(7), w7 = new Set(Array.from({length: 7}, (_, i) => key(i))), w30 = new Set(Array.from({length: 30}, (_, i) => key(i)));
+  for (const [t, m] of vol) {
+    let s7 = 0, s30 = 0; for (const [d, x] of m) { if (w30.has(d)) s30 += x; if (w7.has(d)) s7 += x; }
+    const d0 = m.get(latest) || 0, a = m.get(d7) || 0;
+    if (d0 || a || s7 || s30) v[t] = [d0, a, s7, s30];
+  }
+  return {latest, v, days: full.filter(d => w30.has(d)).length};
+}
+async function buildVolume() {
+  const REGION = 10000002, BASE = 'https://data.everef.net/market-history/', cps = [];
+  const result = {updated, region: REGION, ok: false, checkpoints: cps, latest_date: null, days: 0, types: 0, v: {}};
+  const cp = (step, ok, msg) => {
+    cps.push({step, ok, msg}); console.log(`[volume] ${ok ? 'OK  ' : 'FAIL'} ${step}: ${msg}`);
+    if (!ok) console.log(`::warning title=Volume ${step}::${msg}`);
+  };
+  let tmpd = null;
+  try {
+    const r = await get(BASE + 'index.json');
+    if (!r) throw new Error('could not download ' + BASE + 'index.json');
+    const files = ((await r.json()).files || []).map(f => ({m: /(\d{4}-\d{2}-\d{2})[^/]*\.csv\.bz2$/i.exec(f.name || ''), f}))
+      .filter(x => x.m).map(x => ({date: x.m[1], url: x.f.url || BASE + x.f.name})).sort((a, b) => b.date.localeCompare(a.date));
+    if (!files.length) throw new Error('index.json lists no daily .csv.bz2 history files (dataset layout changed?)');
+    cp('history-index', true, `${files.length} daily files listed, newest ${files[0].date}`);
+    tmpd = fs.mkdtempSync(path.join(os.tmpdir(), 'hist-'));
+    const vol = new Map(), dayTypes = new Map(); let used = 0, failed = 0;
+    for (const f of files.slice(0, 45)) {
+      if (dayTypes.size >= 32) break;
+      const res = await get(f.url);
+      if (!res) { failed++; console.log(`[volume] download failed for ${f.date}`); continue; }
+      const file = path.join(tmpd, f.date + '.csv.bz2');
+      fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+      const s = await readHistoryFile(file, REGION, vol, dayTypes); fs.rmSync(file, {force: true}); used++;
+      console.log(`[volume] ${f.date}: ${s.rowsSeen} rows, ${s.rowsKept} in The Forge`);
+    }
+    cp('history-download', used > 0 && vol.size > 0, `${used} files read${failed ? `, ${failed} failed` : ''}, ${vol.size} item types with Forge history, ${dayTypes.size} distinct days`);
+    if (!vol.size) throw new Error('no rows for region 10000002 found in the history files');
+    const s = summariseVolumes(vol, dayTypes);
+    if (!s.latest) throw new Error('could not determine the latest complete day');
+    const ageDays = (Date.now() - Date.parse(s.latest + 'T00:00:00Z')) / 864e5;
+    cp('latest-day', ageDays <= 4, `latest complete day ${s.latest} (${ageDays.toFixed(1)} days old)${ageDays > 4 ? ': dataset looks stale' : ''}`);
+    cp('window', s.days >= 25, `${s.days} of the last 30 days present${s.days < 25 ? ': 30-day totals will be too low' : ''}`);
+    Object.assign(result, {latest_date: s.latest, days: s.days, v: s.v, types: Object.keys(s.v).length});
+    result.ok = result.types > 1000 && ageDays <= 4;
+    const jita = s.v[34]; // Tritanium, as a sanity value
+    cp('summary', result.types > 1000, `${result.types} types written; Tritanium latest day ${jita ? jita[0].toLocaleString() : 'missing'}, 7d ${jita ? jita[2].toLocaleString() : '?'}, 30d ${jita ? jita[3].toLocaleString() : '?'}`);
+  } catch (e) { cp('fatal', false, e.message); }
+  finally { if (tmpd) fs.rmSync(tmpd, {recursive: true, force: true}); }
+  fs.writeFileSync(path.join(OUT, 'volume.json'), JSON.stringify(result));
+}
+await buildVolume();
+
 console.log('Done.', updated);

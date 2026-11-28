@@ -87,7 +87,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-offset:2px
 <div class="tabs" role="tablist"><button class="planner-tab" data-planner-tab="quick" aria-selected="true">Quick Plan</button><button class="secondary planner-tab" data-planner-tab="scanner" aria-selected="false">Opportunity Scanner</button></div>
 <div id="plannerQuick" class="card" style="margin-top:10px"><div class="between"><h2 style="margin:0">Build a product</h2><span class="tiny">Choose product → calculate → review</span></div>
 <div class="formgrid" style="margin-top:12px"><div class="field" style="grid-column:span 2"><label>Product (ship, module, rig or ammunition)</label><input id="bpSearch" autocomplete="off" placeholder="Start typing a product name"><select id="bpSelect" style="margin-top:5px"><option value="">Loading product catalogue…</option></select></div><div class="field"><label>Production runs</label><input id="planRuns" type="number" min="1" max="100000" value="1"></div><div class="field"><label>Buy materials in</label><select id="planBuyMarket"><option value="10000002">Jita · The Forge</option><option value="10000043">Amarr · Domain</option><option value="10000032">Dodixie · Sinq Laison</option><option value="10000030">Rens · Heimatar</option><option value="10000042">Hek · Metropolis</option></select></div><div class="field"><label>Sell finished product in</label><select id="planMarket"><option value="10000002">Jita · The Forge</option><option value="10000043">Amarr · Domain</option><option value="10000032">Dodixie · Sinq Laison</option><option value="10000030">Rens · Heimatar</option><option value="10000042">Hek · Metropolis</option></select></div></div>
-<details style="margin-top:12px"><summary style="cursor:pointer;color:var(--gold);font-weight:700">Advanced production settings</summary><div class="formgrid" style="margin-top:10px"><div class="field"><label>Blueprint ME (%)</label><input id="planME" type="number" min="0" max="10" value="0"></div><div class="field"><label>Blueprint TE (%)</label><input id="planTE" type="number" min="0" max="20" value="0"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" min="0" value="0"></div><div class="field"><label>SCC surcharge (%)</label><input id="planSCC" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Structure / rig material bonus (%)</label><input id="planMatBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Structure / rig time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Facility preset name</label><input id="planFacilityName" placeholder="e.g. Jita Azbel · Rigged"></div><div class="field"><label>Load saved facility</label><select id="facilityPreset"><option value="">Choose saved preset…</option></select></div><div class="field" style="grid-column:1/-1"><label>Nearby facility (within 10 jumps of Jita)</label><select id="nearFacility"><option value="">Loading facilities…</option></select><div class="tiny" id="nearFacStatus">Checking data/facilities.json…</div><div class="tiny"><button class="secondary" id="nearFacSave" type="button">Remember rig/tax for this facility</button> <span id="nearFacInfo"></span></div></div><div class="field"><label>Blueprint copy runs</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Manual product sell price (ISK)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:8px"><button class="secondary" id="saveFacilityPreset">Save facility preset</button><button class="secondary" id="loadSDE">Refresh blueprint database</button><span id="sdeStatus" class="tiny">Checking local cache when planner opens…</span></div></details>
+<details style="margin-top:12px"><summary style="cursor:pointer;color:var(--gold);font-weight:700">Advanced production settings</summary><div class="formgrid" style="margin-top:10px"><div class="field"><label>Blueprint ME (%)</label><input id="planME" type="number" min="0" max="10" value="0"></div><div class="field"><label>Blueprint TE (%)</label><input id="planTE" type="number" min="0" max="20" value="0"></div><div class="field"><label>System cost index (%)</label><input id="planIndex" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Facility tax (%)</label><input id="planFacility" type="number" step=".01" min="0" value="0"></div><div class="field"><label>SCC surcharge (%)</label><input id="planSCC" type="number" step=".01" min="0" value="4"></div><div class="field"><label>Structure / rig material bonus (%)</label><input id="planMatBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Structure / rig time bonus (%)</label><input id="planTimeBonus" type="number" step=".01" min="0" value="0"></div><div class="field"><label>Facility preset name</label><input id="planFacilityName" placeholder="e.g. Jita Azbel · Rigged"></div><div class="field"><label>Load saved facility</label><select id="facilityPreset"><option value="">Choose saved preset…</option></select></div><div class="field" style="grid-column:1/-1"><label>Nearby facilities (within 10 jumps of Jita)</label><button id="nearFacOpen" type="button" class="secondary">🏭 Browse &amp; pick best facility</button><div class="tiny" id="nearFacInfo"></div></div><div class="field"><label>Blueprint copy runs</label><input id="planBPRuns" type="number" min="1" value="1"></div><div class="field"><label>Manual product sell price (ISK)</label><input id="planSell" type="number" min="0" value="0"></div><div class="field"><label>Broker fee (%)</label><input id="planBroker" type="number" step=".01" value="3"></div><div class="field"><label>Sales tax (%)</label><input id="planTax" type="number" step=".01" value="4.5"></div></div><div class="row" style="margin-top:8px"><button class="secondary" id="saveFacilityPreset">Save facility preset</button><button class="secondary" id="loadSDE">Refresh blueprint database</button><span id="sdeStatus" class="tiny">Checking local cache when planner opens…</span></div></details>
 <div class="row" style="margin-top:14px"><button id="calculatePlan">Calculate complete plan</button><button class="secondary" id="savePlan">Save plan</button><button class="secondary" id="addToQueue">Add to queue</button><button class="secondary" id="findPlanBpc">Find BPC contracts</button></div><div id="planProgressWrap" class="plan-progress-wrap" hidden><div class="between"><span id="planProgressLabel" class="tiny">Preparing calculation…</span><span id="planProgressPct" class="tiny">0%</span></div><div class="progress plan-progress"><div id="planProgressBar"></div></div><div id="planProgressSteps" class="plan-steps"><span>Blueprint</span><span>Materials</span><span>Market</span><span>Profit</span></div></div>
 <div id="planBpcPanel" class="notice" style="margin-top:12px"><b>Optional BPC sourcing</b><div id="planBpcStatus" class="tiny" style="margin-top:5px">Contract lookup is not started automatically. Use the Blueprint Contract Finder below if you want to source a copy.</div><div id="planBpcSummary" style="margin-top:8px"></div></div><div id="planMaterialTable"></div><div id="planResult"></div></div>
 <div id="plannerScanner" class="card" style="display:none;margin-top:10px"><div class="between"><div><h2 style="margin:0">Most profitable contracts</h2><div class="tiny">Prices every blueprint in every contract for sale, then ranks contracts by profit. Market data is cached for 1 hour.</div></div><span class="pill">On demand</span></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Contract station</label><select id="scanStation"><option value="60003760" selected>Jita IV - Moon 4</option><option value="60008494">Amarr VIII (Oris)</option><option value="60011866">Dodixie IX - Moon 20</option><option value="60004588">Rens VI - Moon 8</option><option value="60005686">Hek VIII - Moon 12</option><option value="0">Any station (all regions)</option></select></div><div class="field"><label>Market for prices</label><select id="scanMarket"><option value="10000002">Jita</option><option value="10000043">Amarr</option><option value="10000032">Dodixie</option><option value="10000030">Rens</option><option value="10000042">Hek</option></select></div><div class="field"><label>Show top</label><select id="scanTopN"><option value="10" selected>10 contracts</option><option value="25">25 contracts</option><option value="50">50 contracts</option><option value="100">100 contracts</option></select></div><div class="field"><label>Min profit (ISK) · 0 = any</label><input id="scanMinProfit" inputmode="decimal" autocomplete="off" value="0" placeholder="e.g. 50m"></div><div class="field"><label>Max profit (ISK) · 0 = no cap</label><input id="scanMaxProfit" inputmode="decimal" autocomplete="off" value="0" placeholder="e.g. 500m"></div></div><div class="row" style="margin-top:12px"><button id="runOpportunityScan">Find most profitable contracts</button><button class="secondary" id="stopOpportunityScan" disabled>Stop scan</button><button class="secondary" id="redownloadAll" title="Force a fresh download of the EVE Ref market orders and contract archive">Redownload all data</button><span id="scanStatus" class="tiny">Not running</span></div><div class="progress" style="margin-top:9px"><div id="scanProgressBar"></div></div><div id="scanResults" style="margin-top:12px"></div></div>
@@ -1311,44 +1311,118 @@ window.eveEnsureContractsLoaded=function(){
 
 
 <script>
-// Nearby facility picker: reads data/facilities.json (built by the GitHub Action) and shows every build checkpoint / error.
+// Facility browser: recommended stations + clickable stat cards. Data: data/facilities.json (GitHub Action). Rigs/tax are only known once YOU save them.
 (function(){
-  const g=id=>document.getElementById(id), KEY='facilityOverrides';
-  const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}, set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
-  const ov=()=>get('eveFacOverrides',{}), say=(m,w)=>{const el=g('nearFacStatus');if(el){el.textContent=m;el.style.color=w?'#f85149':''}};
-  let data=null;
-  function fill(f){
-    const o=ov()[f.id]||{}, set_=(id,v)=>{const el=g(id);if(el&&v!==undefined&&v!==null&&v!=='')el.value=v};
-    set_('planFacilityName',f.name);
-    if(f.mfg_index!==null&&f.mfg_index!==undefined)set_('planIndex',f.mfg_index);
-    const tax=o.tax??f.tax; if(tax!==undefined&&tax!==null)set_('planFacility',tax);
-    if(o.matBonus!==undefined)set_('planMatBonus',o.matBonus); if(o.timeBonus!==undefined)set_('planTimeBonus',o.timeBonus);
-    g('nearFacInfo').textContent=`${f.type} · ${f.system} (${(+f.sec).toFixed(1)} ${f.sec_class}-sec) · ${f.jumps} jumps`+(f.mfg_index==null?' · no cost index found':'')+(o.tax!==undefined||o.matBonus!==undefined?' · your saved rig/tax applied':' · rigs/tax not published by the game: set them below and press Remember');
-    if(typeof savePlannerSettings==='function')savePlannerSettings();
+  const $=id=>document.getElementById(id), ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+  const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}, ov=()=>ls('eveFacOverrides',{});
+  const e=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const ROLE={35825:{me:1,cost:3,time:15},35826:{me:1,cost:4,time:20},35827:{me:1,cost:5,time:30}}; // standard engineering-complex role bonuses (verify in game)
+  const MUL={high:1,low:1.9,null:2.1}, SEC={high:'#3fb950',low:'#d29922',null:'#f85149'};
+  const RIG={none:[0,0],t1:[2,20],t2:[2.4,24]}; // base rig ME % / TE % before the security multiplier
+  let data=null,list=[],filter={q:'',kind:'all',sec:'all',max:10,sort:'rec'},sel=null;
+  const css=document.createElement('style');css.textContent=`
+  #fbOv{position:fixed;inset:0;background:#000b;z-index:9999;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:12px}
+  #fbOv.on{display:flex}#fbWin{background:#11161d;color:#e6ebf2;border:1px solid #2a3340;border-radius:14px;width:min(980px,100%);padding:14px;font:14px/1.4 system-ui,sans-serif}
+  #fbWin h2{margin:0;font-size:18px}#fbWin h3{margin:14px 0 6px;font-size:13px;color:#8b97a8;text-transform:uppercase;letter-spacing:.05em}
+  .fbTop{display:flex;justify-content:space-between;align-items:center;gap:8px}.fbX{background:#263041;color:#e6ebf2;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
+  .fbBar{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.fbBar input,.fbBar select{background:#0c1015;color:#e6ebf2;border:1px solid #2a3340;border-radius:8px;padding:8px;font:inherit}.fbBar input{flex:1;min-width:140px}
+  .fbChip{background:#1b2330;color:#c9d3e0;border:1px solid #2a3340;border-radius:99px;padding:5px 11px;cursor:pointer;font-size:12px}.fbChip.on{background:#d4a73c;color:#111;border-color:#d4a73c;font-weight:700}
+  .fbGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .fbCard{background:#181e26;border:1px solid #2a3340;border-radius:12px;padding:10px;cursor:pointer;display:flex;flex-direction:column;gap:6px;position:relative;text-align:left;color:inherit;font:inherit}
+  .fbCard:hover,.fbCard:focus{border-color:#d4a73c;outline:0}.fbCard.top{border-color:#d4a73c66;background:#1d2230}
+  .fbImg{width:100%;aspect-ratio:16/9;border-radius:8px;background:#0c1015 center/cover;display:flex;align-items:center;justify-content:center;font-size:34px;overflow:hidden}.fbImg img{width:100%;height:100%;object-fit:cover}
+  .fbName{font-weight:700;font-size:13px;word-break:break-word}.fbSub{color:#8b97a8;font-size:12px}
+  .fbTags{display:flex;flex-wrap:wrap;gap:4px}.fbTag{font-size:11px;padding:2px 7px;border-radius:99px;background:#263041;color:#c9d3e0}
+  .fbMini{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;font-size:12px}.fbMini b{color:#fff}
+  .fbScore{position:absolute;top:8px;right:8px;background:#d4a73c;color:#111;font-weight:800;border-radius:99px;padding:2px 9px;font-size:12px}
+  .fbTiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.fbTile{background:#181e26;border:1px solid #2a3340;border-radius:10px;padding:10px}
+  .fbTile small{color:#8b97a8;display:block;font-size:11px}.fbTile b{font-size:17px}.fbTile.good b{color:#3fb950}.fbTile.bad b{color:#f85149}
+  .fbRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.fbBtn{background:#d4a73c;color:#111;border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer}.fbBtn.s{background:#263041;color:#e6ebf2}
+  .fbEd{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0}.fbEd label{font-size:11px;color:#8b97a8;display:flex;flex-direction:column;gap:3px}.fbEd input{background:#0c1015;color:#e6ebf2;border:1px solid #2a3340;border-radius:8px;padding:8px;font:inherit}
+  .fbSt{font-size:12px;margin:6px 0}.fbSt.err{color:#f85149}.fbNote{font-size:12px;color:#8b97a8}`;document.head.appendChild(css);
+  const ov_=document.createElement('div');ov_.id='fbOv';ov_.innerHTML='<div id="fbWin"></div>';document.body.appendChild(ov_);
+  const win=$('fbWin');
+
+  function stats(f){
+    const o=ov()[f.id]||null, role=ROLE[f.type_id]||{me:0,cost:0,time:0}, mul=MUL[f.sec_class]||1;
+    const tax=o&&o.tax!==''&&o.tax!=null?+o.tax:(f.tax??null), rigMe=o?+o.rigMe||0:0, rigTe=o?+o.rigTe||0:0;
+    const me=(1-(1-role.me/100)*(1-rigMe/100*mul))*100, te=(1-(1-role.time/100)*(1-rigTe/100*mul))*100;
+    const idx=f.mfg_index, base=idx==null?null:50e6*idx/100;
+    const job=base==null?null:base*(1-role.cost/100)+base*((tax??0)/100+.04);
+    const sc=(tax==null?.5:Math.max(0,1-tax/10))*35+Math.min(1,(me+te/10)/12)*25+Math.min(1,(role.me+role.cost+role.time/5)/12)*15+(idx==null?.4:Math.max(0,1-idx/10))*15+Math.max(0,1-f.jumps/10)*10;
+    return {o,role,mul,tax,rigMe,rigTe,me,te,idx,job,score:Math.round(sc),verified:!!o};
   }
-  async function init(){
-    const sel=g('nearFacility'); if(!sel)return;
-    try{
-      const r=await fetch('data/facilities.json',{cache:'no-cache'});
-      if(!r.ok)throw Error(`data/facilities.json gave HTTP ${r.status}. Run the GitHub Action again and open the site from its GitHub Pages address.`);
-      data=await r.json();
-      const bad=(data.checkpoints||[]).filter(c=>!c.ok);
-      const list=(data.facilities||[]).filter(f=>f.industry!==false);
-      if(!list.length)throw Error('facilities.json has no facilities. '+(bad.map(c=>c.step+': '+c.msg).join(' | ')||'No checkpoint reported an error.'));
-      sel.innerHTML='<option value="">Choose a facility…</option>'+list.map((f,i)=>`<option value="${i}">${f.jumps}j · ${f.system} · ${String(f.name).replace(/</g,'&lt;')} (${f.type})</option>`).join('');
-      sel._list=list;
-      say(`${list.length} facilities loaded (built ${new Date(data.updated).toLocaleString()}).`+(bad.length?' WARNINGS: '+bad.map(c=>c.step+': '+c.msg).join(' | '):' All build checkpoints passed.'),bad.length>0);
-    }catch(e){sel.innerHTML='<option value="">Facilities unavailable</option>';say('Facility data error: '+e.message,true)}
+  const pct=v=>v==null?'?':(Math.round(v*100)/100)+'%', isk=v=>v==null?'?':Math.round(v).toLocaleString()+' ISK';
+  const img=f=>f.type_id?`<img loading="lazy" src="https://images.evetech.net/types/${f.type_id}/render?size=256" alt="" onerror="this.replaceWith(document.createTextNode('🏗️'))">`:'🏭';
+  function card(f,i,top){
+    const s=stats(f);
+    return `<button class="fbCard${top?' top':''}" data-i="${i}"><span class="fbScore">★ ${s.score}</span><div class="fbImg">${img(f)}</div><div class="fbName">${e(f.name)}</div><div class="fbSub">${e(f.type)} · ${e(f.system)}</div>
+    <div class="fbTags"><span class="fbTag" style="color:${SEC[f.sec_class]}">${(+f.sec).toFixed(1)} ${f.sec_class}</span><span class="fbTag">${f.jumps} jumps</span>${s.verified?'<span class="fbTag" style="color:#3fb950">✔ your rigs</span>':''}</div>
+    <div class="fbMini"><span>Tax <b>${pct(s.tax)}</b></span><span>Index <b>${pct(s.idx)}</b></span><span>ME <b>${s.me?pct(s.me):(s.role.me?pct(s.role.me):'–')}</b></span><span>Time <b>${s.te?pct(s.te):'–'}</b></span></div></button>`;
   }
-  document.addEventListener('change',e=>{if(e.target.id==='nearFacility'){const f=e.target._list?.[+e.target.value];if(f)fill(f)}});
-  document.addEventListener('click',e=>{
-    if(e.target.id!=='nearFacSave')return;
-    const sel=g('nearFacility'),f=sel?._list?.[+sel.value];
-    if(!f){if(typeof showMsg==='function')showMsg('Pick a facility first.','warn');return}
-    const all=ov();all[f.id]={tax:g('planFacility').value,matBonus:g('planMatBonus').value,timeBonus:g('planTimeBonus').value};set('eveFacOverrides',all);
-    g('nearFacInfo').textContent='Saved rig/tax for '+f.name+' on this device.';
+  function filtered(){
+    const q=filter.q.toLowerCase();
+    let r=list.map((f,i)=>({f,i})).filter(({f})=>f.jumps<=filter.max&&(filter.kind==='all'||(filter.kind==='npc')===(f.kind==='npc'))&&(filter.sec==='all'||f.sec_class===filter.sec)&&(!q||(f.name+' '+f.system+' '+f.type).toLowerCase().includes(q)));
+    const sc=x=>stats(x.f).score;
+    r.sort(filter.sort==='rec'?(a,b)=>sc(b)-sc(a):filter.sort==='jumps'?(a,b)=>a.f.jumps-b.f.jumps:filter.sort==='tax'?(a,b)=>(stats(a.f).tax??99)-(stats(b.f).tax??99):(a,b)=>(stats(a.f).idx??99)-(stats(b.f).idx??99));
+    return r;
+  }
+  function renderList(){
+    const r=filtered(), best=r.slice(0,4), chip=(k,v,l)=>`<button class="fbChip${filter[k]===v?' on':''}" data-k="${k}" data-v="${v}">${l}</button>`;
+    const bad=(data.checkpoints||[]).filter(c=>!c.ok);
+    win.innerHTML=`<div class="fbTop"><h2>🏭 Choose a facility</h2><button class="fbX" id="fbClose">✕ Close</button></div>
+    <div class="fbSt${bad.length?' err':''}">${list.length} facilities · built ${new Date(data.updated).toLocaleString()} · ${bad.length?'WARNINGS: '+e(bad.map(c=>c.step+': '+c.msg).join(' | ')):'all build checkpoints passed'}</div>
+    <div class="fbBar"><input id="fbQ" placeholder="Search name, system, type…" value="${e(filter.q)}"><select id="fbSort"><option value="rec">Best recommended</option><option value="jumps">Closest</option><option value="tax">Lowest tax</option><option value="idx">Lowest cost index</option></select><select id="fbMax">${[1,2,3,5,7,10].map(n=>`<option value="${n}"${filter.max==n?' selected':''}>≤ ${n} jumps</option>`).join('')}</select></div>
+    <div class="fbBar">${chip('kind','all','All')}${chip('kind','struct','Player structures')}${chip('kind','npc','NPC stations')}${chip('sec','all','Any sec')}${chip('sec','high','High-sec')}${chip('sec','low','Low-sec')}${chip('sec','null','Null-sec')}</div>
+    ${r.length?`<h3>⭐ Recommended for you</h3><div class="fbGrid">${best.map(x=>card(x.f,x.i,1)).join('')}</div><div class="fbNote" style="margin-top:6px">Score = low tax, strong rigs, structure role bonus, low cost index, distance. The game does not publish player-structure tax or rigs, so facilities you have saved rigs/tax for (✔) rank on real numbers; others use a neutral guess.</div>
+    <h3>All matching (${r.length})</h3><div class="fbGrid">${r.slice(4,200).map(x=>card(x.f,x.i)).join('')}</div>`:'<div class="fbNote">No facilities match these filters.</div>'}`;
+    $('fbSort').value=filter.sort;
+  }
+  function tile(l,v,c){return `<div class="fbTile ${c||''}"><small>${l}</small><b>${v}</b></div>`}
+  function renderDetail(f){
+    const s=stats(f), o=s.o||{};
+    win.innerHTML=`<div class="fbTop"><button class="fbX" id="fbBack">← Back</button><button class="fbX" id="fbClose">✕</button></div>
+    <div class="fbRow" style="margin:10px 0"><div class="fbImg" style="width:200px;flex:none">${img(f)}</div><div><h2>${e(f.name)}</h2><div class="fbSub">${e(f.type)} · ${e(f.system)} · ${f.jumps} jumps from Jita</div><div class="fbTags" style="margin-top:6px"><span class="fbTag" style="color:${SEC[f.sec_class]}">${(+f.sec).toFixed(1)} ${f.sec_class}-sec</span><span class="fbTag">★ score ${s.score}</span>${f.market?'<span class="fbTag">🛒 market</span>':''}${s.verified?'<span class="fbTag" style="color:#3fb950">✔ your rigs saved</span>':'<span class="fbTag">rigs/tax not set</span>'}</div></div></div>
+    <h3>Buffs &amp; debuffs</h3><div class="fbTiles">
+    ${tile('Facility tax',pct(s.tax),s.tax==null?'':s.tax<=1?'good':s.tax>=5?'bad':'')}${tile('System cost index',pct(s.idx),s.idx==null?'':s.idx<=2?'good':s.idx>=6?'bad':'')}
+    ${tile('Material bonus (role + rigs)',s.me?'−'+pct(s.me):(s.role.me?'−'+pct(s.role.me):'none'),s.me>=3?'good':'')}${tile('Time bonus (role + rigs)',s.te?'−'+pct(s.te):'none',s.te>=20?'good':'')}
+    ${tile('Job cost bonus (role)',s.role.cost?'−'+pct(s.role.cost):'none',s.role.cost?'good':'')}${tile('Rig strength multiplier','×'+s.mul+' ('+f.sec_class+')',s.mul>1?'good':'')}
+    ${tile('SCC surcharge','+4%','bad')}${tile('Example 50M item job',isk(s.job))}</div>
+    <h3>Your rigs &amp; tax (saved on this device)</h3>
+    <div class="fbRow"><button class="fbChip" data-rig="none">No rigs</button><button class="fbChip" data-rig="t1">T1 ME+TE rig</button><button class="fbChip" data-rig="t2">T2 ME+TE rig</button></div>
+    <div class="fbEd"><label>Facility tax %<input id="eTax" type="number" step=".01" value="${o.tax??s.tax??''}"></label><label>Rig ME bonus % (before sec multiplier)<input id="eMe" type="number" step=".1" value="${o.rigMe??''}"></label><label>Rig TE bonus % (before sec multiplier)<input id="eTe" type="number" step=".1" value="${o.rigTe??''}"></label></div>
+    <div class="fbRow"><button class="fbBtn" id="fbUse">✔ Use this facility in planner</button><button class="fbBtn s" id="fbSave">Save rigs/tax</button></div>
+    <div class="fbNote" style="margin-top:8px">Role bonuses are the standard Raitaru/Azbel/Sotiyo values and rig strength uses ×1 / ×1.9 / ×2.1 by security; both are my reconstruction, so double-check in game. Job-cost bonus is shown here but the planner has no field for it yet.</div>`;
+    const read=()=>({tax:$('eTax').value,rigMe:$('eMe').value,rigTe:$('eTe').value});
+    const persist=()=>{const a=ov();a[f.id]=read();save('eveFacOverrides',a)};
+    win.querySelectorAll('[data-rig]').forEach(b=>b.onclick=()=>{const[m,t]=RIG[b.dataset.rig];$('eMe').value=m;$('eTe').value=t;persist();renderDetail(f)});
+    $('fbSave').onclick=()=>{persist();renderDetail(f)};
+    $('fbUse').onclick=()=>{persist();const n=stats(f),set=(id,v)=>{const el=$(id);if(el&&v!=null&&v!=='')el.value=v};
+      set('planFacilityName',f.name);set('planIndex',f.mfg_index);set('planFacility',n.tax);set('planMatBonus',Math.round(Math.max(n.me,n.role.me)*100)/100);set('planTimeBonus',Math.round(n.te*100)/100);
+      if(typeof savePlannerSettings==='function')savePlannerSettings();sel=f;summary();close();if(typeof showMsg==='function')showMsg('Facility applied to the planner: '+f.name,'good')};
+  }
+  function summary(){const el=$('nearFacInfo');if(el)el.textContent=sel?`Selected: ${sel.name} (${sel.type}, ${sel.system})`:'';}
+  const close=()=>ov_.classList.remove('on');
+  async function open(){
+    ov_.classList.add('on');
+    if(!data){win.innerHTML='<div class="fbNote">Loading data/facilities.json…</div>';
+      try{const r=await fetch('data/facilities.json',{cache:'no-cache'});if(!r.ok)throw Error(`data/facilities.json gave HTTP ${r.status}. Run the GitHub Action again and open the site from its GitHub Pages address.`);
+        data=await r.json();list=(data.facilities||[]).filter(f=>f.industry!==false);
+        if(!list.length)throw Error('facilities.json has no facilities. '+((data.checkpoints||[]).filter(c=>!c.ok).map(c=>c.step+': '+c.msg).join(' | ')||'No checkpoint reported an error.'));
+      }catch(err){data=null;win.innerHTML=`<div class="fbTop"><h2>Facility data error</h2><button class="fbX" id="fbClose">✕</button></div><div class="fbSt err">${e(err.message)}</div>`;return}}
+    renderList();
+  }
+  document.addEventListener('click',ev=>{
+    const t=ev.target;if(!t.closest)return;
+    if(t.closest('#nearFacOpen'))return open();
+    if(!ov_.classList.contains('on'))return;
+    if(t===ov_||t.closest('#fbClose'))return close();
+    if(t.closest('#fbBack'))return renderList();
+    const c=t.closest('.fbCard');if(c)return renderDetail(list[+c.dataset.i]);
+    const ch=t.closest('.fbChip[data-k]');if(ch){filter[ch.dataset.k]=ch.dataset.v;renderList()}
   });
-  init();
+  document.addEventListener('input',ev=>{if(ev.target.id==='fbQ'){filter.q=ev.target.value;const p=ev.target.selectionStart;renderList();const q=$('fbQ');q.focus();q.setSelectionRange(p,p)}});
+  document.addEventListener('change',ev=>{if(ev.target.id==='fbSort'){filter.sort=ev.target.value;renderList()}if(ev.target.id==='fbMax'){filter.max=+ev.target.value;renderList()}});
 })();
 </script>
 </body></html>

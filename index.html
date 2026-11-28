@@ -307,16 +307,146 @@ function renderPlannerBpc(){const box=$('#planBpcSummary'),status=$('#planBpcSta
 async function refreshPlannerBpc(){const status=$('#planBpcStatus');if(!plannerRecipe)return;if(plannerPinned&&plannerBpcLots.length){renderPlannerBpc();pinnedBpcNote();renderPlanMaterials();return;}if(!window.eveContractLookup){status.textContent='Contract finder is unavailable.';return;}status.textContent='Searching the cached contract archive for BPCs…';try{const id=plannerRecipe.bp.blueprintTypeID||plannerRecipe.bp._key||plannerRecipe.bp.typeID;const hits=await window.eveContractLookup(id);plannerBpcLots=hits;renderPlannerBpc();if(!hits.length)status.textContent='No eligible BPC contracts found in the selected region/station filters. Manual ME / TE remains available.';renderPlanMaterials();}catch(e){status.textContent='BPC lookup failed: '+e.message;}}
 
 function renderPlanMaterials(){if(!plannerRecipe)return;let runs=Math.max(1,+$('#planRuns').value||1),me=Math.max(0,Math.min(10,+$('#planME').value||0)),bonus=Math.max(0,+$('#planMatBonus').value||0),rows=(plannerRecipe.activity.materials||[]).map(m=>{let base=Math.max(runs,Math.ceil(m.quantity*runs*(1-me/100)*(1-bonus/100)));let quote=plannerQuotes[m.typeID]||{};return {id:m.typeID,name:sdeTypes[m.typeID]||('Type '+m.typeID),qty:base,price:quote.sell||0,owned:0}});$('#planMaterialTable').innerHTML='<h3>Material requirements (ME + facility material bonus)</h3>'+table(['Material','Required','Market price (ISK)','Cost estimate'],rows.map(x=>[esc(x.name),fmt(x.qty),`<input class="mat-price" data-id="${x.id}" type="number" value="${x.price}" min="0" style="width:130px">`,fmtMoney(x.qty*x.price)]));}
-const MARKET_TTL=30*60*1000,marketFiles=new Map();
-// Order books for a hub region from the published EVE Ref snapshot (data/market.json for Jita, data/market-<regionId>.json for the others). Loaded once per region and shared.
+// ---- Market data: EVE Ref snapshot ------------------------------------------------------------
+// 1) Preferred: data/market*.json published by the build (already filtered, instant).
+// 2) Fallback (same method as everef-market-test.html): download EVE Ref's market-order snapshot in the browser,
+//    decompress it with bzip2 in a Web Worker and keep the best 40 levels per type for the five hub regions.
+// Neither path calls ESI.
+const MARKET_TTL=30*60*1000,PUB_MAX_AGE=6*3600*1000,LIVE_TTL=60*60*1000,marketFiles=new Map();
+const HUB_REGIONS=[10000002,10000043,10000032,10000030,10000042];
+const EVEREF_ORDERS='https://data.everef.net/market-orders/';
+const BZ2_SOURCES=['https://cdn.jsdelivr.net/npm/bz2@1.0.1/index.js','https://unpkg.com/bz2@1.0.1/index.js'];
+let marketNote=null,snapDl=null,livePending=null;
+function note(m){try{if(marketNote)marketNote(m);else{const e=$('#sdeStatus');if(e)e.textContent=m}}catch(e){}}
+
+/*PARSER_START*/
+// Self-contained on purpose: it is stringified into a Web Worker and also runs on the main thread as a fallback.
+function parseOrders(bytes,opts,decompress,report){
+  const t0=Date.now(),LV=40,TRIM=200;
+  if(report)report('Decompressing EVE Ref snapshot (bzip2 in JavaScript, this is the slow part)…');
+  const csv=decompress(bytes,true);
+  const regions=new Set(opts.regions.map(Number)),want=opts.types&&opts.types.length?new Set(opts.types.map(Number)):null;
+  const dec=new TextDecoder(),CH=8*1024*1024,n=csv.length;
+  let ix=null,header=[],scanned=0,kept=0,pos=0;
+  const books={},snap={};
+  for(const r of regions)books[r]={};
+  while(pos<n){
+    let end=Math.min(n,pos+CH);
+    if(end<n){const nl=csv.indexOf(10,end);end=nl<0?n:nl+1;}
+    const lines=dec.decode(csv.subarray(pos,end)).split('\n');
+    pos=end;
+    if(report)report('Reading orders… '+Math.round(pos/n*100)+'%');
+    for(let line of lines){
+      if(!line)continue;
+      if(line.charCodeAt(line.length-1)===13)line=line.slice(0,-1);
+      if(!line)continue;
+      if(!ix){
+        header=line.split(',').map(x=>x.replace(/"/g,'').trim());ix={};header.forEach((h,i)=>ix[h]=i);
+        for(const need of ['is_buy_order','price','type_id','volume_remain','region_id'])
+          if(ix[need]===undefined)throw new Error('Unexpected CSV columns, missing "'+need+'". Found: '+header.join(', '));
+        continue;
+      }
+      scanned++;
+      const f=line.split(','),reg=+f[ix.region_id];
+      if(!regions.has(reg))continue;
+      const t=+f[ix.type_id];
+      if(want&&!want.has(t))continue;
+      const b=books[reg],side=/^(true|1)$/i.test(f[ix.is_buy_order])?1:0,pair=b[t]||(b[t]=[[],[]]),lv=pair[side];
+      lv.push([+f[ix.price],+f[ix.volume_remain]]);
+      if(lv.length>TRIM){lv.sort(side?(a,c)=>c[0]-a[0]:(a,c)=>a[0]-c[0]);lv.length=LV;} // keeps memory bounded when every type is kept
+      kept++;
+      if(ix.http_last_modified!==undefined&&!snap[reg]&&f[ix.http_last_modified])snap[reg]=f[ix.http_last_modified];
+    }
+  }
+  if(!ix)throw new Error('The snapshot file was empty.');
+  for(const reg of regions)for(const t in books[reg]){const [s,bu]=books[reg][t];s.sort((a,b)=>a[0]-b[0]);bu.sort((a,b)=>b[0]-a[0]);if(s.length>LV)s.length=LV;if(bu.length>LV)bu.length=LV}
+  return {books,snap,stats:{scanned,kept,csvBytes:n,ms:Date.now()-t0}};
+}
+/*PARSER_END*/
+function workerSource(){
+  return 'self.window=self;\n'+parseOrders.toString()+'\n'+
+  'const SRC='+JSON.stringify(BZ2_SOURCES)+';\n'+
+  `onmessage=e=>{try{
+    let fn,errs=[];
+    for(const u of SRC){try{importScripts(u);fn=self.bz2&&self.bz2.decompress;if(typeof fn==='function')break;errs.push(u+': decompress not exposed')}catch(x){errs.push(u+': '+x.message)}}
+    if(typeof fn!=='function')throw new Error('Worker could not load the bzip2 decoder ('+errs.join(' | ')+')');
+    postMessage({type:'done',out:parseOrders(e.data.bytes,e.data.opts,fn,m=>postMessage({type:'status',msg:m}))});
+  }catch(x){postMessage({type:'error',msg:x.message})}};`;
+}
+function parseInWorker(bytes,opts){
+  return new Promise((resolve,reject)=>{
+    let url,w;
+    try{url=URL.createObjectURL(new Blob([workerSource()],{type:'text/javascript'}));w=new Worker(url)}catch(e){if(url)URL.revokeObjectURL(url);return reject(e)}
+    const done=()=>{w.terminate();URL.revokeObjectURL(url)};
+    w.onmessage=e=>{const m=e.data;if(m.type==='status')note(m.msg);else if(m.type==='done'){done();resolve(m.out)}else if(m.type==='error'){done();reject(new Error(m.msg))}};
+    w.onerror=e=>{done();reject(new Error(e.message||'worker failed to start'))};
+    w.postMessage({bytes,opts});
+  });
+}
+async function loadBz2Main(){
+  if(window.bz2&&window.bz2.decompress)return window.bz2.decompress;
+  for(const url of BZ2_SOURCES){
+    try{await new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=url;sc.onload=res;sc.onerror=()=>rej(new Error('could not load '+url));document.head.appendChild(sc)});
+      if(window.bz2&&window.bz2.decompress)return window.bz2.decompress}catch(e){}
+  }
+  throw new Error('Could not load a bzip2 decoder. Check content blockers or your connection.');
+}
+async function discoverSnapshot(){
+  try{
+    const r=await fetch(EVEREF_ORDERS+'index.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
+    const files=((await r.json()).files||[]).filter(f=>/\.csv\.bz2$/i.test(f.name||''));
+    let f=files.find(x=>/latest/i.test(x.name))||files.slice().sort((a,b)=>String(b.last_modified||b.name).localeCompare(String(a.last_modified||a.name)))[0];
+    if(f)return {url:f.url||EVEREF_ORDERS+f.name,name:f.name,size:f.size};
+  }catch(e){}
+  return {url:EVEREF_ORDERS+'market-orders-latest.v3.csv.bz2',name:'market-orders-latest.v3.csv.bz2'};
+}
+async function downloadSnapshot(file){
+  if(snapDl&&snapDl.url===file.url&&Date.now()-snapDl.at<600000)return snapDl;
+  const r=await fetch(file.url,{cache:'no-store'});
+  if(!r.ok)throw new Error('EVE Ref snapshot download failed: HTTP '+r.status);
+  const total=Number(r.headers.get('content-length'))||file.size||0,reader=r.body.getReader(),chunks=[];let got=0;
+  for(;;){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;
+    note('Downloading EVE Ref market snapshot… '+(got/1048576).toFixed(1)+(total?' / '+(total/1048576).toFixed(1):'')+' MiB')}
+  const bytes=new Uint8Array(got);let o=0;for(const c of chunks){bytes.set(c,o);o+=c.length}
+  snapDl={url:file.url,bytes,at:Date.now()};return snapDl;
+}
+// One download + one decompression covers all five hubs and every item type; results are cached for an hour in IndexedDB.
+function liveMarket(region){
+  if(!livePending){
+    livePending=(async()=>{
+      const out={};let missing=false;
+      for(const r of HUB_REGIONS){let c=null;try{c=await sdeCacheGet('everefBooks:'+r)}catch(e){}if(c&&c.books&&Date.now()-c.t<LIVE_TTL)out[r]=c;else missing=true}
+      if(!missing)return out;
+      const d=await downloadSnapshot(await discoverSnapshot()),opts={regions:HUB_REGIONS,types:null};
+      let res;
+      try{res=await parseInWorker(d.bytes,opts)}
+      catch(e){note('Background worker unavailable ('+e.message+'). Parsing on the main thread; the page may freeze for a while…');const fn=await loadBz2Main();await new Promise(r=>setTimeout(r,50));res=parseOrders(d.bytes,opts,fn,note)}
+      snapDl=null;
+      for(const r of HUB_REGIONS){const m={t:Date.now(),region:r,updated:new Date().toISOString(),snapshot:res.snap[r]||null,source:'everef-market-orders (browser)',complete:true,books:res.books[r]};out[r]=m;sdeCachePut('everefBooks:'+r,m).catch(()=>{})}
+      return out;
+    })();
+    livePending.catch(()=>{livePending=null});
+    setTimeout(()=>{livePending=null},LIVE_TTL);
+  }
+  return livePending.then(o=>{if(!o[region])throw Error('Region '+region+' is not one of the five hub markets.');return o[region]});
+}
+// Order books for a hub region: the published file when it is fresh and complete, otherwise the browser-side EVE Ref snapshot.
 function marketFor(region){
   const hit=marketFiles.get(region);if(hit&&Date.now()-hit.t<MARKET_TTL)return hit.p;
   const file=region===10000002?'data/market.json':`data/market-${region}.json`;
   const p=(async()=>{
-    const r=await fetch(file,{cache:'no-cache'});
-    if(!r.ok)throw Error(`No published prices for this market (${file} gave HTTP ${r.status}). Open the site from its GitHub Pages address and make sure the build workflow has run.`);
-    const m=await r.json();if(!m||!m.books)throw Error(`${file} has no market books; run the build workflow.`);
-    return m;
+    let why='';
+    try{
+      const r=await fetch(file,{cache:'no-cache'});
+      if(!r.ok)why=`${file} gave HTTP ${r.status}`;
+      else{const m=await r.json();
+        if(!m||!m.books)why=`${file} has no books`;
+        else if(!m.complete)why=`${file} is from an older build (not every item type)`;
+        else if(!(Date.now()-Date.parse(m.updated)<=PUB_MAX_AGE))why=`${file} is more than 6 hours old`;
+        else return m;}
+    }catch(e){why=e.message}
+    note('Published market data not usable ('+why+'). Loading EVE Ref snapshot in your browser instead…');
+    return await liveMarket(region);
   })();
   marketFiles.set(region,{t:Date.now(),p});p.catch(()=>marketFiles.delete(region));return p;
 }
@@ -344,6 +474,8 @@ async function fetchPlanQuotes(force=false){
  if(wrap)wrap.hidden=false;
  const setProgress=(n,msg)=>{let pct=Math.round(n/Math.max(1,requests.length)*100);if(bar)bar.style.width=pct+'%';if(label)label.textContent=msg;if(pctEl)pctEl.textContent=pct+'%';$('#sdeStatus').textContent=msg;};
  setProgress(0,'Preparing market quotes…');
+ marketNote=m=>{if(label)label.textContent=m;const e=$('#sdeStatus');if(e)e.textContent=m};
+ try{await marketFor(buyRegion);if(sellRegion!==buyRegion)await marketFor(sellRegion)}catch(e){}
  await mapLimit(requests,4,async x=>{
    try{plannerQuotes[x.id]=await quoteType(x.id,x.region,x.qty,force);}
    catch(e){plannerQuotes[x.id]={};failed.push({id:x.id,region:x.region,error:e.message});}
@@ -444,6 +576,7 @@ async function loadPublished(region=10000002){
     const c=await cr.json(),age=Date.now()-Date.parse(c.updated);
     if(!c.updated||!(age<=6*3600*1000)){publishedWhy=`published data is ${c.updated?Math.round(age/36e5)+' hours':'of unknown age'} old (limit is 6 hours); run the build workflow`;return null}
     let m=null;try{if(mr&&mr.ok)m=await mr.json()}catch(e){}
+    if(m&&!(m.complete&&Date.now()-Date.parse(m.updated)<=6*3600*1000))m=null; // old/partial file: fall back to the browser-side EVE Ref snapshot
     publishedWhy=(m&&m.books)?'':`no published prices for this market yet (${marketFile} is missing); run the build workflow`;
     // No published book for this hub: keep the published contracts, the scan then falls back to live market data.
     return {c,m:m&&m.books?m:{region:0,books:{},updated:c.updated}};
@@ -489,11 +622,11 @@ async function runOpportunityScan(){
     const ids=[...types],books=new Map();let done=0,failed=0;
     const usePub=!!pub&&pub.m.region===region;
     if(usePub){for(const id of ids){const b=pub.m.books[id];if(b)books.set(id,{sell:b[0],buy:b[1]})}}
-    else await mapLimit(ids,4,async id=>{
+    else{marketNote=m=>{st.textContent=m};await marketFor(region);await mapLimit(ids,4,async id=>{
       if(opportunityScanStop)return;
       try{books.set(id,await getBook(id,region))}catch(e){failed++}
       done++;st.textContent=`Published market data ${done}/${ids.length}`;prog(done,ids.length);
-    });
+    })}
     if(opportunityScanStop){st.textContent='Stopped';return}
     const fill=(lv,n)=>{let left=n,cost=0;for(const [p,v] of lv){if(left<=0)break;const k=Math.min(left,v);cost+=k*p;left-=k}return {units:n-left,cost,left}};
     const results=[];
@@ -600,7 +733,7 @@ async function loadPlan(p){
  $('#planIndex').value=p.systemIndex??$('#planIndex').value;$('#planFacility').value=p.facilityTax??$('#planFacility').value;$('#planMatBonus').value=p.matBonus??$('#planMatBonus').value;$('#planTimeBonus').value=p.timeBonus??$('#planTimeBonus').value;$('#planME').value=p.me??$('#planME').value;$('#planTE').value=p.te??$('#planTE').value;$('#planFacilityName').value=p.facilityName??$('#planFacilityName').value;if(p.market)$('#planMarket').value=String(p.market);if(p.buyMarket&&$('#planBuyMarket'))$('#planBuyMarket').value=String(p.buyMarket);if(p.scc!==undefined&&$('#planSCC'))$('#planSCC').value=p.scc;savePlannerSettings();
  renderPlanMaterials();calcAutoPlan();
 }
-async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let bk=await getBook(item,region),sell=bk.sell,buy=bk.buy;per[n]={sell:sell.length?sell[0][0]:0,buy:buy.length?buy[0][0]:0,sellVol:sell.filter(l=>l[0]===(sell[0]||[])[0]).reduce((s,l)=>s+l[1],0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
+async function scanItems(items){let rows=[];$('#marketResult').innerHTML='<div class="notice">Scanning…</div>';marketNote=m=>{$('#marketResult').innerHTML='<div class="notice">'+esc(m)+'</div>'};try{await Promise.all(HUBS.map(([,r])=>marketFor(r)))}catch(e){$('#marketResult').innerHTML='<div class="notice">'+esc(e.message)+'</div>';return}for(let item of items.slice(0,30)){let per={};await Promise.all(HUBS.map(async([n,region])=>{try{let bk=await getBook(item,region),sell=bk.sell,buy=bk.buy;per[n]={sell:sell.length?sell[0][0]:0,buy:buy.length?buy[0][0]:0,sellVol:sell.filter(l=>l[0]===(sell[0]||[])[0]).reduce((s,l)=>s+l[1],0)}}catch{}}));let active=Object.entries(per).filter(([,v])=>v.sell);if(!active.length)continue;let low=active.reduce((a,b)=>b[1].sell<a[1].sell?b:a),high=active.reduce((a,b)=>b[1].sell>a[1].sell?b:a),j=per.Jita||{},c=cfg(),hauling=(high[1].sell*(1-c.tax/100-c.broker/100)-low[1].sell)/low[1].sell,flip=j.sell&&j.buy?(j.sell*(1-c.tax/100-c.broker/100)-j.buy*(1+c.broker/100))/(j.buy*(1+c.broker/100)):null;rows.push([esc(names()[item]||item),esc(low[0]+' · '+fmtMoney(low[1].sell)),esc(high[0]+' · '+fmtMoney(high[1].sell)),pct(hauling),flip==null?'–':pct(flip)])}$('#marketResult').innerHTML=table(['Item','Lowest sell','Highest sell','Cross-hub spread (estimate)','Jita flip (estimate)'],rows)}
 function scanTop(){let items=fifo().sort((a,b)=>b.buyq+b.sellq-(a.buyq+a.sellq)).slice(0,8).map(x=>x.id);if(items.length)scanItems(items);else showMsg('No transaction history to scan.')}
 function scanAssetItems(){let items=[...new Set(assets().sort((a,b)=>b[4]-a[4]).slice(0,8).map(x=>x[0]))];if(items.length)scanItems(items);else showMsg('No assets to scan.')}
 function removeCharacter(id){if(!confirm('Remove '+name(id)+' and its saved data from this browser? This does not revoke authorization at EVE.'))return;let c=chars();delete c[id];store.set('chars',c);store.del('data:'+id);selected='all';populateSelect();render()}

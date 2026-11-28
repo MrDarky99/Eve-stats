@@ -1,5 +1,5 @@
-// Builds data/contracts.json + market books for the five trade hubs for the Pages site. Runs inside GitHub Actions.
-// Market data comes from EVE Ref's market-order snapshot (one download), so this script makes NO per-item ESI requests.
+// Builds data/contracts.json, data/prices.json and market books for the five trade hubs for the Pages site. Runs inside GitHub Actions.
+// All market data comes from EVE Ref's market-order snapshot (one download), so neither this script nor the site makes ESI price requests.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,7 +8,7 @@ import {execFileSync, spawn} from 'node:child_process';
 
 const OUT = process.argv[2] || 'site/data';
 const HUBS = [10000002, 10000043, 10000032, 10000030, 10000042]; // Forge (Jita), Domain (Amarr), Sinq Laison (Dodixie), Heimatar (Rens), Metropolis (Hek)
-const SNAP_BASE = 'https://data.everef.net/market-orders/', LEVELS = 40, MAX_SNAPSHOT_AGE_MS = 3 * 3600 * 1000;
+const SNAP_BASE = 'https://data.everef.net/market-orders/', LEVELS = 40, TRIM_AT = 200, MAX_SNAPSHOT_AGE_MS = 3 * 3600 * 1000;
 const STATIONS = new Set([60003760, 60008494, 60011866, 60004588, 60005686]); // Jita, Amarr, Dodixie, Rens, Hek
 const UA = {'User-Agent': 'EVE-Ledger data builder (github.com/mrdarky99/Eve-stats)'};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -20,7 +20,8 @@ async function get(url) {
   return null;
 }
 
-// Streams EVE Ref's bzip2 CSV through the system bzip2 and keeps the best LEVELS sell/buy levels per wanted type, per hub region.
+// Streams EVE Ref's bzip2 CSV through the system bzip2 and keeps the best LEVELS sell/buy levels per type, per hub region.
+// wanted = Set of type ids to keep, or null to keep every type that has orders in the hub regions.
 async function readSnapshot(file, wanted, hubs) {
   const books = Object.fromEntries(hubs.map(r => [r, {}])), snap = {}, regions = new Set(hubs);
   let ix = null, scanned = 0, kept = 0;
@@ -39,9 +40,11 @@ async function readSnapshot(file, wanted, hubs) {
     const reg = +row[ix.region_id];
     if (!regions.has(reg)) continue;
     const t = +row[ix.type_id];
-    if (!wanted.has(t)) continue;
+    if (wanted && !wanted.has(t)) continue;
     const b = books[reg][t] || (books[reg][t] = [[], []]);
-    b[/^(true|1)$/i.test(row[ix.is_buy_order]) ? 1 : 0].push([+row[ix.price], +row[ix.volume_remain]]);
+    const side = /^(true|1)$/i.test(row[ix.is_buy_order]) ? 1 : 0, lv = b[side];
+    lv.push([+row[ix.price], +row[ix.volume_remain]]);
+    if (lv.length > TRIM_AT) { lv.sort(side ? (a, c) => c[0] - a[0] : (a, c) => a[0] - c[0]); lv.length = LEVELS; } // keeps memory bounded when every type is kept
     kept++;
     if (!snap[reg] && ix.http_last_modified !== undefined && row[ix.http_last_modified]) snap[reg] = row[ix.http_last_modified];
   }
@@ -145,10 +148,11 @@ for await (const line of rl) {
 const kept = [...contracts.values()].filter(c => c.rows.length);
 console.log(`${kept.length} contracts contain blueprints.`);
 
-// 4) Market depth for every product and material those blueprints need, from EVE Ref's market snapshot (no ESI calls)
+// 4) Market depth for EVERY item type in the hub regions (not only blueprint products/materials), from EVE Ref's market snapshot (no ESI calls)
+// `types` is only used as a sanity check: the products and materials of the contract blueprints must be well covered.
 const types = new Set();
 for (const c of kept) for (const r of c.rows) { const rc = recipes.get(String(r[0])); types.add(rc.product); rc.mats.forEach(m => types.add(m)); }
-console.log(`Need market data for ${types.size} item types.`);
+console.log(`${types.size} item types are needed by the contract blueprints; keeping books for every traded type.`);
 const snapUrl = await snapshotUrl();
 console.log('Downloading market snapshot…', snapUrl);
 const snapRes = await get(snapUrl);
@@ -156,22 +160,36 @@ if (!snapRes) throw new Error('Could not download the EVE Ref market snapshot; k
 const snapFile = path.join(tmp, 'orders.csv.bz2');
 fs.writeFileSync(snapFile, Buffer.from(await snapRes.arrayBuffer()));
 console.log(`Reading ${(fs.statSync(snapFile).size / 1048576).toFixed(1)} MiB snapshot…`);
-const snapshot = await readSnapshot(snapFile, types, HUBS);
+const snapshot = await readSnapshot(snapFile, null, HUBS);
 console.log(`${snapshot.scanned.toLocaleString()} orders scanned, ${snapshot.kept.toLocaleString()} kept.`);
 if (snapshot.scanned < 200000) throw new Error(`Snapshot looks incomplete (${snapshot.scanned} orders); keeping the previous deployment.`);
 const jitaAt = Date.parse(snapshot.snap[HUBS[0]]);
 if (Number.isFinite(jitaAt) && Date.now() - jitaAt > MAX_SNAPSHOT_AGE_MS) throw new Error(`Snapshot is too old (${snapshot.snap[HUBS[0]]}); keeping the previous deployment.`);
 for (const reg of HUBS) {
   const have = Object.keys(snapshot.books[reg]).length;
-  console.log(`  region ${reg}: books for ${have}/${types.size} item types`);
+  const need = [...types].filter(t => snapshot.books[reg][t]).length;
+  console.log(`  region ${reg}: books for ${have} item types (${need}/${types.size} of the contract blueprint items)`);
 }
-if (Object.keys(snapshot.books[HUBS[0]]).length < types.size * 0.5) throw new Error('Too few Jita markets found in the snapshot; keeping the previous deployment.');
+if ([...types].filter(t => snapshot.books[HUBS[0]][t]).length < types.size * 0.5) throw new Error('Too few Jita markets found in the snapshot; keeping the previous deployment.');
 
 // 5) Write the files
 fs.mkdirSync(OUT, {recursive: true});
 const updated = new Date().toISOString();
 fs.writeFileSync(path.join(OUT, 'contracts.json'), JSON.stringify({updated, scrape_end: meta.scrape_end, contracts: kept.map(c => [c.id, c.price, c.station, c.exp, c.items, c.rows])}));
-// Jita keeps the original file name and format; the other hubs get market-<regionId>.json in the same format.
+// One price per item type for valuing assets, mining and losses (replaces ESI /markets/prices/):
+// Jita lowest sell, else Jita highest buy, else the cheapest sell in the other hubs, else their highest buy.
+const prices = {}, allTypes = new Set(HUBS.flatMap(r => Object.keys(snapshot.books[r])));
+for (const t of allTypes) {
+  let p = 0;
+  const j = snapshot.books[HUBS[0]][t];
+  if (j) p = j[0][0]?.[0] || j[1][0]?.[0] || 0;
+  if (!p) { const s = HUBS.slice(1).map(r => snapshot.books[r][t]?.[0][0]?.[0]).filter(x => x > 0); if (s.length) p = Math.min(...s); }
+  if (!p) { const b = HUBS.slice(1).map(r => snapshot.books[r][t]?.[1][0]?.[0]).filter(x => x > 0); if (b.length) p = Math.max(...b); }
+  if (p > 0) prices[t] = Math.round(p * 100) / 100;
+}
+fs.writeFileSync(path.join(OUT, 'prices.json'), JSON.stringify({updated, snapshot: snapshot.snap[HUBS[0]] || null, source: 'everef-market-orders', region: HUBS[0], prices}));
+console.log(`Wrote prices for ${Object.keys(prices).length} item types.`);
+// Jita keeps the original file name and format; the other hubs get market-<regionId>.json in the same format (now with every traded type).
 for (const reg of HUBS) {
   const file = reg === HUBS[0] ? 'market.json' : `market-${reg}.json`;
   fs.writeFileSync(path.join(OUT, file), JSON.stringify({updated, region: reg, snapshot: snapshot.snap[reg] || null, source: 'everef-market-orders', books: snapshot.books[reg]}));

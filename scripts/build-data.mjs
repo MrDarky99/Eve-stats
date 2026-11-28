@@ -194,4 +194,105 @@ for (const reg of HUBS) {
   const file = reg === HUBS[0] ? 'market.json' : `market-${reg}.json`;
   fs.writeFileSync(path.join(OUT, file), JSON.stringify({updated, region: reg, snapshot: snapshot.snap[reg] || null, source: 'everef-market-orders', complete: true, books: snapshot.books[reg]}));
 }
+// 6) Facilities within MAX_JUMPS of Jita (EVE Ref + SDE, no ESI).
+// NON-FATAL on purpose: a failure here is written into facilities.json (ok:false + checkpoints) and logged as a GitHub warning,
+// but never blocks the prices/contracts/market deployment above.
+async function buildFacilities() {
+  const ORIGIN = 30000142, MAX = +process.env.MAX_JUMPS || 10, cps = [];
+  const STRUCT_TYPES = {35825: 'Raitaru', 35826: 'Azbel', 35827: 'Sotiyo', 35832: 'Astrahus', 35833: 'Fortizar', 35834: 'Keepstar', 35835: 'Athanor', 35836: 'Tatara'};
+  const INDUSTRY = new Set([35825, 35826, 35827, 35835, 35836]);
+  const result = {updated, origin: ORIGIN, max_jumps: MAX, ok: false, checkpoints: cps, counts: {}, facilities: []};
+  const cp = (step, ok, msg) => {
+    cps.push({step, ok, msg}); console.log(`[facilities] ${ok ? 'OK  ' : 'FAIL'} ${step}: ${msg}`);
+    if (!ok) console.log(`::warning title=Facilities ${step}::${msg}`);
+  };
+  const pick = (o, ...names) => { for (const n of names) for (const s of [o, o?.value]) if (s && s[n] !== undefined) return s[n]; };
+  const sysOf = r => Number(pick(r, 'solar_system_id', 'system_id', 'solarSystemID', 'solarSystemId') ?? r?.value?.esi?.solar_system_id);
+  const rows = j => {
+    if (Array.isArray(j)) return j;
+    if (j && typeof j === 'object') {
+      const arrs = Object.values(j).filter(Array.isArray);
+      if (arrs.length === 1 && arrs[0].length > 20) return arrs[0];
+      return Object.entries(j).map(([k, v]) => (v && typeof v === 'object' && !Array.isArray(v)) ? {_key: k, ...v} : {_key: k, value: v});
+    }
+    return [];
+  };
+  const getJ = async u => { const r = await get(u); if (!r) throw new Error('download failed: ' + u); return r.json(); };
+  async function latest(dir, pattern, fallback) {
+    const base = `https://data.everef.net/${dir}/`;
+    try {
+      const idx = await (await get(base + 'index.json')).json();
+      const fl = (idx.files || []).filter(f => pattern.test(f.name || ''));
+      const f = fl.find(x => /latest/i.test(x.name)) || fl.sort((a, b) => String(b.name).localeCompare(String(a.name)))[0];
+      if (f) return f.url || base + f.name;
+    } catch {}
+    return fallback;
+  }
+  const secClass = s => s >= 0.45 ? 'high' : s > 0 ? 'low' : 'null';
+  const mfgIndex = d => {
+    const ci = d?.cost_indices ?? d?.costIndices ?? d; let v;
+    if (Array.isArray(ci)) { const a = ci.find(x => /manufactur/i.test(String(x.activity ?? x.activity_name ?? ''))); v = a?.cost_index ?? a?.costIndex; }
+    else if (ci && typeof ci === 'object') v = ci.manufacturing?.cost_index ?? ci.manufacturing ?? ci.manufacturing_cost_index;
+    return typeof v === 'number' ? Math.round(v * 10000) / 100 : null; // percent, e.g. 0.0129 -> 1.29
+  };
+  try {
+    // A) jump graph
+    const nm = t => String(t.name || t.table || t.id || ''), tUrl = t => t.jsonl?.url || t.jsonl || t.url;
+    const jsonl = async t => (await (await get(tUrl(t))).text()).split(/\r?\n/).filter(l => l.trim()).map(l => JSON.parse(l));
+    const adj = new Map(), link = (a, b) => { if (a && b) { (adj.get(a) || adj.set(a, new Set()).get(a)).add(b); (adj.get(b) || adj.set(b, new Set()).get(b)).add(a); } };
+    const jt = tables.find(t => /solarsystemjumps|systemjumps/i.test(nm(t))), gt = tables.find(t => /stargates/i.test(nm(t)));
+    if (jt) for (const r of await jsonl(jt)) link(+pick(r, 'fromSolarSystemID', 'from_solar_system_id', 'fromSystemID'), +pick(r, 'toSolarSystemID', 'to_solar_system_id', 'toSystemID'));
+    else if (gt) for (const r of await jsonl(gt)) link(+pick(r, 'solarSystemID'), +(pick(r, 'destination')?.solarSystemID ?? pick(r, 'destinationSolarSystemID')));
+    else throw new Error('No jump or stargate table in the SDE (tables: ' + tables.map(nm).filter(n => /jump|gate|system/i.test(n)).join(', ') + ')');
+    if (adj.size < 5000) throw new Error(`Jump graph only has ${adj.size} systems (expected ~8000); SDE format changed?`);
+    const jumps = new Map([[ORIGIN, 0]]); let fr = [ORIGIN];
+    for (let d = 1; d <= MAX; d++) { const nx = []; for (const s of fr) for (const n of adj.get(s) || []) if (!jumps.has(n)) { jumps.set(n, d); nx.push(n); } fr = nx; }
+    if (jumps.size < 10) throw new Error(`Only ${jumps.size} systems found within ${MAX} jumps of ${ORIGIN}`);
+    cp('jump-search', true, `${adj.size} systems in graph, ${jumps.size} within ${MAX} jumps of Jita`);
+    // B) names + security
+    const info = new Map(), st = tables.find(t => /^mapsolarsystems$/i.test(nm(t)));
+    if (st) for (const r of await jsonl(st)) { const n = pick(r, 'name', 'solarSystemName'); info.set(+pick(r, '_key', 'solarSystemID'), {name: typeof n === 'object' ? n.en : n, sec: Number(pick(r, 'securityStatus', 'security'))}); }
+    cp('system-names', info.size > 5000, `${info.size} system names/security values loaded`);
+    // C) cost indices (optional)
+    const idx = new Map();
+    try {
+      const u = await latest('industry-systems', /latest.*\.json$/i, 'https://data.everef.net/industry-systems/industry-systems-latest.json');
+      for (const r of rows(await getJ(u))) { const sid = sysOf(r); if (jumps.has(sid)) idx.set(sid, mfgIndex(r.value || r)); }
+      const withVal = [...idx.values()].filter(v => v !== null).length;
+      cp('cost-indices', withVal > 0, `${idx.size} systems matched, ${withVal} with a manufacturing index${withVal ? '' : ' (record format not recognised; see data/facilities.json)'}`);
+    } catch (e) { cp('cost-indices', false, e.message); }
+    const base = (sid, f) => ({...f, system_id: sid, system: info.get(sid)?.name, sec: info.get(sid)?.sec, sec_class: secClass(info.get(sid)?.sec), jumps: jumps.get(sid), mfg_index: idx.get(sid) ?? null});
+    // D) player structures (optional)
+    try {
+      const u = await latest('structures', /structures-latest\.v2\.json$/i, 'https://data.everef.net/structures/structures-latest.v2.json');
+      const all = rows(await getJ(u)); let n = 0;
+      for (const r of all) {
+        const sid = sysOf(r); if (!jumps.has(sid)) continue;
+        const d = r.value || r, tid = Number(d.type_id ?? d.esi?.type_id);
+        result.facilities.push(base(sid, {kind: 'structure', id: Number(r._key ?? d.structure_id ?? d.id), name: d.name ?? d.esi?.name ?? 'Unknown structure', type_id: tid, type: STRUCT_TYPES[tid] || 'Structure', industry: INDUSTRY.has(tid), market: d.has_market ?? d.market ?? null})); n++;
+      }
+      cp('structures', all.length > 100 && n > 0, `${all.length} structures downloaded, ${n} within range`);
+    } catch (e) { cp('structures', false, e.message); }
+    // E) NPC stations (optional)
+    try {
+      const u = await latest('industry-facilities', /latest.*\.json$/i, 'https://data.everef.net/industry-facilities/industry-facilities-latest.json');
+      const all = rows(await getJ(u)); let n = 0;
+      for (const r of all) {
+        const d = r.value || r, sid = sysOf(r); if (!jumps.has(sid)) continue;
+        const id = Number(r._key ?? d.facility_id ?? d.station_id ?? d.id); if (result.facilities.some(f => f.id === id)) continue;
+        const tax = typeof d.tax === 'number' ? (d.tax <= 1 ? d.tax * 100 : d.tax) : null;
+        result.facilities.push(base(sid, {kind: 'npc', id, name: d.name ?? d.station_name ?? 'NPC station ' + id, type: 'NPC station', industry: true, tax})); n++;
+      }
+      cp('npc-stations', all.length > 100 && n > 0, `${all.length} NPC facilities downloaded, ${n} within range`);
+    } catch (e) { cp('npc-stations', false, e.message); }
+    // F) finish
+    result.facilities.sort((a, b) => a.jumps - b.jumps || String(a.name).localeCompare(String(b.name)));
+    result.counts = result.facilities.reduce((a, f) => (a[f.kind] = (a[f.kind] || 0) + 1, a), {});
+    result.ok = result.facilities.length > 0 && cps.every(c => c.ok || ['cost-indices', 'structures', 'npc-stations'].includes(c.step));
+    cp('summary', result.facilities.length > 0, `${result.facilities.length} facilities written (${JSON.stringify(result.counts)})`);
+  } catch (e) { cp('fatal', false, e.message); }
+  fs.writeFileSync(path.join(OUT, 'facilities.json'), JSON.stringify(result));
+}
+await buildFacilities();
+
 console.log('Done.', updated);

@@ -1,0 +1,17 @@
+name: Cleanup unused files
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git rm -f --ignore-unmatch app.js esi.js store.js planner.js style.css original.html \
+            industry-core.mjs industry-core.test.mjs planner-core.mjs planner.test.mjs \
+            sde-loader-core.mjs sde-loader-core.test.mjs
+          git config user.name "cleanup"
+          git config user.email "cleanup@users.noreply.github.com"
+          git commit -m "Remove unused files" || echo "nothing to remove"
+          git push

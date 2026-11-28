@@ -192,6 +192,6 @@ console.log(`Wrote prices for ${Object.keys(prices).length} item types.`);
 // Jita keeps the original file name and format; the other hubs get market-<regionId>.json in the same format (now with every traded type).
 for (const reg of HUBS) {
   const file = reg === HUBS[0] ? 'market.json' : `market-${reg}.json`;
-  fs.writeFileSync(path.join(OUT, file), JSON.stringify({updated, region: reg, snapshot: snapshot.snap[reg] || null, source: 'everef-market-orders', books: snapshot.books[reg]}));
+  fs.writeFileSync(path.join(OUT, file), JSON.stringify({updated, region: reg, snapshot: snapshot.snap[reg] || null, source: 'everef-market-orders', complete: true, books: snapshot.books[reg]}));
 }
 console.log('Done.', updated);

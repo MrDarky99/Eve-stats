@@ -1345,7 +1345,7 @@ window.eveEnsureContractsLoaded=function(){
 
   function stats(f){
     const o=ov()[f.id]||null, role=ROLE[f.type_id]||{me:0,cost:0,time:0}, mul=MUL[f.sec_class]||1;
-    const tax=o&&o.tax!==''&&o.tax!=null?+o.tax:(f.tax??null), rigMe=o?+o.rigMe||0:0, rigTe=o?+o.rigTe||0:0;
+    const tax=o&&o.tax!==''&&o.tax!=null?+o.tax:(f.kind==='npc'?0.25:(f.tax??null)), rigMe=o?+o.rigMe||0:0, rigTe=o?+o.rigTe||0:0;
     const me=(1-(1-role.me/100)*(1-rigMe/100*mul))*100, te=(1-(1-role.time/100)*(1-rigTe/100*mul))*100;
     const idx=f.mfg_index, base=idx==null?null:50e6*idx/100;
     const job=base==null?null:base*(1-role.cost/100)+base*((tax??0)/100+.04);
@@ -1423,6 +1423,51 @@ window.eveEnsureContractsLoaded=function(){
   });
   document.addEventListener('input',ev=>{if(ev.target.id==='fbQ'){filter.q=ev.target.value;const p=ev.target.selectionStart;renderList();const q=$('fbQ');q.focus();q.setSelectionRange(p,p)}});
   document.addEventListener('change',ev=>{if(ev.target.id==='fbSort'){filter.sort=ev.target.value;renderList()}if(ev.target.id==='fbMax'){filter.max=+ev.target.value;renderList()}});
+})();
+</script>
+<script>
+// Sold volume (The Forge = Jita's region) in the planner result and in every Opportunity scan result. Data: data/volume.json (built by the GitHub Action).
+(function(){
+  let vol=null,err=null,loading=null;
+  const load=()=>loading||(loading=fetch('data/volume.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error(`data/volume.json gave HTTP ${r.status}. Run the GitHub Action again and open the site from its GitHub Pages address.`);return r.json()})
+    .then(j=>{if(!j.v||!Object.keys(j.v).length)throw Error('volume.json has no data. '+((j.checkpoints||[]).filter(c=>!c.ok).map(c=>c.step+': '+c.msg).join(' | ')||'No checkpoint reported an error.'));vol=j;return j})
+    .catch(e=>{err=e.message;return null}));
+  const n=v=>v==null?'?':Math.round(v).toLocaleString(), esc_=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const nm=id=>(typeof sdeTypes!=='undefined'&&sdeTypes[id])||('Type '+id);
+  function block(items){
+    if(err)return `<div class="evevol notice bad" style="margin-top:8px">Sold-volume data unavailable: ${esc_(err)}</div>`;
+    const bad=(vol.checkpoints||[]).filter(c=>!c.ok);
+    const rows=items.map(it=>{
+      const v=vol.v[it.id],avg=v?v[3]/Math.max(1,Math.min(30,vol.days||30)):null,days=(v&&avg>0&&it.qty)?it.qty/avg:null;
+      const warn=days!=null&&days>3?' style="color:#f85149;font-weight:700"':(days!=null&&days<=1?' style="color:#3fb950;font-weight:700"':'');
+      return `<tr><td>${esc_(it.name||nm(it.id))}</td><td>${it.qty?n(it.qty):'–'}</td><td>${v?n(v[0]):'no data'}</td><td>${v?n(v[1]):'–'}</td><td>${v?n(v[2]):'–'}</td><td>${v?n(v[3]):'–'}</td><td>${avg?n(avg):'–'}</td><td${warn}>${days!=null?(days<0.1?'<0.1':days.toFixed(1))+' d':'–'}</td></tr>`}).join('');
+    return `<div class="evevol" style="margin-top:8px;padding:8px 10px;border:1px solid var(--line,#2a3340);border-radius:10px;background:var(--panel2,#181e26)"><b>📈 Sold volume · The Forge (Jita region)</b>
+    <div style="overflow-x:auto"><table style="width:100%;font-size:12px;border-collapse:collapse"><tr style="color:#8b97a8;text-align:left"><th>Product</th><th>Your output</th><th>Latest day (${vol.latest_date})</th><th>7 days before</th><th>Last 7 days</th><th>Last 30 days</th><th>Avg/day</th><th>Days to sell</th></tr>${rows}</table></div>
+    <div class="tiny" style="color:#8b97a8;margin-top:4px">Today's volume is not published (the game only releases completed days). The game gives totals for the whole region, not Jita 4-4 alone; Jita is its main hub. "Days to sell" = your output ÷ 30-day average per day.${bad.length?` <span style="color:#f85149">Build warnings: ${esc_(bad.map(c=>c.step+': '+c.msg).join(' | '))}</span>`:''}</div></div>`;
+  }
+  const prodOf=bpId=>{try{const b=getBlueprint(bpId),p=b&&bpProduct(b);return p?p.typeID:null}catch{return null}};
+  let timer=null;
+  function schedule(){clearTimeout(timer);timer=setTimeout(apply,80)}
+  async function apply(){
+    const plan=document.getElementById('planResult'),scan=document.getElementById('scanResults');
+    const needPlan=plan&&plan.children.length&&!plan.querySelector('.evevol')&&typeof plannerRecipe!=='undefined'&&plannerRecipe&&plannerRecipe.product&&!plan.textContent.includes('Preparing the manufacturing calculation');
+    const cards=scan?[...scan.querySelectorAll(':scope > .card')].filter(c=>!c.querySelector('.evevol')):[];
+    if(!needPlan&&!cards.length)return;
+    await load();
+    if(needPlan&&!plan.querySelector('.evevol')){
+      const runs=Math.max(1,+(document.getElementById('planRuns')||{}).value||1),p=plannerRecipe.product;
+      plan.insertAdjacentHTML('afterbegin',block([{id:p.typeID,qty:(p.quantity||1)*runs}]));
+    }
+    const top=window._evePlannerScanRows||[];
+    if(scan)[...scan.querySelectorAll(':scope > .card')].forEach((c,i)=>{
+      if(c.querySelector('.evevol')||!top[i])return;
+      const items=top[i].rows.filter(r=>!r.skip&&r.bpId!=null).map(r=>({id:prodOf(r.bpId),name:r.prodName,qty:r.qtyOut})).filter(x=>x.id);
+      if(!items.length)return;
+      const anchor=c.querySelector('.tiny');(anchor||c.firstElementChild).insertAdjacentHTML('afterend',block(items));
+    });
+  }
+  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
+  schedule();
 })();
 </script>
 </body></html>
